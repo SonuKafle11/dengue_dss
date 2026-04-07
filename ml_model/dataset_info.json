@@ -1,0 +1,70 @@
+{
+  "dataset_file": "dengue_dataset.csv",
+  "total_rows": 10000,
+  "usable_rows": 10000,
+  "rows_after_outlier_removal": 10000,
+  "outliers_removed": 0,
+  "outlier_per_column": {},
+  "total_columns": 14,
+  "all_columns": [
+    "fever",
+    "headache",
+    "joint_pain",
+    "muscle_pain",
+    "rash",
+    "nausea",
+    "vomiting",
+    "platelet_count",
+    "wbc_count",
+    "symptom_score",
+    "lab_probability",
+    "symptom_probability",
+    "final_probability",
+    "dengue"
+  ],
+  "feature_columns": [
+    "fever",
+    "headache",
+    "joint_pain",
+    "muscle_pain",
+    "rash",
+    "nausea",
+    "vomiting",
+    "platelet_count",
+    "wbc_count"
+  ],
+  "dropped_columns": [
+    "final_probability",
+    "lab_probability",
+    "symptom_probability",
+    "symptom_score"
+  ],
+  "target_column": "dengue",
+  "class_distribution": {
+    "0": 7279,
+    "1": 2721
+  },
+  "model_accuracy_pct": 84.0,
+  "model_info": {
+    "classes": [
+      "0",
+      "1"
+    ],
+    "n_features": 9,
+    "feature_names": [
+      "fever",
+      "headache",
+      "joint_pain",
+      "muscle_pain",
+      "rash",
+      "nausea",
+      "vomiting",
+      "platelet_count",
+      "wbc_count"
+    ],
+    "class_priors": {
+      "0": 0.727875,
+      "1": 0.272125
+    }
+  }
+}
