@@ -6,14 +6,13 @@
 
 <div>
   <div>
-    <div>🦟</div>
     <h1>Dengue DSS</h1>
-    <p>Decision Support System for Dengue Risk Assessment</p>
+    <p>A Decision Support System for Dengue Risk Assessment</p>
     <ul>
-      <li>✦ Clinical Scoring System</li>
-      <li>✦ Naive Bayes ML Prediction</li>
-      <li>✦ Smart Dosage Recommendations</li>
-      <li>✦ Doctor–Patient Workflow</li>
+      <li> Clinical Scoring System</li>
+      <li> Naive Bayes ML Prediction</li>
+      <li> Smart Dosage Recommendations</li>
+      <li> Doctor-Patient Workflow</li>
     </ul>
   </div>
 
@@ -29,10 +28,10 @@
         <div>
           <label>Your Unique ID</label>
           <div>{{ registered_id }}</div>
-          <small>Save this ID — you can use it to log in</small>
+          <small>Save this ID —"you can use it to login"</small>
         </div>
 
-        <a href="{% url 'login' %}">Go to Login →</a>
+        <a href="{% url 'login' %}">Go to Login </a>
       </div>
 
       {% else %}
@@ -48,16 +47,13 @@
           <label>
             <input type="radio" name="role" value="patient" required>
             <div>
-              <span>🧑‍⚕️</span>
               <span>Patient</span>
               <span>Submit symptoms & view risk score</span>
             </div>
           </label>
-
           <label>
             <input type="radio" name="role" value="doctor" required>
-            <div>
-              <span>👨‍⚕️</span>
+            <div>              
               <span>Doctor</span>
               <span>Review patients & run ML prediction</span>
             </div>
