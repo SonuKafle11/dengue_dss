@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+{% block title %}Admin Login — Dengue DSS{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block content %}
+
+<div>
+  <div>
+    <div>🛡️</div>
+    <h1>Admin Panel</h1>
+    <p>Dengue DSS — System Administration</p>
+    <ul>
+      <li>✦ Manage Users & Records</li>
+      <li>✦ View Dataset Statistics</li>
+      <li>✦ Monitor ML Model Status</li>
+    </ul>
+  </div>
+
+  <div>
+    <div>
+
+      <div>
+        <h2>Admin Login</h2>
+        <p>Restricted access — authorized personnel only</p>
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div>
+          <label>Admin Username</label>
+          <input type="text" name="username" placeholder="Enter admin username" required/>
+        </div>
+
+        <div>
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter password" required/>
+        </div>
+
+        <button type="submit">Access Admin Panel</button>
+      </form>
+
+      <div>
+        <a href="{% url 'login' %}">← Back to user login</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
