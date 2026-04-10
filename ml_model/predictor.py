@@ -1,28 +1,12 @@
-"""
-predictor.py  —  loads trained .pkl and predicts on new patient input.
-
-Feature mapping (patient form -> CSV column used in training):
-  fever              -> fever
-  severe_headache    -> headache
-  joint_back_pain    -> joint_pain
-  nausea_vomiting    -> nausea
-  skin_rash          -> rash
-  vomiting_more_than_3 -> vomiting
-  platelet_count     -> platelet_count
-  wbc_count          -> wbc_count
-  muscle_pain        -> 0 (not in patient form; default 0)
-"""
-
 import os, pickle, json
 import numpy as np
-
 BASE       = os.path.dirname(os.path.abspath(__file__))
 MODEL_PKL  = os.path.join(BASE, 'naive_bayes_model.pkl')
 SCALER_PKL = os.path.join(BASE, 'scaler.pkl')
 FEAT_JSON  = os.path.join(BASE, 'feature_names.json')
 INFO_JSON  = os.path.join(BASE, 'dataset_info.json')
 
-# Canonical feature order (must match training)
+# Canonical feature order
 FEATURES = ['fever', 'headache', 'joint_pain', 'muscle_pain',
             'rash', 'nausea', 'vomiting',
             'platelet_count', 'wbc_count']

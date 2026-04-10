@@ -3,8 +3,6 @@ import pickle
 import os
 import json
 import numpy as np
-
-
 class GaussianNaiveBayes:
     """
     Gaussian Naive Bayes classifier implemented.

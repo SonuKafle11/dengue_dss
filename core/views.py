@@ -1,5 +1,3 @@
-# Module 1: views.py is empty at this stage.
-# Views will be added in Module 4 (Auth) and Module 5 (Patient/Doctor).
 import hashlib
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -7,9 +5,6 @@ from django.contrib import messages
 
 from .models import User, AdminUser, PatientRecord
 from ml_model.predictor import is_model_trained
-
-
-# ── Helpers ──────────────────────────────────────────────────────────────────
 
 def hash_password(raw):
     return hashlib.sha256(raw.encode()).hexdigest()
@@ -133,12 +128,9 @@ def admin_logout(request):
     request.session.flush()
     return redirect('admin_login')
 
-
-# ── Stubs (completed in Module 5 and 6) ──────────────────────────────────────
-
 @patient_required
 def patient_dashboard(request):
-    return render(request, 'core/login.html')  # stub
+    return render(request, 'core/login.html')  #stub
 
 @patient_required
 def patient_form(request):

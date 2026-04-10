@@ -3,10 +3,8 @@ import uuid
 import random
 import string
 
-
 def generate_user_id():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
 
 class User(models.Model):
     ROLE_CHOICES = [
