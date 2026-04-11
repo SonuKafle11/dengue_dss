@@ -4,7 +4,7 @@
 {% block content %}
 <div class="app-layout">
   <nav class="sidebar">
-    <div class="sidebar-brand"> Dengue DSS</div>
+    <div class="sidebar-brand">🦟 Dengue DSS</div>
     <div class="sidebar-user">
       <div class="user-avatar patient-avatar">{{ user.name|first|upper }}</div>
       <div>
@@ -14,10 +14,10 @@
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li><a href="{% url 'patient_dashboard' %}"> Dashboard</a></li>
-      <li class="active"><a href="{% url 'patient_form' %}"> New Assessment</a></li>
+      <li><a href="{% url 'patient_dashboard' %}">🏠 Dashboard</a></li>
+      <li class="active"><a href="{% url 'patient_form' %}">➕ New Assessment</a></li>
       <li class="nav-separator"></li>
-      <li><a href="{% url 'logout' %}"> Logout</a></li>
+      <li><a href="{% url 'logout' %}">🚪 Logout</a></li>
     </ul>
   </nav>
 
@@ -64,7 +64,7 @@
         </div>
 
         <div class="info-banner">
-           Scoring: <strong>Low Risk</strong> (0–3) &nbsp;|&nbsp;
+          📊 Scoring: <strong>Low Risk</strong> (0–3) &nbsp;|&nbsp;
           <strong>Possible Dengue</strong> (4–6) &nbsp;|&nbsp;
           <strong>Probable Dengue</strong> (7–9) &nbsp;|&nbsp;
           <strong>High Risk</strong> (≥10)
@@ -74,7 +74,7 @@
           <label class="symptom-card" data-score="2">
             <input type="checkbox" name="fever"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">🌡️</span>
               <span class="symptom-name">Fever</span>
               <span class="symptom-score-badge">+2 pts</span>
             </div>
@@ -82,7 +82,7 @@
           <label class="symptom-card" data-score="1">
             <input type="checkbox" name="severe_headache"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">🤕</span>
               <span class="symptom-name">Severe Headache</span>
               <span class="symptom-score-badge">+1 pt</span>
             </div>
@@ -90,7 +90,7 @@
           <label class="symptom-card" data-score="1">
             <input type="checkbox" name="joint_back_pain"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">🦴</span>
               <span class="symptom-name">Joint / Back Pain</span>
               <span class="symptom-score-badge">+1 pt</span>
             </div>
@@ -98,7 +98,7 @@
           <label class="symptom-card" data-score="1">
             <input type="checkbox" name="nausea_vomiting"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">🤢</span>
               <span class="symptom-name">Nausea / Vomiting</span>
               <span class="symptom-score-badge">+1 pt</span>
             </div>
@@ -106,7 +106,7 @@
           <label class="symptom-card" data-score="1">
             <input type="checkbox" name="skin_rash"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">🔴</span>
               <span class="symptom-name">Skin Rash</span>
               <span class="symptom-score-badge">+1 pt</span>
             </div>
@@ -114,15 +114,15 @@
           <label class="symptom-card" data-score="2">
             <input type="checkbox" name="vomiting_more_than_3"/>
             <div class="symptom-content">
-              
-              <span class="symptom-name">Vomiting > 3 times</span>
+              <span class="symptom-icon">🤮</span>
+              <span class="symptom-name">Vomiting &gt; 3 times</span>
               <span class="symptom-score-badge">+2 pts</span>
             </div>
           </label>
           <label class="symptom-card" data-score="3">
             <input type="checkbox" name="bleeding"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">🩸</span>
               <span class="symptom-name">Bleeding</span>
               <span class="symptom-score-badge score-high">+3 pts</span>
             </div>
@@ -130,7 +130,7 @@
           <label class="symptom-card" data-score="2">
             <input type="checkbox" name="extreme_weakness"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">😴</span>
               <span class="symptom-name">Extreme Weakness</span>
               <span class="symptom-score-badge">+2 pts</span>
             </div>
@@ -138,7 +138,7 @@
           <label class="symptom-card" data-score="2">
             <input type="checkbox" name="urine_output_low"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">💧</span>
               <span class="symptom-name">Low Urine Output</span>
               <span class="symptom-score-badge">+2 pts</span>
             </div>
@@ -146,7 +146,7 @@
           <label class="symptom-card" data-score="1">
             <input type="checkbox" name="fever_not_improving"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">📈</span>
               <span class="symptom-name">Fever Not Improving (3–4 days)</span>
               <span class="symptom-score-badge">+1 pt</span>
             </div>
@@ -154,7 +154,7 @@
           <label class="symptom-card" data-score="3">
             <input type="checkbox" name="drop_in_fever_with_weakness"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">⚠️</span>
               <span class="symptom-name">Fever Drop + Increasing Weakness</span>
               <span class="symptom-score-badge score-high">+3 pts</span>
             </div>
@@ -162,7 +162,7 @@
           <label class="symptom-card" data-score="2">
             <input type="checkbox" name="cold_hands_feet"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">🥶</span>
               <span class="symptom-name">Cold Hands / Feet</span>
               <span class="symptom-score-badge">+2 pts</span>
             </div>
@@ -170,7 +170,7 @@
           <label class="symptom-card" data-score="2">
             <input type="checkbox" name="restless_drowsy"/>
             <div class="symptom-content">
-              
+              <span class="symptom-icon">😵</span>
               <span class="symptom-name">Restless / Drowsy</span>
               <span class="symptom-score-badge">+2 pts</span>
             </div>
@@ -186,7 +186,7 @@
 
       <div class="form-actions">
         <a href="{% url 'patient_dashboard' %}" class="btn btn-outline">Cancel</a>
-        <button type="submit" class="btn btn-primary btn-lg"> Save & Predict Risk</button>
+        <button type="submit" class="btn btn-primary btn-lg">💾 Save &amp; Predict Risk</button>
       </div>
     </form>
   </main>
@@ -208,10 +208,10 @@ function updateScore() {
   liveScore.textContent = score;
   let level = '', cls = '';
   if      (score === 0)  { level = 'No Risk Selected';      cls = ''; }
-  else if (score <= 3)   { level = ' Low Risk';            cls = 'low'; }
-  else if (score <= 6)   { level = ' Possible Dengue';     cls = 'possible'; }
-  else if (score <= 9)   { level = ' Probable Dengue';     cls = 'probable'; }
-  else                   { level = ' High Risk of Dengue';  cls = 'high'; }
+  else if (score <= 3)   { level = '🟢 Low Risk';            cls = 'low'; }
+  else if (score <= 6)   { level = '🟡 Possible Dengue';     cls = 'possible'; }
+  else if (score <= 9)   { level = '🟠 Probable Dengue';     cls = 'probable'; }
+  else                   { level = '🔴 High Risk of Dengue'; cls = 'high'; }
   liveLevel.textContent = level;
   liveLevel.className   = 'live-score-level level-' + cls;
   liveScore.className   = 'live-score-value score-' + cls;
