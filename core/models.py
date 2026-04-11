@@ -20,7 +20,6 @@ class User(models.Model):
     def __str__(self):
         return f"{self.name} ({self.role}) - {self.user_id}"
 
-
 class AdminUser(models.Model):
     username = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=255)
@@ -28,7 +27,6 @@ class AdminUser(models.Model):
 
     def __str__(self):
         return self.username
-
 
 class PatientRecord(models.Model):
     RISK_CHOICES = [
