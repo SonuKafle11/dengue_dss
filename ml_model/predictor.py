@@ -13,7 +13,6 @@ FEATURES = ['fever', 'headache', 'joint_pain', 'muscle_pain',
 
 _model = _scaler = None
 
-
 def _load():
     global _model, _scaler
     if _model is None:

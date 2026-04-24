@@ -47,9 +47,18 @@
             <label>Body Weight (kg) <span class="required">*</span></label>
             <input type="number" name="weight" min="1" max="300" step="0.1" placeholder="e.g. 65.5" required/>
           </div>
+          <div class="form-group">
+            <label>Gender <span class="required">*</span></label>
+            <select name="gender" id="gender" required>
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+            </select>
+          </div>
           <div class="form-group form-group-check">
             <label class="checkbox-label">
-              <input type="checkbox" name="is_pregnant"/>
+              <input type="checkbox" name="is_pregnant" id="pregnancy"/>
               
               Pregnancy status <small>(Check if currently pregnant)</small>
             </label>
@@ -197,6 +206,28 @@
 const symptomCards = document.querySelectorAll('.symptom-card');
 const liveScore    = document.getElementById('liveScore');
 const liveLevel    = document.getElementById('liveLevel');
+const genderField = document.getElementById('gender');
+const ageField = document.querySelector('input[name="age"]');
+const pregnancyField = document.getElementById('pregnancy');
+
+pregnancyField.addEventListener('change', function () {
+  const gender = genderField.value;
+  const age = parseInt(ageField.value || 0);
+
+  // Rule 1: Only female can be pregnant
+  if (this.checked && gender !== 'female') {
+    alert('Only females can be marked as pregnant.');
+    this.checked = false;
+    return;
+  }
+
+  // Rule 2: Age must be >= 10
+  if (this.checked && age < 10) {
+    alert('Pregnancy not valid for age below 10.');
+    this.checked = false;
+    return;
+  }
+});
 
 function updateScore() {
   let score = 0;
