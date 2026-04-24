@@ -1,22 +1,20 @@
 {% extends 'core/base.html' %}
-{% block title %}Doctor Dashboard — Dengue DSS{% endblock %}
+{% block title %}Doctor Dashboard — Dengue Decision Support System{% endblock %}
 {% block body_class %}app-page{% endblock %}
 {% block content %}
 <div class="app-layout">
   <nav class="sidebar">
-    <div class="sidebar-brand">🦟 Dengue DSS</div>
+    <div class="sidebar-brand">Dengue Decision Support System</div>
     <div class="sidebar-user">
-      <div class="user-avatar doctor-avatar">{{ user.name|first|upper }}</div>
       <div>
         <div class="user-name">Dr. {{ user.name }}</div>
-        <div class="user-role">Doctor</div>
         <div class="user-id">ID: {{ user.user_id }}</div>
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li class="active"><a href="{% url 'doctor_dashboard' %}">🏥 Patient List</a></li>
-      <li class="nav-separator"></li>
-      <li><a href="{% url 'logout' %}">🚪 Logout</a></li>
+      <li class="active"><a href="{% url 'doctor_dashboard' %}">Patient List</a></li>
+      
+      <li><a href="{% url 'logout' %}">Logout</a></li>
     </ul>
   </nav>
 
@@ -24,23 +22,12 @@
     <header class="app-header">
       <div>
         <h1>Doctor Dashboard</h1>
-        <p>Review patient assessments and run ML-based dengue prediction</p>
+        <!--Review patient assessments and run ML-based dengue prediction-->
       </div>
     </header>
-
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-num">{{ total }}</div>
-        <div class="stat-label">Total Records</div>
-      </div>
-      <div class="stat-card stat-warning">
-        <div class="stat-num">{{ pending }}</div>
-        <div class="stat-label">Pending Review</div>
-      </div>
-      <div class="stat-card stat-success">
-        <div class="stat-num">{{ reviewed }}</div>
-        <div class="stat-label">Reviewed</div>
-      </div>
+<p><strong>Total Records:</strong> {{ total }}</p>
+<p><strong>Pending Review:</strong> {{ pending }}</p>
+<p><strong>Reviewed:</strong> {{ reviewed }}</p>
     </div>
 
     <form method="GET" class="filter-bar">
@@ -93,9 +80,9 @@
             </td>
             <td>
               {% if rec.is_reviewed %}
-              <span class="status-dot reviewed">✓ Reviewed</span>
+              <span class="status-dot reviewed">Reviewed</span>
               {% else %}
-              <span class="status-dot pending">⏳ Pending</span>
+              <span class="status-dot pending">Pending</span>
               {% endif %}
             </td>
             <td><small>{{ rec.created_at|date:"M d, Y" }}</small></td>

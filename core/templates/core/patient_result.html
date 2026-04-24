@@ -1,12 +1,12 @@
 {% extends 'core/base.html' %}
-{% block title %}Assessment Result — Dengue DSS{% endblock %}
+{% block title %}Assessment Result — Dengue Decision Support System{% endblock %}
 {% block body_class %}app-page{% endblock %}
 {% block content %}
 <div class="app-layout">
   <nav class="sidebar">
-    <div class="sidebar-brand">🦟 Dengue DSS</div>
+    <div class="sidebar-brand"> Dengue Decision Support System</div>
     <div class="sidebar-user">
-      <div class="user-avatar patient-avatar">{{ user.name|first|upper }}</div>
+    
       <div>
         <div class="user-name">{{ user.name }}</div>
         <div class="user-role">Patient</div>
@@ -14,10 +14,10 @@
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li><a href="{% url 'patient_dashboard' %}">🏠 Dashboard</a></li>
-      <li><a href="{% url 'patient_form' %}">➕ New Assessment</a></li>
-      <li class="nav-separator"></li>
-      <li><a href="{% url 'logout' %}">🚪 Logout</a></li>
+      <li><a href="{% url 'patient_dashboard' %}">Dashboard</a></li>
+      <li><a href="{% url 'patient_form' %}"> New Assessment</a></li>
+      
+      <li><a href="{% url 'logout' %}">Logout</a></li>
     </ul>
   </nav>
 
@@ -32,36 +32,28 @@
 
     <div class="result-hero risk-bg-{{ record.clinical_risk_level }}">
       <div class="result-score-wrap">
-        <div class="result-score-circle risk-{{ record.clinical_risk_level }}">
-          {{ record.clinical_score }}
-        </div>
+        
         <div class="result-score-info">
           <div class="result-risk-label">
-            {% if record.clinical_risk_level == 'low' %}🟢 Low Risk{% endif %}
-            {% if record.clinical_risk_level == 'possible' %}🟡 Possible Dengue{% endif %}
-            {% if record.clinical_risk_level == 'probable' %}🟠 Probable Dengue{% endif %}
-            {% if record.clinical_risk_level == 'high' %}🔴 High Risk of Dengue{% endif %}
+            {% if record.clinical_risk_level == 'low' %}<b>Low Risk</b>{% endif %}
+            {% if record.clinical_risk_level == 'possible' %}<b>Possible Dengue</b>{% endif %}
+            {% if record.clinical_risk_level == 'probable' %}<b>Probable Dengue</b>{% endif %}
+            {% if record.clinical_risk_level == 'high' %}<b>High Risk of Dengue</b>{% endif %}
           </div>
           <div class="result-score-sub">Clinical Score: {{ record.clinical_score }} / 21 pts</div>
           <div class="result-date">Assessed on {{ record.created_at|date:"F j, Y — g:i A" }}</div>
         </div>
       </div>
-      <div class="score-range-bar">
-        <div class="score-range-fill" style="width: {% widthratio record.clinical_score 21 100 %}%"></div>
-        <div class="score-markers">
-          <span>0</span><span>3</span><span>6</span><span>9</span><span>21</span>
-        </div>
-      </div>
-    </div>
+      
 
     <div class="result-grid">
       <div class="result-card">
         <h3>Patient Details</h3>
-        <div class="detail-row"><span>Name</span><strong>{{ user.name }}</strong></div>
-        <div class="detail-row"><span>Patient ID</span><strong>{{ user.user_id }}</strong></div>
-        <div class="detail-row"><span>Age</span><strong>{{ record.age|floatformat:0 }} years</strong></div>
-        <div class="detail-row"><span>Weight</span><strong>{{ record.weight }} kg</strong></div>
-        <div class="detail-row"><span>Pregnant</span><strong>{% if record.is_pregnant %}Yes ⚠️{% else %}No{% endif %}</strong></div>
+        <div class="detail-row"><span>Name:</span><strong>{{ user.name }}</strong></div>
+        <div class="detail-row"><span>Patient ID:</span><strong>{{ user.user_id }}</strong></div>
+        <div class="detail-row"><span>Age:</span><strong>{{ record.age|floatformat:0 }} years</strong></div>
+        <div class="detail-row"><span>Weight:</span><strong>{{ record.weight }} kg</strong></div>
+        <div class="detail-row"><span>Pregnant:</span><strong>{% if record.is_pregnant %}Yes ⚠️{% else %}No{% endif %}</strong></div>
       </div>
 
       <div class="result-card">
@@ -105,7 +97,7 @@
           <div class="status-icon pending">⏳</div>
           <div>
             <strong>Awaiting Doctor Review</strong>
-            <p>A doctor will review your data and add lab results for final ML prediction.</p>
+            <p><i> A doctor will review your data and add lab results for your final prediction with proper dosage recommendations.</i></p>
           </div>
         </div>
         {% endif %}

@@ -4,9 +4,9 @@
 {% block content %}
 <div class="app-layout">
   <nav class="sidebar">
-    <div class="sidebar-brand">🦟 Dengue DSS</div>
+    <div class="sidebar-brand"> Dengue Decision Support System</div>
     <div class="sidebar-user">
-      <div class="user-avatar patient-avatar">{{ user.name|first|upper }}</div>
+      
       <div>
         <div class="user-name">{{ user.name }}</div>
         <div class="user-role">Patient</div>
@@ -14,10 +14,10 @@
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li><a href="{% url 'patient_dashboard' %}">🏠 Dashboard</a></li>
-      <li class="active"><a href="{% url 'patient_form' %}">➕ New Assessment</a></li>
-      <li class="nav-separator"></li>
-      <li><a href="{% url 'logout' %}">🚪 Logout</a></li>
+      <li><a href="{% url 'patient_dashboard' %}">Dashboard</a></li>
+      <li class="active"><a href="{% url 'patient_form' %}">New Assessment</a></li>
+      
+      <li><a href="{% url 'logout' %}">Logout</a></li>
     </ul>
   </nav>
 
@@ -50,8 +50,8 @@
           <div class="form-group form-group-check">
             <label class="checkbox-label">
               <input type="checkbox" name="is_pregnant"/>
-              <span class="checkbox-custom"></span>
-              <div><strong>Pregnant</strong><small>Check if currently pregnant</small></div>
+              
+              Pregnancy status <small>(Check if currently pregnant)</small>
             </label>
           </div>
         </div>
@@ -59,12 +59,11 @@
 
       <div class="form-section">
         <div class="section-title">
-          <span class="section-num">02</span>
           <div><h3>Symptoms Checklist</h3><p>Select all symptoms you are currently experiencing.</p></div>
         </div>
 
         <div class="info-banner">
-          📊 Scoring: <strong>Low Risk</strong> (0–3) &nbsp;|&nbsp;
+          Scoring: <strong>Low Risk</strong> (0–3) &nbsp;|&nbsp;
           <strong>Possible Dengue</strong> (4–6) &nbsp;|&nbsp;
           <strong>Probable Dengue</strong> (7–9) &nbsp;|&nbsp;
           <strong>High Risk</strong> (≥10)
@@ -178,15 +177,15 @@
         </div>
 
         <div class="live-score-bar">
-          <div class="live-score-label">Live Clinical Score:</div>
-          <div class="live-score-value" id="liveScore">0</div>
+          <div class="live-score-label">Clinical Score: <span id="liveScore">0</span></div>
+          
           <div class="live-score-level" id="liveLevel">No Risk Selected</div>
         </div>
       </div>
 
       <div class="form-actions">
         <a href="{% url 'patient_dashboard' %}" class="btn btn-outline">Cancel</a>
-        <button type="submit" class="btn btn-primary btn-lg">💾 Save &amp; Predict Risk</button>
+        <button type="submit" class="btn btn-primary btn-lg">Save &amp; Predict Risk</button>
       </div>
     </form>
   </main>
@@ -208,10 +207,10 @@ function updateScore() {
   liveScore.textContent = score;
   let level = '', cls = '';
   if      (score === 0)  { level = 'No Risk Selected';      cls = ''; }
-  else if (score <= 3)   { level = '🟢 Low Risk';            cls = 'low'; }
-  else if (score <= 6)   { level = '🟡 Possible Dengue';     cls = 'possible'; }
-  else if (score <= 9)   { level = '🟠 Probable Dengue';     cls = 'probable'; }
-  else                   { level = '🔴 High Risk of Dengue'; cls = 'high'; }
+  else if (score <= 3)   { level = 'Low Risk';            cls = 'low'; }
+  else if (score <= 6)   { level = 'Possible Dengue';     cls = 'possible'; }
+  else if (score <= 9)   { level = 'Probable Dengue';     cls = 'probable'; }
+  else                   { level = 'High Risk of Dengue'; cls = 'high'; }
   liveLevel.textContent = level;
   liveLevel.className   = 'live-score-level level-' + cls;
   liveScore.className   = 'live-score-value score-' + cls;

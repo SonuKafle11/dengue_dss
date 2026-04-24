@@ -4,33 +4,30 @@
 {% block content %}
 <div class="app-layout">
   <nav class="sidebar">
-    <div class="sidebar-brand">🦟 Dengue DSS</div>
+    <div class="sidebar-brand">Dengue Decision Support System</div>
     <div class="sidebar-user">
-      <div class="user-avatar doctor-avatar">{{ doctor.name|first|upper }}</div>
+      
       <div>
         <div class="user-name">Dr. {{ doctor.name }}</div>
-        <div class="user-role">Doctor</div>
+       
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li><a href="{% url 'doctor_dashboard' %}">🏥 Patient List</a></li>
-      <li class="nav-separator"></li>
-      <li><a href="{% url 'logout' %}">🚪 Logout</a></li>
+      <li><a href="{% url 'doctor_dashboard' %}">Patient List</a></li>
+     
+      <li><a href="{% url 'logout' %}">Logout</a></li>
     </ul>
   </nav>
 
   <main class="app-main">
     <header class="app-header">
-      <div>
-        <h1>Patient Review</h1>
-        <p>Add lab results to trigger ML prediction and dosage recommendation</p>
-      </div>
+      
       <a href="{% url 'doctor_dashboard' %}" class="btn btn-outline">← Back to List</a>
     </header>
 
     {% if not model_trained %}
     <div class="alert alert-warning">
-      ⚠️ ML model is not trained yet. Run: <code>python ml_model/train_model.py</code>
+      ML model is not trained yet. Run: <code>python ml_model/train_model.py</code>
     </div>
     {% endif %}
 
@@ -38,12 +35,12 @@
       <div class="detail-left">
         <div class="result-card">
           <h3>Patient Information</h3>
-          <div class="detail-row"><span>Name</span><strong>{{ record.patient.name }}</strong></div>
-          <div class="detail-row"><span>Patient ID</span><code>{{ record.patient.user_id }}</code></div>
-          <div class="detail-row"><span>Age</span><strong>{{ record.age|floatformat:0 }} years</strong></div>
-          <div class="detail-row"><span>Weight</span><strong>{{ record.weight }} kg</strong></div>
-          <div class="detail-row"><span>Pregnant</span><strong>{% if record.is_pregnant %}Yes ⚠️{% else %}No{% endif %}</strong></div>
-          <div class="detail-row"><span>Assessed</span><strong>{{ record.created_at|date:"M d, Y g:i A" }}</strong></div>
+          <div class="detail-row"><span>Name:</span><strong>{{ record.patient.name }}</strong></div>
+          <div class="detail-row"><span>Patient ID:</span><strong><code>{{ record.patient.user_id }}</code></strong></div>
+          <div class="detail-row"><span>Age:</span><strong>{{ record.age|floatformat:0 }} years</strong></div>
+          <div class="detail-row"><span>Weight:</span><strong>{{ record.weight }} kg</strong></div>
+          <div class="detail-row"><span>Pregnant:</span><strong>{% if record.is_pregnant %}Yes ⚠️{% else %}No{% endif %}</strong></div>
+          <div class="detail-row"><span>Assessed:</span><strong>{{ record.created_at|date:"M d, Y g:i A" }}</strong></div>
         </div>
 
         <div class="result-card">
@@ -51,10 +48,10 @@
           <div class="score-display risk-{{ record.clinical_risk_level }}">
             <div class="big-score">{{ record.clinical_score }}</div>
             <div class="big-level">
-              {% if record.clinical_risk_level == 'low' %}🟢 Low Risk (0–3)
-              {% elif record.clinical_risk_level == 'possible' %}🟡 Possible Dengue (4–6)
-              {% elif record.clinical_risk_level == 'probable' %}🟠 Probable Dengue (7–9)
-              {% else %}🔴 High Risk (≥10){% endif %}
+              {% if record.clinical_risk_level == 'low' %} Low Risk (0–3)
+              {% elif record.clinical_risk_level == 'possible' %} Possible Dengue (4–6)
+              {% elif record.clinical_risk_level == 'probable' %} Probable Dengue (7–9)
+              {% else %} High Risk (≥10){% endif %}
             </div>
           </div>
         </div>
@@ -81,8 +78,8 @@
 
       <div class="detail-right">
         <div class="result-card lab-card">
-          <h3>🔬 Laboratory Results</h3>
-          <p class="card-sub">Enter the lab values below. These will be used for the Naive Bayes ML prediction.</p>
+          <h3>Laboratory Results</h3>
+          <p class="card-sub">Enter the lab values below.</p>
           <form method="POST">
             {% csrf_token %}
             <div class="lab-grid">
@@ -115,12 +112,9 @@
                 <small class="hint">Elevated in primary dengue infection</small>
               </div>
             </div>
-            <div class="model-info-box">
-              <div>🤖 <strong>Naive Bayes Model</strong> (84% accuracy)</div>
-              <div>Features: fever, headache, joint pain, rash, nausea, vomiting, platelet count, WBC count</div>
-            </div>
+            
             <button type="submit" class="btn btn-primary btn-lg btn-full">
-              🔍 Save &amp; Run Prediction
+              Save &amp; Run Prediction
             </button>
           </form>
         </div>

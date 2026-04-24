@@ -4,7 +4,7 @@
 {% block content %}
 <div class="app-layout">
   <nav class="sidebar admin-sidebar">
-    <div class="sidebar-brand">🛡️ Admin Panel</div>
+    <div class="sidebar-brand">Admin Panel</div>
     <div class="sidebar-user">
       <div class="user-avatar admin-avatar">A</div>
       <div>
@@ -13,10 +13,10 @@
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li class="active"><a href="{% url 'admin_dashboard' %}">📊 Dashboard</a></li>
-      <li><a href="{% url 'admin_dataset_json' %}" target="_blank">📁 Dataset JSON</a></li>
+      <li class="active"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+      <li><a href="{% url 'admin_dataset_json' %}" target="_blank">Dataset JSON</a></li>
       <li class="nav-separator"></li>
-      <li><a href="{% url 'admin_logout' %}">🚪 Logout</a></li>
+      <li><a href="{% url 'admin_logout' %}">Logout</a></li>
     </ul>
   </nav>
 
@@ -36,9 +36,10 @@
     </div>
 
     <div class="result-card">
-      <h3>🤖 ML Model Status</h3>
+      <h3>
+        9ML Model Status</h3>
       {% if model_trained %}
-      <div class="model-status-ok">✅ Naive Bayes model is trained and ready</div>
+      <div class="model-status-ok">Naive Bayes model is trained and ready</div>
       {% else %}
       <div class="model-status-err">❌ Model not trained. Run: <code>python ml_model/train_model.py</code></div>
       {% endif %}
@@ -56,7 +57,7 @@
         </div>
       </div>
       <div class="json-link">
-        <a href="{% url 'admin_dataset_json' %}" target="_blank" class="btn btn-outline btn-sm">📄 View Full Dataset JSON</a>
+        <a href="{% url 'admin_dataset_json' %}" target="_blank" class="btn btn-outline btn-sm">View Full Dataset JSON</a>
       </div>
       {% endif %}
     </div>

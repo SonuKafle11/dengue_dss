@@ -4,9 +4,9 @@
 {% block content %}
 <div class="app-layout">
   <nav class="sidebar">
-    <div class="sidebar-brand">🦟 Dengue DSS</div>
+    <div class="sidebar-brand">Dengue DSS</div>
     <div class="sidebar-user">
-      <div class="user-avatar patient-avatar">{{ user.name|first|upper }}</div>
+      
       <div>
         <div class="user-name">{{ user.name }}</div>
         <div class="user-role">Patient</div>
@@ -14,10 +14,10 @@
       </div>
     </div>
     <ul class="sidebar-nav">
-      <li class="active"><a href="{% url 'patient_dashboard' %}">🏠 Dashboard</a></li>
-      <li><a href="{% url 'patient_form' %}">➕ New Assessment</a></li>
-      <li class="nav-separator"></li>
-      <li><a href="{% url 'logout' %}">🚪 Logout</a></li>
+      <li class="active"><a href="{% url 'patient_dashboard' %}"> Dashboard</a></li>
+      <li><a href="{% url 'patient_form' %}"> New Assessment</a></li>
+      
+      <li><a href="{% url 'logout' %}"> Logout</a></li>
     </ul>
   </nav>
 
@@ -32,7 +32,7 @@
 
     {% if not records %}
     <div class="empty-state">
-      <div class="empty-icon">📋</div>
+      <div class="empty-icon"></div>
       <h3>No assessments yet</h3>
       <p>Start your first dengue risk assessment to get a clinical score and recommendations.</p>
       <a href="{% url 'patient_form' %}" class="btn btn-primary">Start Assessment</a>
@@ -43,10 +43,10 @@
       <div class="record-card risk-{{ rec.clinical_risk_level }}">
         <div class="record-header">
           <div class="risk-badge risk-{{ rec.clinical_risk_level }}">
-            {% if rec.clinical_risk_level == 'low' %}🟢 Low Risk
-            {% elif rec.clinical_risk_level == 'possible' %}🟡 Possible Dengue
-            {% elif rec.clinical_risk_level == 'probable' %}🟠 Probable Dengue
-            {% else %}🔴 High Risk{% endif %}
+            {% if rec.clinical_risk_level == 'low' %} Low Risk
+            {% elif rec.clinical_risk_level == 'possible' %} Possible Dengue
+            {% elif rec.clinical_risk_level == 'probable' %} Probable Dengue
+            {% else %} High Risk{% endif %}
           </div>
           <div class="record-date">{{ rec.created_at|date:"M d, Y" }}</div>
         </div>
