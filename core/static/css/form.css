@@ -1,0 +1,63 @@
+/* Form container */
+form {
+    background: white;
+    padding: 25px;
+    border: 1px solid #ddd;
+    max-width: 550px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Headings inside form */
+h3 {
+    margin-top: 20px;
+    color: #2c3e50;
+}
+
+/* Labels */
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+/* Inputs */
+input[type="number"],
+input[type="text"] {
+    width: 100%;
+    padding: 7px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Radio & checkbox alignment */
+input[type="radio"],
+input[type="checkbox"] {
+    margin-right: 6px;
+}
+
+/* Error messages */
+#error-msg,
+#symptom-error {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Button */
+button {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}

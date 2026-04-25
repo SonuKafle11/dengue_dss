@@ -1,11 +1,17 @@
 [
   "fever",
-  "headache",
-  "joint_pain",
-  "muscle_pain",
-  "rash",
-  "nausea",
-  "vomiting",
+  "severe_headache",
+  "joint_back_pain",
+  "nausea_vomiting",
+  "skin_rash",
+  "vomiting_more_than_3",
+  "bleeding",
+  "extreme_weakness",
+  "urine_output_low",
+  "fever_not_improving",
+  "drop_in_fever_with_weakness",
+  "cold_hands_feet",
+  "restless_drowsy",
   "platelet_count",
   "wbc_count"
 ]

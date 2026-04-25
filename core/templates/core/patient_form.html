@@ -1,6 +1,9 @@
 {% extends 'core/base.html' %}
+{% load static %} 
 {% block title %}Symptom Assessment{% endblock %}
-
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock %}
 {% block content %}
 
 <h1>Dengue Risk Assessment</h1>
@@ -17,35 +20,46 @@
 
     <h3>Basic Information</h3>
 
-    <label>Age:</label><br>
-    <input type="number" name="age" required><br><br>
+    <!-- Gender -->
+    <label>Gender:</label><br>
+    <input type="radio" name="gender" value="male" required> Male<br>
+    <input type="radio" name="gender" value="female"> Female<br>
+    <input type="radio" name="gender" value="other"> Other<br><br>
 
+    <!-- Age -->
+    <label>Age:</label><br>
+    <input type="number" id="age" name="age" required><br><br>
+
+    <!-- Weight -->
     <label>Weight (kg):</label><br>
     <input type="number" name="weight" step="0.1" required><br><br>
 
+    <!-- Pregnant -->
     <label>
-        <input type="checkbox" name="is_pregnant">
+        <input type="checkbox" id="pregnant" name="is_pregnant">
         Pregnant
     </label>
 
+    <!-- Error message -->
+    <p id="error-msg" style="color:red;"></p>
+
     <hr>
 
-    <h3>Symptoms (select all that apply)</h3>
-
-    <label><input type="checkbox" name="fever"> Fever (+2)</label><br>
-    <label><input type="checkbox" name="severe_headache"> Severe Headache (+1)</label><br>
-    <label><input type="checkbox" name="joint_back_pain"> Joint/Back Pain (+1)</label><br>
-    <label><input type="checkbox" name="nausea_vomiting"> Nausea/Vomiting (+1)</label><br>
-    <label><input type="checkbox" name="skin_rash"> Skin Rash (+1)</label><br>
-    <label><input type="checkbox" name="vomiting_more_than_3"> Vomiting >3 times (+2)</label><br>
-    <label><input type="checkbox" name="bleeding"> Bleeding (+3)</label><br>
-    <label><input type="checkbox" name="extreme_weakness"> Extreme Weakness (+2)</label><br>
-    <label><input type="checkbox" name="urine_output_low"> Low Urine Output (+2)</label><br>
-    <label><input type="checkbox" name="fever_not_improving"> Fever Not Improving (+1)</label><br>
-    <label><input type="checkbox" name="drop_in_fever_with_weakness"> Fever Drop + Weakness (+3)</label><br>
-    <label><input type="checkbox" name="cold_hands_feet"> Cold Hands/Feet (+2)</label><br>
-    <label><input type="checkbox" name="restless_drowsy"> Restless/Drowsy (+2)</label><br>
-
+    <h3>Symptoms</h3>
+    <label><input type="checkbox" name="fever"> Fever</label>
+    <label><input type="checkbox" name="severe_headache"> Severe Headache</label>
+    <label><input type="checkbox" name="joint_back_pain"> Joint/Back Pain</label>
+    <label><input type="checkbox" name="nausea_vomiting"> Nausea/Vomiting</label>
+    <label><input type="checkbox" name="skin_rash"> Skin Rash</label>
+    <label><input type="checkbox" name="vomiting_more_than_3"> Vomiting >3 times</label>
+    <label><input type="checkbox" name="bleeding"> Bleeding</label>
+    <label><input type="checkbox" name="extreme_weakness"> Extreme Weakness</label>
+    <label><input type="checkbox" name="urine_output_low"> Low Urine Output</label>
+    <label><input type="checkbox" name="fever_not_improving"> Fever Not Improving</label>
+    <label><input type="checkbox" name="drop_in_fever_with_weakness"> Fever Drop + Weakness</label>
+    <label><input type="checkbox" name="cold_hands_feet"> Cold Hands/Feet</label>
+    <label><input type="checkbox" name="restless_drowsy"> Restless/Drowsy</label>
+    <p id="symptom-error" style="color:red;"></p>
     <br><br>
 
     <button type="submit">Submit Assessment</button>

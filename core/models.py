@@ -41,6 +41,10 @@ class PatientRecord(models.Model):
 
     age = models.FloatField()
     weight = models.FloatField()
+    gender = models.CharField(
+    max_length=10,
+    choices=[('male','Male'), ('female','Female'), ('other','Other')]
+    )
     is_pregnant = models.BooleanField(default=False)
 
     fever = models.BooleanField(default=False)

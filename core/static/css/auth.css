@@ -1,0 +1,30 @@
+/* Center text */
+h1, p {
+    text-align: center;
+}
+
+/* Form */
+form {
+    margin-top: 20px;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Button center */
+button {
+    display: block;
+    margin: 10px auto;
+}
+
+/* Links center */
+p {
+    margin-top: 15px;
+}

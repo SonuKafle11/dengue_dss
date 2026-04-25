@@ -1,6 +1,9 @@
 {% extends 'core/base.html' %}
+{% load static %} 
 {% block title %}Login{% endblock %}
-
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
 {% block content %}
 
 <h1>Dengue DSS Login</h1>

@@ -3,56 +3,31 @@
 <html>
 <head>
     <title>{% block title %}Dengue DSS{% endblock %}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
 
-        h1, h2, h3 {
-            margin-bottom: 10px;
-        }
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        table, th, td {
-            border: 1px solid black;
-        }
-
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        button {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        a {
-            text-decoration: none;
-            color: blue;
-        }
-    </style>
+    <!-- Page-specific CSS -->
+    {% block extra_head %}{% endblock %}
 </head>
 
 <body>
 
+<!-- Django Messages -->
 {% if messages %}
-    {% for msg in messages %}
-        <p><strong>{{ msg }}</strong></p>
-    {% endfor %}
+    <div class="container">
+        {% for msg in messages %}
+            <p class="message">{{ msg }}</p>
+        {% endfor %}
+    </div>
 {% endif %}
 
-{% block content %}{% endblock %}
+<div class="container {% block container_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- JS -->
 <script src="{% static 'js/main.js' %}"></script>
+
 </body>
 </html>

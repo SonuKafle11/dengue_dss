@@ -1,6 +1,9 @@
 {% extends 'core/base.html' %}
+{% load static %} 
 {% block title %}Assessment Result{% endblock %}
-
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/result.css' %}">
+{% endblock %}
 {% block content %}
 
 <h1>Assessment Result</h1>

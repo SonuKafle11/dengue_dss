@@ -1,6 +1,10 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block title %}Patient Dashboard{% endblock %}
-
+{% block container_class %}container-wide{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
 {% block content %}
 
 <h1>Patient Dashboard</h1>

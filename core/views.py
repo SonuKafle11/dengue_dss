@@ -7,15 +7,9 @@ from .models import User, AdminUser, PatientRecord
 from ml_model.predictor import predict_dengue, is_model_trained, get_dataset_info
 from ml_model.dosage_engine import recommend_dosage, format_dosage_text
 
-
-# ═══════════════════════════════════════════════════════════════
-# HELPERS — used by all views below
-# ═══════════════════════════════════════════════════════════════
-
 def hash_password(raw):
     """Convert plain text password to SHA-256 hash before saving."""
     return hashlib.sha256(raw.encode()).hexdigest()
-
 
 def current_user(request):
     """Return the logged-in User object from session, or None."""
@@ -27,7 +21,6 @@ def current_user(request):
             pass
     return None
 
-
 def patient_required(fn):
     """Decorator — blocks access if user is not logged in as patient."""
     def wrap(request, *a, **kw):
@@ -36,7 +29,6 @@ def patient_required(fn):
         return fn(request, *a, **kw)
     wrap.__name__ = fn.__name__
     return wrap
-
 
 def doctor_required(fn):
     """Decorator — blocks access if user is not logged in as doctor."""
@@ -47,7 +39,6 @@ def doctor_required(fn):
     wrap.__name__ = fn.__name__
     return wrap
 
-
 def admin_required(fn):
     """Decorator — blocks access if admin is not logged in."""
     def wrap(request, *a, **kw):
@@ -57,13 +48,6 @@ def admin_required(fn):
     wrap.__name__ = fn.__name__
     return wrap
 
-
-# ═══════════════════════════════════════════════════════════════
-# INDEX
-# Template: none (pure redirect)
-# URL: /
-# ═══════════════════════════════════════════════════════════════
-
 def index(request):
     role = request.session.get('role')
     if role == 'patient':   return redirect('patient_dashboard')
@@ -72,12 +56,6 @@ def index(request):
     return redirect('login')
 
 
-# ═══════════════════════════════════════════════════════════════
-# AUTH VIEWS
-# ═══════════════════════════════════════════════════════════════
-
-# Template: core/templates/core/register.html
-# URL: /register/
 # What it does: shows registration form, creates User with hashed
 #               password, returns unique 8-char ID on success
 def register(request):
@@ -103,9 +81,6 @@ def register(request):
         })
     return render(request, 'core/register.html')
 
-
-# Template: core/templates/core/login.html
-# URL: /login/
 # What it does: accepts user_id or name + password, stores role
 #               in session, redirects to correct dashboard
 def login_view(request):
@@ -133,17 +108,11 @@ def login_view(request):
         messages.error(request, 'Invalid credentials. Check your ID/name and password.')
     return render(request, 'core/login.html')
 
-
-# Template: none (pure redirect)
-# URL: /logout/
 # What it does: clears entire session and redirects to login
 def logout_view(request):
     request.session.flush()
     return redirect('login')
 
-
-# Template: core/templates/core/admin_login.html
-# URL: /admin-login/
 # What it does: separate login for admin, stores admin_logged_in
 #               in session
 def admin_login(request):
@@ -161,21 +130,11 @@ def admin_login(request):
             messages.error(request, 'Admin account not found.')
     return render(request, 'core/admin_login.html')
 
-
-# Template: none (pure redirect)
-# URL: /admin-logout/
 # What it does: clears session and redirects to admin login
 def admin_logout(request):
     request.session.flush()
     return redirect('admin_login')
 
-
-# ═══════════════════════════════════════════════════════════════
-# PATIENT VIEWS
-# ═══════════════════════════════════════════════════════════════
-
-# Template: core/templates/core/patient_dashboard.html
-# URL: /patient/
 # What it does: fetches all records for logged-in patient,
 #               shows them as cards with risk badges and review status
 @patient_required
@@ -187,9 +146,6 @@ def patient_dashboard(request):
         'records': records
     })
 
-
-# Template: core/templates/core/patient_form.html
-# URL: /patient/form/
 # What it does: shows 13 symptom checkboxes with live JS score,
 #               on POST creates PatientRecord and calls rec.save()
 #               which auto-calculates clinical_score and risk_level
@@ -198,13 +154,32 @@ def patient_form(request):
     user = current_user(request)
     if request.method == 'POST':
         try:
+            gender = request.POST.get("gender")
             age    = float(request.POST.get('age', 0))
             weight = float(request.POST.get('weight', 0))
             if age <= 0 or weight <= 0:
                 raise ValueError("Age and weight must be positive.")
             is_pregnant = request.POST.get('is_pregnant') == 'on'
+            if is_pregnant:
+                if gender != "female":
+                    messages.error(request, "Only females can be pregnant.")
+                    return redirect('patient_form')
 
-            rec = PatientRecord(
+                if age < 10:
+                    messages.error(request, "Pregnancy not valid for age below 10.")
+                    return redirect('patient_form')
+                symptoms = [
+                'fever', 'severe_headache', 'joint_back_pain', 'nausea_vomiting',
+                'skin_rash', 'vomiting_more_than_3', 'bleeding',
+                'extreme_weakness', 'urine_output_low', 'fever_not_improving',
+                'drop_in_fever_with_weakness', 'cold_hands_feet', 'restless_drowsy'
+                ]
+
+                if not any(symptom in request.POST for symptom in symptoms):
+                    messages.error(request, "Please select at least one symptom.")
+                    return redirect('patient_form')
+
+                rec = PatientRecord(
                 patient=user, age=age, weight=weight, is_pregnant=is_pregnant,
                 fever                       = 'fever' in request.POST,
                 severe_headache             = 'severe_headache' in request.POST,
@@ -212,6 +187,13 @@ def patient_form(request):
                 nausea_vomiting             = 'nausea_vomiting' in request.POST,
                 skin_rash                   = 'skin_rash' in request.POST,
                 vomiting_more_than_3        = 'vomiting_more_than_3' in request.POST,
+                bleeding                    = 'bleeding' in request.POST,
+                extreme_weakness            = 'extreme_weakness' in request.POST,
+                urine_output_low            = 'urine_output_low' in request.POST,
+                fever_not_improving         = 'fever_not_improving' in request.POST,
+                drop_in_fever_with_weakness = 'drop_in_fever_with_weakness' in request.POST,
+                cold_hands_feet             = 'cold_hands_feet' in request.POST,
+                restless_drowsy             = 'restless_drowsy' in request.POST,
             )
             rec.save()  # triggers calculate_clinical_score() and get_risk_level()
             return redirect('patient_result', record_id=rec.record_id)
@@ -219,9 +201,6 @@ def patient_form(request):
             messages.error(request, f'Invalid input: {e}')
     return render(request, 'core/patient_form.html', {'user': user})
 
-
-# Template: core/templates/core/patient_result.html
-# URL: /patient/result/<uuid>/
 # What it does: fetches a single record by UUID, shows clinical
 #               score, reported symptoms, and review status
 @patient_required
@@ -233,13 +212,6 @@ def patient_result(request, record_id):
         'user'  : user
     })
 
-
-# ═══════════════════════════════════════════════════════════════
-# DOCTOR VIEWS
-# ═══════════════════════════════════════════════════════════════
-
-# Template: core/templates/core/doctor_dashboard.html
-# URL: /doctor/
 # What it does: fetches ALL patient records, supports search by
 #               name and filter by pending/reviewed, shows stats
 @doctor_required
@@ -266,9 +238,6 @@ def doctor_dashboard(request):
         'reviewed'     : PatientRecord.objects.filter(is_reviewed=True).count(),
     })
 
-
-# Template: core/templates/core/doctor_patient_detail.html
-# URL: /doctor/patient/<uuid>/
 # What it does: shows patient info + symptoms (read-only left side),
 #               on POST takes lab values, calls predict_dengue()
 #               from ml_model/predictor.py, calls recommend_dosage()
@@ -293,15 +262,23 @@ def doctor_patient_detail(request, record_id):
             rec.is_reviewed    = True
 
             # build feature dict and run Naive Bayes prediction
+            # NEW — all 13 symptoms now pass directly to ML
             ml_input = {
-                'fever'               : int(rec.fever),
-                'severe_headache'     : int(rec.severe_headache),
-                'joint_back_pain'     : int(rec.joint_back_pain),
-                'nausea_vomiting'     : int(rec.nausea_vomiting),
-                'skin_rash'           : int(rec.skin_rash),
-                'vomiting_more_than_3': int(rec.vomiting_more_than_3),
-                'platelet_count'      : platelet,
-                'wbc_count'           : wbc,
+                'fever'                       : int(rec.fever),
+                'severe_headache'             : int(rec.severe_headache),
+                'joint_back_pain'             : int(rec.joint_back_pain),
+                'nausea_vomiting'             : int(rec.nausea_vomiting),
+                'skin_rash'                   : int(rec.skin_rash),
+                'vomiting_more_than_3'        : int(rec.vomiting_more_than_3),
+                'bleeding'                    : int(rec.bleeding),
+                'extreme_weakness'            : int(rec.extreme_weakness),
+                'urine_output_low'            : int(rec.urine_output_low),
+                'fever_not_improving'         : int(rec.fever_not_improving),
+                'drop_in_fever_with_weakness' : int(rec.drop_in_fever_with_weakness),
+                'cold_hands_feet'             : int(rec.cold_hands_feet),
+                'restless_drowsy'             : int(rec.restless_drowsy),
+                'platelet_count'              : platelet,
+                'wbc_count'                   : wbc,
             }
             ml_res = predict_dengue(ml_input)
             rec.ml_prediction = ml_res['prediction']
@@ -329,9 +306,6 @@ def doctor_patient_detail(request, record_id):
         'model_trained': is_model_trained()
     })
 
-
-# Template: core/templates/core/doctor_prediction_result.html
-# URL: /doctor/result/<uuid>/
 # What it does: shows ML prediction banner, confidence %,
 #               lab results, clinical score, full dosage section
 @doctor_required
@@ -356,13 +330,6 @@ def doctor_prediction_result(request, record_id):
         'dosage': dosage_rec
     })
 
-
-# ═══════════════════════════════════════════════════════════════
-# ADMIN VIEWS
-# ═══════════════════════════════════════════════════════════════
-
-# Template: core/templates/core/admin_dashboard.html
-# URL: /admin-panel/
 # What it does: shows all users, all records, ML model status,
 #               dataset info, stat counts
 @admin_required
@@ -381,9 +348,6 @@ def admin_dashboard(request):
         'admin_username'  : request.session.get('admin_username'),
     })
 
-
-# Template: none (redirects back to admin_dashboard)
-# URL: /admin-panel/delete-user/<user_id>/
 # What it does: deletes a User and all their records via CASCADE
 @admin_required
 def admin_delete_user(request, user_id):
@@ -397,9 +361,6 @@ def admin_delete_user(request, user_id):
             messages.error(request, 'User not found.')
     return redirect('admin_dashboard')
 
-
-# Template: none (redirects back to admin_dashboard)
-# URL: /admin-panel/delete-record/<uuid>/
 # What it does: deletes a single PatientRecord
 @admin_required
 def admin_delete_record(request, record_id):
@@ -412,9 +373,6 @@ def admin_delete_record(request, record_id):
             messages.error(request, 'Record not found.')
     return redirect('admin_dashboard')
 
-
-# Template: none (returns JSON response)
-# URL: /admin-panel/dataset-json/
 # What it does: returns dataset_info.json as JSON API response
 @admin_required
 def admin_dataset_json(request):
