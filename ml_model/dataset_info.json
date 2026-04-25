@@ -53,10 +53,10 @@
   ],
   "target_column": "dengue",
   "class_distribution": {
-    "0": 7279,
-    "1": 2721
+    "0": 6699,
+    "1": 3301
   },
-  "model_accuracy_pct": 88.8,
+  "model_accuracy_pct": 80.3,
   "model_info": {
     "classes": [
       "0",
@@ -81,8 +81,8 @@
       "wbc_count"
     ],
     "class_priors": {
-      "0": 0.727875,
-      "1": 0.272125
+      "0": 0.669875,
+      "1": 0.330125
     }
   }
 }

@@ -168,18 +168,18 @@ def patient_form(request):
                 if age < 10:
                     messages.error(request, "Pregnancy not valid for age below 10.")
                     return redirect('patient_form')
-                symptoms = [
+            symptoms = [
                 'fever', 'severe_headache', 'joint_back_pain', 'nausea_vomiting',
                 'skin_rash', 'vomiting_more_than_3', 'bleeding',
                 'extreme_weakness', 'urine_output_low', 'fever_not_improving',
                 'drop_in_fever_with_weakness', 'cold_hands_feet', 'restless_drowsy'
-                ]
+            ]
 
-                if not any(symptom in request.POST for symptom in symptoms):
-                    messages.error(request, "Please select at least one symptom.")
-                    return redirect('patient_form')
+            if not any(symptom in request.POST for symptom in symptoms):
+                messages.error(request, "Please select at least one symptom.")
+                return redirect('patient_form')
 
-                rec = PatientRecord(
+            rec = PatientRecord(
                 patient=user, age=age, weight=weight, is_pregnant=is_pregnant,
                 fever                       = 'fever' in request.POST,
                 severe_headache             = 'severe_headache' in request.POST,
