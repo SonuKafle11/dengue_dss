@@ -1,86 +1,44 @@
 {% extends 'core/base.html' %}
-{% block title %}Register — Dengue DSS{% endblock %}
-{% block body_class %}{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
 
-<div>
-  <div>
-    <h1>Dengue DSS</h1>
-    <p>A Decision Support System for Dengue Risk Assessment</p>
-    <ul>
-      <li> Clinical Scoring System</li>
-      <li> Naive Bayes ML Prediction</li>
-      <li> Smart Dosage Recommendations</li>
-      <li> Doctor-Patient Workflow</li>
-    </ul>
-  </div>
+<h1>Register</h1>
 
-  <div>
-    <div>
+{% if registered_id %}
 
-      {% if registered_id %}
-      <div>
-        <div>✓</div>
-        <h3>Registration Successful!</h3>
-        <p>Welcome, <strong>{{ registered_name }}</strong> ({{ registered_role }})</p>
+    <h3>Registration Successful</h3>
 
-        <div>
-          <label>Your Unique ID</label>
-          <div>{{ registered_id }}</div>
-          <small>Save this ID —"you can use it to login"</small>
-        </div>
+    <p><strong>Name:</strong> {{ registered_name }}</p>
+    <p><strong>Role:</strong> {{ registered_role }}</p>
+    <p><strong>Your ID:</strong> {{ registered_id }}</p>
 
-        <a href="{% url 'login' %}">Go to Login </a>
-      </div>
+    <p>Please save this ID. You will need it to log in.</p>
 
-      {% else %}
-      <div>
-        <h2>Create Account</h2>
-        <p>Join the Dengue Decision Support System</p>
-      </div>
+    <a href="{% url 'login' %}">Go to Login</a>
 
-      <form method="POST">
-        {% csrf_token %}
+{% else %}
 
-        <div>
-          <label>
-            <input type="radio" name="role" value="patient" required>
-            <div>
-              <span>Patient</span>
-              <span>Submit symptoms & view risk score</span>
-            </div>
-          </label>
-          <label>
-            <input type="radio" name="role" value="doctor" required>
-            <div>              
-              <span>Doctor</span>
-              <span>Review patients & run ML prediction</span>
-            </div>
-          </label>
-        </div>
+<form method="POST">
+    {% csrf_token %}
 
-        <div>
-          <label>Full Name</label>
-          <input type="text" name="name" placeholder="Enter your full name" required/>
-        </div>
+    <label>Role:</label><br>
+    <input type="radio" name="role" value="patient" required> Patient<br>
+    <input type="radio" name="role" value="doctor" required> Doctor<br><br>
 
-        <div>
-          <label>Password</label>
-          <input type="password" name="password" placeholder="Create a password" required/>
-        </div>
+    <label>Full Name:</label><br>
+    <input type="text" name="name" required><br><br>
 
-        <button type="submit">Create Account</button>
-      </form>
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
 
-      <div>
-        Already have an account? <a href="{% url 'login' %}">Log In</a>
-      </div>
+    <button type="submit">Register</button>
+</form>
 
-      {% endif %}
+<br>
 
-    </div>
-  </div>
-</div>
+<p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+
+{% endif %}
 
 {% endblock %}

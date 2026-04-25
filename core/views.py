@@ -212,13 +212,6 @@ def patient_form(request):
                 nausea_vomiting             = 'nausea_vomiting' in request.POST,
                 skin_rash                   = 'skin_rash' in request.POST,
                 vomiting_more_than_3        = 'vomiting_more_than_3' in request.POST,
-                bleeding                    = 'bleeding' in request.POST,
-                extreme_weakness            = 'extreme_weakness' in request.POST,
-                urine_output_low            = 'urine_output_low' in request.POST,
-                fever_not_improving         = 'fever_not_improving' in request.POST,
-                drop_in_fever_with_weakness = 'drop_in_fever_with_weakness' in request.POST,
-                cold_hands_feet             = 'cold_hands_feet' in request.POST,
-                restless_drowsy             = 'restless_drowsy' in request.POST,
             )
             rec.save()  # triggers calculate_clinical_score() and get_risk_level()
             return redirect('patient_result', record_id=rec.record_id)

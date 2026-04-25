@@ -1,258 +1,54 @@
 {% extends 'core/base.html' %}
-{% block title %}Symptom Assessment — Dengue DSS{% endblock %}
-{% block body_class %}app-page{% endblock %}
+{% block title %}Symptom Assessment{% endblock %}
+
 {% block content %}
-<div class="app-layout">
-  <nav class="sidebar">
-    <div class="sidebar-brand"> Dengue Decision Support System</div>
-    <div class="sidebar-user">
-      
-      <div>
-        <div class="user-name">{{ user.name }}</div>
-        <div class="user-role">Patient</div>
-        <div class="user-id">ID: {{ user.user_id }}</div>
-      </div>
-    </div>
-    <ul class="sidebar-nav">
-      <li><a href="{% url 'patient_dashboard' %}">Dashboard</a></li>
-      <li class="active"><a href="{% url 'patient_form' %}">New Assessment</a></li>
-      
-      <li><a href="{% url 'logout' %}">Logout</a></li>
-    </ul>
-  </nav>
 
-  <main class="app-main">
-    <header class="app-header">
-      <div>
-        <h1>Dengue Risk Assessment</h1>
-        <p>Fill in your symptoms. Our clinical scoring system will assess your dengue risk.</p>
-      </div>
-      <a href="{% url 'patient_dashboard' %}" class="btn btn-outline">← Back</a>
-    </header>
+<h1>Dengue Risk Assessment</h1>
 
-    <form method="POST" class="assessment-form">
-      {% csrf_token %}
+<p><strong>Name:</strong> {{ user.name }}</p>
+<p><strong>User ID:</strong> {{ user.user_id }}</p>
 
-      <div class="form-section">
-        <div class="section-title">
-          <span class="section-num">01</span>
-          <div><h3>Basic Information</h3><p>Enter your personal details</p></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Age (years) <span class="required">*</span></label>
-            <input type="number" name="age" min="1" max="120" step="1" placeholder="e.g. 25" required/>
-          </div>
-          <div class="form-group">
-            <label>Body Weight (kg) <span class="required">*</span></label>
-            <input type="number" name="weight" min="1" max="300" step="0.1" placeholder="e.g. 65.5" required/>
-          </div>
-          <div class="form-group">
-            <label>Gender <span class="required">*</span></label>
-            <select name="gender" id="gender" required>
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="form-group form-group-check">
-            <label class="checkbox-label">
-              <input type="checkbox" name="is_pregnant" id="pregnancy"/>
-              
-              Pregnancy status <small>(Check if currently pregnant)</small>
-            </label>
-          </div>
-        </div>
-      </div>
+<a href="{% url 'patient_dashboard' %}">← Back to Dashboard</a>
 
-      <div class="form-section">
-        <div class="section-title">
-          <div><h3>Symptoms Checklist</h3><p>Select all symptoms you are currently experiencing.</p></div>
-        </div>
+<hr>
 
-        <div class="info-banner">
-          Scoring: <strong>Low Risk</strong> (0–3) &nbsp;|&nbsp;
-          <strong>Possible Dengue</strong> (4–6) &nbsp;|&nbsp;
-          <strong>Probable Dengue</strong> (7–9) &nbsp;|&nbsp;
-          <strong>High Risk</strong> (≥10)
-        </div>
+<form method="POST">
+    {% csrf_token %}
 
-        <div class="symptoms-grid">
-          <label class="symptom-card" data-score="2">
-            <input type="checkbox" name="fever"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">🌡️</span>
-              <span class="symptom-name">Fever</span>
-              <span class="symptom-score-badge">+2 pts</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="1">
-            <input type="checkbox" name="severe_headache"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">🤕</span>
-              <span class="symptom-name">Severe Headache</span>
-              <span class="symptom-score-badge">+1 pt</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="1">
-            <input type="checkbox" name="joint_back_pain"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">🦴</span>
-              <span class="symptom-name">Joint / Back Pain</span>
-              <span class="symptom-score-badge">+1 pt</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="1">
-            <input type="checkbox" name="nausea_vomiting"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">🤢</span>
-              <span class="symptom-name">Nausea / Vomiting</span>
-              <span class="symptom-score-badge">+1 pt</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="1">
-            <input type="checkbox" name="skin_rash"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">🔴</span>
-              <span class="symptom-name">Skin Rash</span>
-              <span class="symptom-score-badge">+1 pt</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="2">
-            <input type="checkbox" name="vomiting_more_than_3"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">🤮</span>
-              <span class="symptom-name">Vomiting &gt; 3 times</span>
-              <span class="symptom-score-badge">+2 pts</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="3">
-            <input type="checkbox" name="bleeding"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">🩸</span>
-              <span class="symptom-name">Bleeding</span>
-              <span class="symptom-score-badge score-high">+3 pts</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="2">
-            <input type="checkbox" name="extreme_weakness"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">😴</span>
-              <span class="symptom-name">Extreme Weakness</span>
-              <span class="symptom-score-badge">+2 pts</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="2">
-            <input type="checkbox" name="urine_output_low"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">💧</span>
-              <span class="symptom-name">Low Urine Output</span>
-              <span class="symptom-score-badge">+2 pts</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="1">
-            <input type="checkbox" name="fever_not_improving"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">📈</span>
-              <span class="symptom-name">Fever Not Improving (3–4 days)</span>
-              <span class="symptom-score-badge">+1 pt</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="3">
-            <input type="checkbox" name="drop_in_fever_with_weakness"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">⚠️</span>
-              <span class="symptom-name">Fever Drop + Increasing Weakness</span>
-              <span class="symptom-score-badge score-high">+3 pts</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="2">
-            <input type="checkbox" name="cold_hands_feet"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">🥶</span>
-              <span class="symptom-name">Cold Hands / Feet</span>
-              <span class="symptom-score-badge">+2 pts</span>
-            </div>
-          </label>
-          <label class="symptom-card" data-score="2">
-            <input type="checkbox" name="restless_drowsy"/>
-            <div class="symptom-content">
-              <span class="symptom-icon">😵</span>
-              <span class="symptom-name">Restless / Drowsy</span>
-              <span class="symptom-score-badge">+2 pts</span>
-            </div>
-          </label>
-        </div>
+    <h3>Basic Information</h3>
 
-        <div class="live-score-bar">
-          <div class="live-score-label">Clinical Score: <span id="liveScore">0</span></div>
-          
-          <div class="live-score-level" id="liveLevel">No Risk Selected</div>
-        </div>
-      </div>
+    <label>Age:</label><br>
+    <input type="number" name="age" required><br><br>
 
-      <div class="form-actions">
-        <a href="{% url 'patient_dashboard' %}" class="btn btn-outline">Cancel</a>
-        <button type="submit" class="btn btn-primary btn-lg">Save &amp; Predict Risk</button>
-      </div>
-    </form>
-  </main>
-</div>
-{% endblock %}
+    <label>Weight (kg):</label><br>
+    <input type="number" name="weight" step="0.1" required><br><br>
 
-{% block extra_js %}
-<script>
-const symptomCards = document.querySelectorAll('.symptom-card');
-const liveScore    = document.getElementById('liveScore');
-const liveLevel    = document.getElementById('liveLevel');
-const genderField = document.getElementById('gender');
-const ageField = document.querySelector('input[name="age"]');
-const pregnancyField = document.getElementById('pregnancy');
+    <label>
+        <input type="checkbox" name="is_pregnant">
+        Pregnant
+    </label>
 
-pregnancyField.addEventListener('change', function () {
-  const gender = genderField.value;
-  const age = parseInt(ageField.value || 0);
+    <hr>
 
-  // Rule 1: Only female can be pregnant
-  if (this.checked && gender !== 'female') {
-    alert('Only females can be marked as pregnant.');
-    this.checked = false;
-    return;
-  }
+    <h3>Symptoms (select all that apply)</h3>
 
-  // Rule 2: Age must be >= 10
-  if (this.checked && age < 10) {
-    alert('Pregnancy not valid for age below 10.');
-    this.checked = false;
-    return;
-  }
-});
+    <label><input type="checkbox" name="fever"> Fever (+2)</label><br>
+    <label><input type="checkbox" name="severe_headache"> Severe Headache (+1)</label><br>
+    <label><input type="checkbox" name="joint_back_pain"> Joint/Back Pain (+1)</label><br>
+    <label><input type="checkbox" name="nausea_vomiting"> Nausea/Vomiting (+1)</label><br>
+    <label><input type="checkbox" name="skin_rash"> Skin Rash (+1)</label><br>
+    <label><input type="checkbox" name="vomiting_more_than_3"> Vomiting >3 times (+2)</label><br>
+    <label><input type="checkbox" name="bleeding"> Bleeding (+3)</label><br>
+    <label><input type="checkbox" name="extreme_weakness"> Extreme Weakness (+2)</label><br>
+    <label><input type="checkbox" name="urine_output_low"> Low Urine Output (+2)</label><br>
+    <label><input type="checkbox" name="fever_not_improving"> Fever Not Improving (+1)</label><br>
+    <label><input type="checkbox" name="drop_in_fever_with_weakness"> Fever Drop + Weakness (+3)</label><br>
+    <label><input type="checkbox" name="cold_hands_feet"> Cold Hands/Feet (+2)</label><br>
+    <label><input type="checkbox" name="restless_drowsy"> Restless/Drowsy (+2)</label><br>
 
-function updateScore() {
-  let score = 0;
-  symptomCards.forEach(card => {
-    const cb = card.querySelector('input[type="checkbox"]');
-    if (cb.checked) score += parseInt(card.dataset.score || 0);
-  });
-  liveScore.textContent = score;
-  let level = '', cls = '';
-  if      (score === 0)  { level = 'No Risk Selected';      cls = ''; }
-  else if (score <= 3)   { level = 'Low Risk';            cls = 'low'; }
-  else if (score <= 6)   { level = 'Possible Dengue';     cls = 'possible'; }
-  else if (score <= 9)   { level = 'Probable Dengue';     cls = 'probable'; }
-  else                   { level = 'High Risk of Dengue'; cls = 'high'; }
-  liveLevel.textContent = level;
-  liveLevel.className   = 'live-score-level level-' + cls;
-  liveScore.className   = 'live-score-value score-' + cls;
-}
+    <br><br>
 
-symptomCards.forEach(card => {
-  const cb = card.querySelector('input[type="checkbox"]');
-  cb.addEventListener('change', () => {
-    card.classList.toggle('selected', cb.checked);
-    updateScore();
-  });
-});
-</script>
+    <button type="submit">Submit Assessment</button>
+</form>
+
 {% endblock %}

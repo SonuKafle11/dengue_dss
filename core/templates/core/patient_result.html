@@ -1,113 +1,76 @@
 {% extends 'core/base.html' %}
-{% block title %}Assessment Result — Dengue Decision Support System{% endblock %}
-{% block body_class %}app-page{% endblock %}
+{% block title %}Assessment Result{% endblock %}
+
 {% block content %}
-<div class="app-layout">
-  <nav class="sidebar">
-    <div class="sidebar-brand"> Dengue Decision Support System</div>
-    <div class="sidebar-user">
-    
-      <div>
-        <div class="user-name">{{ user.name }}</div>
-        <div class="user-role">Patient</div>
-        <div class="user-id">ID: {{ user.user_id }}</div>
-      </div>
-    </div>
-    <ul class="sidebar-nav">
-      <li><a href="{% url 'patient_dashboard' %}">Dashboard</a></li>
-      <li><a href="{% url 'patient_form' %}"> New Assessment</a></li>
-      
-      <li><a href="{% url 'logout' %}">Logout</a></li>
-    </ul>
-  </nav>
 
-  <main class="app-main">
-    <header class="app-header">
-      <div>
-        <h1>Assessment Result</h1>
-        <p>Clinical risk evaluation based on your reported symptoms</p>
-      </div>
-      <a href="{% url 'patient_dashboard' %}" class="btn btn-outline">← Dashboard</a>
-    </header>
+<h1>Assessment Result</h1>
 
-    <div class="result-hero risk-bg-{{ record.clinical_risk_level }}">
-      <div class="result-score-wrap">
-        
-        <div class="result-score-info">
-          <div class="result-risk-label">
-            {% if record.clinical_risk_level == 'low' %}<b>Low Risk</b>{% endif %}
-            {% if record.clinical_risk_level == 'possible' %}<b>Possible Dengue</b>{% endif %}
-            {% if record.clinical_risk_level == 'probable' %}<b>Probable Dengue</b>{% endif %}
-            {% if record.clinical_risk_level == 'high' %}<b>High Risk of Dengue</b>{% endif %}
-          </div>
-          <div class="result-score-sub">Clinical Score: {{ record.clinical_score }} / 21 pts</div>
-          <div class="result-date">Assessed on {{ record.created_at|date:"F j, Y — g:i A" }}</div>
-        </div>
-      </div>
-      
+<p><strong>Name:</strong> {{ user.name }}</p>
+<p><strong>User ID:</strong> {{ user.user_id }}</p>
+<p><strong>Date:</strong> {{ record.created_at }}</p>
 
-    <div class="result-grid">
-      <div class="result-card">
-        <h3>Patient Details</h3>
-        <div class="detail-row"><span>Name:</span><strong>{{ user.name }}</strong></div>
-        <div class="detail-row"><span>Patient ID:</span><strong>{{ user.user_id }}</strong></div>
-        <div class="detail-row"><span>Age:</span><strong>{{ record.age|floatformat:0 }} years</strong></div>
-        <div class="detail-row"><span>Weight:</span><strong>{{ record.weight }} kg</strong></div>
-        <div class="detail-row"><span>Pregnant:</span><strong>{% if record.is_pregnant %}Yes ⚠️{% else %}No{% endif %}</strong></div>
-      </div>
+<a href="{% url 'patient_dashboard' %}">← Back to Dashboard</a>
 
-      <div class="result-card">
-        <h3>Reported Symptoms</h3>
-        <div class="symptom-report-list">
-          {% if record.fever %}<div class="sym-item checked">🌡️ Fever <span>+2</span></div>{% endif %}
-          {% if record.severe_headache %}<div class="sym-item checked">🤕 Severe Headache <span>+1</span></div>{% endif %}
-          {% if record.joint_back_pain %}<div class="sym-item checked">🦴 Joint / Back Pain <span>+1</span></div>{% endif %}
-          {% if record.nausea_vomiting %}<div class="sym-item checked">🤢 Nausea / Vomiting <span>+1</span></div>{% endif %}
-          {% if record.skin_rash %}<div class="sym-item checked">🔴 Skin Rash <span>+1</span></div>{% endif %}
-          {% if record.vomiting_more_than_3 %}<div class="sym-item checked">🤮 Vomiting &gt;3 Times <span>+2</span></div>{% endif %}
-          {% if record.bleeding %}<div class="sym-item checked high-sym">🩸 Bleeding <span>+3</span></div>{% endif %}
-          {% if record.extreme_weakness %}<div class="sym-item checked">😴 Extreme Weakness <span>+2</span></div>{% endif %}
-          {% if record.urine_output_low %}<div class="sym-item checked">💧 Low Urine Output <span>+2</span></div>{% endif %}
-          {% if record.fever_not_improving %}<div class="sym-item checked">📈 Fever Not Improving <span>+1</span></div>{% endif %}
-          {% if record.drop_in_fever_with_weakness %}<div class="sym-item checked high-sym">⚠️ Fever Drop + Weakness <span>+3</span></div>{% endif %}
-          {% if record.cold_hands_feet %}<div class="sym-item checked">🥶 Cold Hands / Feet <span>+2</span></div>{% endif %}
-          {% if record.restless_drowsy %}<div class="sym-item checked">😵 Restless / Drowsy <span>+2</span></div>{% endif %}
-        </div>
-      </div>
+<hr>
 
-      <div class="result-card">
-        <h3>Review Status</h3>
-        {% if record.is_reviewed %}
-        <div class="status-reviewed">
-          <div class="status-icon">✓</div>
-          <div>
-            <strong>Reviewed by Doctor</strong>
-            <p>{{ record.reviewed_by.name }}</p>
-          </div>
-        </div>
-        {% if record.ml_prediction %}
-        <div class="ml-result-block {% if record.ml_prediction == 'Dengue Present' %}ml-positive{% else %}ml-negative{% endif %}">
-          <div class="ml-label">ML Prediction</div>
-          <div class="ml-value">{{ record.ml_prediction }}</div>
-          <div class="ml-confidence">Confidence: {{ record.ml_confidence|floatformat:1 }}%</div>
-        </div>
-        {% endif %}
-        {% else %}
-        <div class="status-pending">
-          <div class="status-icon pending">⏳</div>
-          <div>
-            <strong>Awaiting Doctor Review</strong>
-            <p><i> A doctor will review your data and add lab results for your final prediction with proper dosage recommendations.</i></p>
-          </div>
-        </div>
-        {% endif %}
-      </div>
-    </div>
+<h3>Clinical Score</h3>
+<p>Score: {{ record.clinical_score }}</p>
 
-    <div class="result-actions">
-      <a href="{% url 'patient_form' %}" class="btn btn-outline">+ New Assessment</a>
-      <a href="{% url 'patient_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
-    </div>
-  </main>
-</div>
+<p>
+Risk Level:
+{% if record.clinical_risk_level == 'low' %}Low
+{% elif record.clinical_risk_level == 'possible' %}Possible Dengue
+{% elif record.clinical_risk_level == 'probable' %}Probable Dengue
+{% else %}High Risk{% endif %}
+</p>
+
+<hr>
+
+<h3>Patient Details</h3>
+<ul>
+    <li>Age: {{ record.age|floatformat:0 }} years</li>
+    <li>Weight: {{ record.weight }} kg</li>
+    <li>Pregnant: {% if record.is_pregnant %}Yes{% else %}No{% endif %}</li>
+</ul>
+
+<hr>
+
+<h3>Symptoms Reported</h3>
+<ul>
+    {% if record.fever %}<li>Fever (+2)</li>{% endif %}
+    {% if record.severe_headache %}<li>Severe Headache (+1)</li>{% endif %}
+    {% if record.joint_back_pain %}<li>Joint/Back Pain (+1)</li>{% endif %}
+    {% if record.nausea_vomiting %}<li>Nausea/Vomiting (+1)</li>{% endif %}
+    {% if record.skin_rash %}<li>Skin Rash (+1)</li>{% endif %}
+    {% if record.vomiting_more_than_3 %}<li>Vomiting >3 times (+2)</li>{% endif %}
+    {% if record.bleeding %}<li>Bleeding (+3)</li>{% endif %}
+    {% if record.extreme_weakness %}<li>Extreme Weakness (+2)</li>{% endif %}
+    {% if record.urine_output_low %}<li>Low Urine Output (+2)</li>{% endif %}
+    {% if record.fever_not_improving %}<li>Fever Not Improving (+1)</li>{% endif %}
+    {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness (+3)</li>{% endif %}
+    {% if record.cold_hands_feet %}<li>Cold Hands/Feet (+2)</li>{% endif %}
+    {% if record.restless_drowsy %}<li>Restless/Drowsy (+2)</li>{% endif %}
+</ul>
+
+<hr>
+
+<h3>Doctor Review Status</h3>
+
+{% if record.is_reviewed %}
+    <p>Reviewed by: Dr. {{ record.reviewed_by.name }}</p>
+
+    {% if record.ml_prediction %}
+        <p><strong>ML Prediction:</strong> {{ record.ml_prediction }}</p>
+        <p><strong>Confidence:</strong> {{ record.ml_confidence|floatformat:1 }}%</p>
+    {% endif %}
+{% else %}
+    <p>Pending doctor review</p>
+{% endif %}
+
+<hr>
+
+<a href="{% url 'patient_form' %}">+ New Assessment</a>
+<br><br>
+<a href="{% url 'patient_dashboard' %}">Back to Dashboard</a>
+
 {% endblock %}

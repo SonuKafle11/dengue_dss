@@ -1,78 +1,72 @@
 {% extends 'core/base.html' %}
-{% block title %}Patient Dashboard — Dengue DSS{% endblock %}
-{% block body_class %}app-page{% endblock %}
+{% block title %}Patient Dashboard{% endblock %}
+
 {% block content %}
-<div class="app-layout">
-  <nav class="sidebar">
-    <div class="sidebar-brand">Dengue DSS</div>
-    <div class="sidebar-user">
-      
-      <div>
-        <div class="user-name">{{ user.name }}</div>
-        <div class="user-role">Patient</div>
-        <div class="user-id">ID: {{ user.user_id }}</div>
-      </div>
-    </div>
-    <ul class="sidebar-nav">
-      <li class="active"><a href="{% url 'patient_dashboard' %}"> Dashboard</a></li>
-      <li><a href="{% url 'patient_form' %}"> New Assessment</a></li>
-      
-      <li><a href="{% url 'logout' %}"> Logout</a></li>
-    </ul>
-  </nav>
 
-  <main class="app-main">
-    <header class="app-header">
-      <div>
-        <h1>My Health Dashboard</h1>
-        <p>Welcome back, {{ user.name }}. Here are your dengue assessments.</p>
-      </div>
-      <a href="{% url 'patient_form' %}" class="btn btn-primary">+ New Assessment</a>
-    </header>
+<h1>Patient Dashboard</h1>
 
-    {% if not records %}
-    <div class="empty-state">
-      <div class="empty-icon"></div>
-      <h3>No assessments yet</h3>
-      <p>Start your first dengue risk assessment to get a clinical score and recommendations.</p>
-      <a href="{% url 'patient_form' %}" class="btn btn-primary">Start Assessment</a>
-    </div>
-    {% else %}
-    <div class="records-grid">
-      {% for rec in records %}
-      <div class="record-card risk-{{ rec.clinical_risk_level }}">
-        <div class="record-header">
-          <div class="risk-badge risk-{{ rec.clinical_risk_level }}">
-            {% if rec.clinical_risk_level == 'low' %} Low Risk
-            {% elif rec.clinical_risk_level == 'possible' %} Possible Dengue
-            {% elif rec.clinical_risk_level == 'probable' %} Probable Dengue
-            {% else %} High Risk{% endif %}
-          </div>
-          <div class="record-date">{{ rec.created_at|date:"M d, Y" }}</div>
-        </div>
-        <div class="record-score">
-          <div class="score-circle risk-{{ rec.clinical_risk_level }}">{{ rec.clinical_score }}</div>
-          <div class="score-label">Clinical Score</div>
-        </div>
-        <div class="record-meta">
-          <span>Age: {{ rec.age|floatformat:0 }} yrs</span>
-          <span>Weight: {{ rec.weight }} kg</span>
-          {% if rec.is_reviewed %}
-          <span class="reviewed-tag">✓ Doctor Reviewed</span>
-          {% else %}
-          <span class="pending-tag">⏳ Pending Review</span>
-          {% endif %}
-        </div>
-        {% if rec.ml_prediction %}
-        <div class="ml-result-mini {% if rec.ml_prediction == 'Dengue Present' %}ml-positive{% else %}ml-negative{% endif %}">
-          ML: {{ rec.ml_prediction }} ({{ rec.ml_confidence|floatformat:1 }}%)
-        </div>
-        {% endif %}
-        <a href="{% url 'patient_result' rec.record_id %}" class="btn btn-outline btn-full btn-sm">View Details</a>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-  </main>
-</div>
+<p><strong>Name:</strong> {{ user.name }}</p>
+<p><strong>User ID:</strong> {{ user.user_id }}</p>
+
+<br>
+
+<a href="{% url 'patient_form' %}">+ New Assessment</a> |
+<a href="{% url 'logout' %}">Logout</a>
+
+<hr>
+
+{% if not records %}
+    <p>No assessments yet.</p>
+    <a href="{% url 'patient_form' %}">Start Assessment</a>
+{% else %}
+
+<h3>Your Records</h3>
+
+<table border="1">
+    <tr>
+        <th>Date</th>
+        <th>Score</th>
+        <th>Risk Level</th>
+        <th>ML Result</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for rec in records %}
+    <tr>
+        <td>{{ rec.created_at }}</td>
+        <td>{{ rec.clinical_score }}</td>
+
+        <td>
+            {% if rec.clinical_risk_level == 'low' %}Low
+            {% elif rec.clinical_risk_level == 'possible' %}Possible
+            {% elif rec.clinical_risk_level == 'probable' %}Probable
+            {% else %}High{% endif %}
+        </td>
+
+        <td>
+            {% if rec.ml_prediction %}
+                {{ rec.ml_prediction }} ({{ rec.ml_confidence|floatformat:1 }}%)
+            {% else %}
+                —
+            {% endif %}
+        </td>
+
+        <td>
+            {% if rec.is_reviewed %}
+                Reviewed
+            {% else %}
+                Pending
+            {% endif %}
+        </td>
+
+        <td>
+            <a href="{% url 'patient_result' rec.record_id %}">View</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endif %}
+
 {% endblock %}

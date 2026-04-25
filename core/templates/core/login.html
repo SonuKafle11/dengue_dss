@@ -1,57 +1,32 @@
 {% extends 'core/base.html' %}
-{% block title %}Login — Dengue DSS{% endblock %}
-{% block body_class %}{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
 
-<div>
-  <div>
-    <h1>Dengue DSS</h1>
-    <p>Decision Support System for Dengue Risk Assessment</p>
-    <ul>
-      <li> Clinical Scoring System</li>
-      <li> Naive Bayes ML Prediction</li>
-      <li> Smart Dosage Recommendations</li>
-      <li> Doctor–Patient Workflow</li>
-    </ul>
-  </div>
+<h1>Dengue DSS Login</h1>
 
-  <div>
-    <div>
+<p>Please sign in to continue</p>
 
-      <div>
-        <h2>Welcome Back</h2>
-        <p>Sign in to your account</p>
-      </div>
+<form method="POST">
+    {% csrf_token %}
 
-      <form method="POST">
-        {% csrf_token %}
+    <label>User ID or Name:</label><br>
+    <input type="text" name="identifier" required><br><br>
 
-        <div>
-          <label>User ID or Name</label>
-          <input type="text" name="identifier" placeholder="Enter your ID or full name" required/>
-          <small>Use your unique ID (e.g. AB12CD34) or your registered name</small>
-        </div>
-        <br>
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
 
-        <div>
-          <label>Password</label>
-          <input type="password" name="password" placeholder="Enter your password" required/>
-      
-        </div>
+    <button type="submit">Login</button>
+</form>
 
-        <br> 
-        <button type="submit">Sign In</button>
-      </form>
+<br>
 
-      <div>
-        New here? <a href="{% url 'register' %}">Create an account</a>
-        &nbsp;|&nbsp;
-        <a href="{% url 'admin_login' %}">Admin Login</a>
-      </div>
+<p>
+    New user? <a href="{% url 'register' %}">Register here</a>
+</p>
 
-    </div>
-  </div>
-</div>
+<p>
+    <a href="{% url 'admin_login' %}">Admin Login</a>
+</p>
 
 {% endblock %}

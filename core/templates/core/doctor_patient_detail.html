@@ -1,125 +1,92 @@
-{% extends 'core/base.html' %}
-{% block title %}Patient Detail — Dengue DSS{% endblock %}
-{% block body_class %}app-page{% endblock %}
+ {% extends 'core/base.html' %}
+{% block title %}Patient Detail{% endblock %}
+
 {% block content %}
-<div class="app-layout">
-  <nav class="sidebar">
-    <div class="sidebar-brand">Dengue Decision Support System</div>
-    <div class="sidebar-user">
-      
-      <div>
-        <div class="user-name">Dr. {{ doctor.name }}</div>
-       
-      </div>
-    </div>
-    <ul class="sidebar-nav">
-      <li><a href="{% url 'doctor_dashboard' %}">Patient List</a></li>
-     
-      <li><a href="{% url 'logout' %}">Logout</a></li>
-    </ul>
-  </nav>
 
-  <main class="app-main">
-    <header class="app-header">
-      
-      <a href="{% url 'doctor_dashboard' %}" class="btn btn-outline">← Back to List</a>
-    </header>
+<h1>Patient Review</h1>
 
-    {% if not model_trained %}
-    <div class="alert alert-warning">
-      ML model is not trained yet. Run: <code>python ml_model/train_model.py</code>
-    </div>
-    {% endif %}
+<p><strong>Doctor:</strong> Dr. {{ doctor.name }}</p>
 
-    <div class="detail-layout">
-      <div class="detail-left">
-        <div class="result-card">
-          <h3>Patient Information</h3>
-          <div class="detail-row"><span>Name:</span><strong>{{ record.patient.name }}</strong></div>
-          <div class="detail-row"><span>Patient ID:</span><strong><code>{{ record.patient.user_id }}</code></strong></div>
-          <div class="detail-row"><span>Age:</span><strong>{{ record.age|floatformat:0 }} years</strong></div>
-          <div class="detail-row"><span>Weight:</span><strong>{{ record.weight }} kg</strong></div>
-          <div class="detail-row"><span>Pregnant:</span><strong>{% if record.is_pregnant %}Yes ⚠️{% else %}No{% endif %}</strong></div>
-          <div class="detail-row"><span>Assessed:</span><strong>{{ record.created_at|date:"M d, Y g:i A" }}</strong></div>
-        </div>
+<a href="{% url 'doctor_dashboard' %}">← Back to Dashboard</a>
 
-        <div class="result-card">
-          <h3>Clinical Score</h3>
-          <div class="score-display risk-{{ record.clinical_risk_level }}">
-            <div class="big-score">{{ record.clinical_score }}</div>
-            <div class="big-level">
-              {% if record.clinical_risk_level == 'low' %} Low Risk (0–3)
-              {% elif record.clinical_risk_level == 'possible' %} Possible Dengue (4–6)
-              {% elif record.clinical_risk_level == 'probable' %} Probable Dengue (7–9)
-              {% else %} High Risk (≥10){% endif %}
-            </div>
-          </div>
-        </div>
+<hr>
 
-        <div class="result-card">
-          <h3>Patient Symptoms</h3>
-          <div class="symptom-report-list compact">
-            <div class="sym-item {% if record.fever %}checked{% endif %}">🌡️ Fever <span>+2</span></div>
-            <div class="sym-item {% if record.severe_headache %}checked{% endif %}">🤕 Severe Headache <span>+1</span></div>
-            <div class="sym-item {% if record.joint_back_pain %}checked{% endif %}">🦴 Joint/Back Pain <span>+1</span></div>
-            <div class="sym-item {% if record.nausea_vomiting %}checked{% endif %}">🤢 Nausea/Vomiting <span>+1</span></div>
-            <div class="sym-item {% if record.skin_rash %}checked{% endif %}">🔴 Skin Rash <span>+1</span></div>
-            <div class="sym-item {% if record.vomiting_more_than_3 %}checked{% endif %}">🤮 Vomiting &gt;3× <span>+2</span></div>
-            <div class="sym-item {% if record.bleeding %}checked high-sym{% endif %}">🩸 Bleeding <span>+3</span></div>
-            <div class="sym-item {% if record.extreme_weakness %}checked{% endif %}">😴 Extreme Weakness <span>+2</span></div>
-            <div class="sym-item {% if record.urine_output_low %}checked{% endif %}">💧 Low Urine Output <span>+2</span></div>
-            <div class="sym-item {% if record.fever_not_improving %}checked{% endif %}">📈 Fever Not Improving <span>+1</span></div>
-            <div class="sym-item {% if record.drop_in_fever_with_weakness %}checked high-sym{% endif %}">⚠️ Fever Drop+Weakness <span>+3</span></div>
-            <div class="sym-item {% if record.cold_hands_feet %}checked{% endif %}">🥶 Cold Hands/Feet <span>+2</span></div>
-            <div class="sym-item {% if record.restless_drowsy %}checked{% endif %}">😵 Restless/Drowsy <span>+2</span></div>
-          </div>
-        </div>
-      </div>
+{% if not model_trained %}
+<p><strong>Warning:</strong> ML model is not trained. Predictions will not work.</p>
+{% endif %}
 
-      <div class="detail-right">
-        <div class="result-card lab-card">
-          <h3>Laboratory Results</h3>
-          <p class="card-sub">Enter the lab values below.</p>
-          <form method="POST">
-            {% csrf_token %}
-            <div class="lab-grid">
-              <div class="form-group">
-                <label>Platelet Count <span class="unit">(cells/µL)</span></label>
-                <input type="number" name="platelet_count" step="1" min="0"
-                       value="{{ record.platelet_count|default:'' }}"
-                       placeholder="e.g. 85000" required/>
-                <small class="hint">Normal: 150,000 – 400,000 /µL</small>
-              </div>
-              <div class="form-group">
-                <label>WBC Count <span class="unit">(cells/µL)</span></label>
-                <input type="number" name="wbc_count" step="1" min="0"
-                       value="{{ record.wbc_count|default:'' }}"
-                       placeholder="e.g. 3500" required/>
-                <small class="hint">Normal: 4,000 – 11,000 /µL</small>
-              </div>
-              <div class="form-group">
-                <label>IgG Level <span class="unit">(arbitrary units)</span></label>
-                <input type="number" name="igg" step="0.01" min="0"
-                       value="{{ record.igg|default:'' }}"
-                       placeholder="e.g. 12.5" required/>
-                <small class="hint">Used for secondary dengue detection</small>
-              </div>
-              <div class="form-group">
-                <label>IgM Level <span class="unit">(arbitrary units)</span></label>
-                <input type="number" name="igm" step="0.01" min="0"
-                       value="{{ record.igm|default:'' }}"
-                       placeholder="e.g. 3.2" required/>
-                <small class="hint">Elevated in primary dengue infection</small>
-              </div>
-            </div>
-            
-            <button type="submit" class="btn btn-primary btn-lg btn-full">
-              Save &amp; Run Prediction
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
+<hr>
+
+<h3>Patient Information</h3>
+<ul>
+    <li>Name: {{ record.patient.name }}</li>
+    <li>Patient ID: {{ record.patient.user_id }}</li>
+    <li>Age: {{ record.age|floatformat:0 }} years</li>
+    <li>Weight: {{ record.weight }} kg</li>
+    <li>Pregnant: {% if record.is_pregnant %}Yes{% else %}No{% endif %}</li>
+    <li>Date: {{ record.created_at }}</li>
+</ul>
+
+<hr>
+
+<h3>Clinical Score</h3>
+<p>Score: {{ record.clinical_score }}</p>
+<p>
+Risk Level:
+{% if record.clinical_risk_level == 'low' %}Low
+{% elif record.clinical_risk_level == 'possible' %}Possible
+{% elif record.clinical_risk_level == 'probable' %}Probable
+{% else %}High{% endif %}
+</p>
+
+<hr>
+
+<h3>Symptoms</h3>
+<ul>
+    {% if record.fever %}<li>Fever (+2)</li>{% endif %}
+    {% if record.severe_headache %}<li>Severe Headache (+1)</li>{% endif %}
+    {% if record.joint_back_pain %}<li>Joint/Back Pain (+1)</li>{% endif %}
+    {% if record.nausea_vomiting %}<li>Nausea/Vomiting (+1)</li>{% endif %}
+    {% if record.skin_rash %}<li>Skin Rash (+1)</li>{% endif %}
+    {% if record.vomiting_more_than_3 %}<li>Vomiting >3 times (+2)</li>{% endif %}
+    {% if record.bleeding %}<li>Bleeding (+3)</li>{% endif %}
+    {% if record.extreme_weakness %}<li>Extreme Weakness (+2)</li>{% endif %}
+    {% if record.urine_output_low %}<li>Low Urine Output (+2)</li>{% endif %}
+    {% if record.fever_not_improving %}<li>Fever Not Improving (+1)</li>{% endif %}
+    {% if record.drop_in_fever_with_weakness %}<li>Fever Drop with Weakness (+3)</li>{% endif %}
+    {% if record.cold_hands_feet %}<li>Cold Hands/Feet (+2)</li>{% endif %}
+    {% if record.restless_drowsy %}<li>Restless/Drowsy (+2)</li>{% endif %}
+</ul>
+
+<hr>
+
+<h3>Enter Laboratory Results</h3>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Platelet Count:</label><br>
+    <input type="number" name="platelet_count"
+           value="{{ record.platelet_count|default:'' }}" required><br><br>
+
+    <label>WBC Count:</label><br>
+    <input type="number" name="wbc_count"
+           value="{{ record.wbc_count|default:'' }}" required><br><br>
+
+    <label>IgG Level:</label><br>
+    <input type="number" step="0.01" name="igg"
+           value="{{ record.igg|default:'' }}" required><br><br>
+
+    <label>IgM Level:</label><br>
+    <input type="number" step="0.01" name="igm"
+           value="{{ record.igm|default:'' }}" required><br><br>
+
+    <button type="submit">Save and Run Prediction</button>
+</form>
+
+<hr>
+
+<p><strong>Model Used:</strong> Naive Bayes</p>
+<p><strong>Features:</strong> symptoms + platelet + WBC</p>
+
 {% endblock %}

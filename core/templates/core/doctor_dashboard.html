@@ -1,102 +1,106 @@
 {% extends 'core/base.html' %}
-{% block title %}Doctor Dashboard — Dengue Decision Support System{% endblock %}
-{% block body_class %}app-page{% endblock %}
+{% block title %}Doctor Dashboard{% endblock %}
+
 {% block content %}
-<div class="app-layout">
-  <nav class="sidebar">
-    <div class="sidebar-brand">Dengue Decision Support System</div>
-    <div class="sidebar-user">
-      <div>
-        <div class="user-name">Dr. {{ user.name }}</div>
-        <div class="user-id">ID: {{ user.user_id }}</div>
-      </div>
-    </div>
-    <ul class="sidebar-nav">
-      <li class="active"><a href="{% url 'doctor_dashboard' %}">Patient List</a></li>
-      
-      <li><a href="{% url 'logout' %}">Logout</a></li>
-    </ul>
-  </nav>
 
-  <main class="app-main">
-    <header class="app-header">
-      <div>
-        <h1>Doctor Dashboard</h1>
-        <!--Review patient assessments and run ML-based dengue prediction-->
-      </div>
-    </header>
-<p><strong>Total Records:</strong> {{ total }}</p>
-<p><strong>Pending Review:</strong> {{ pending }}</p>
-<p><strong>Reviewed:</strong> {{ reviewed }}</p>
-    </div>
+<h1>Doctor Dashboard</h1>
 
-    <form method="GET" class="filter-bar">
-      <input type="text" name="search" value="{{ search }}" placeholder="Search by patient name…"/>
-      <select name="status">
-        <option value="">All Records</option>
-        <option value="pending"  {% if status_filter == 'pending'  %}selected{% endif %}>Pending Only</option>
-        <option value="reviewed" {% if status_filter == 'reviewed' %}selected{% endif %}>Reviewed Only</option>
-      </select>
-      <button type="submit" class="btn btn-primary">Filter</button>
-      <a href="{% url 'doctor_dashboard' %}" class="btn btn-outline">Reset</a>
-    </form>
+<p><strong>Name:</strong> Dr. {{ user.name }}</p>
+<p><strong>User ID:</strong> {{ user.user_id }}</p>
 
-    {% if not records %}
-    <div class="empty-state">
-      <div class="empty-icon">📋</div>
-      <h3>No records found</h3>
-      <p>No patient records match your current filter.</p>
-    </div>
-    {% else %}
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Patient</th><th>ID</th><th>Age/Weight</th><th>Score</th>
-            <th>Risk Level</th><th>ML Prediction</th><th>Status</th><th>Date</th><th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for rec in records %}
-          <tr>
-            <td><strong>{{ rec.patient.name }}</strong></td>
-            <td><code>{{ rec.patient.user_id }}</code></td>
-            <td>{{ rec.age|floatformat:0 }}yr / {{ rec.weight }}kg</td>
-            <td><span class="score-chip risk-{{ rec.clinical_risk_level }}">{{ rec.clinical_score }}</span></td>
-            <td>
-              <span class="risk-pill risk-{{ rec.clinical_risk_level }}">
-                {% if rec.clinical_risk_level == 'low' %}Low Risk
-                {% elif rec.clinical_risk_level == 'possible' %}Possible
-                {% elif rec.clinical_risk_level == 'probable' %}Probable
-                {% else %}High Risk{% endif %}
-              </span>
-            </td>
-            <td>
-              {% if rec.ml_prediction %}
-              <span class="ml-pill {% if rec.ml_prediction == 'Dengue Present' %}ml-pos{% else %}ml-neg{% endif %}">
-                {{ rec.ml_prediction }}<br><small>{{ rec.ml_confidence|floatformat:1 }}%</small>
-              </span>
-              {% else %}<span class="ml-pill ml-na">—</span>{% endif %}
-            </td>
-            <td>
-              {% if rec.is_reviewed %}
-              <span class="status-dot reviewed">Reviewed</span>
-              {% else %}
-              <span class="status-dot pending">Pending</span>
-              {% endif %}
-            </td>
-            <td><small>{{ rec.created_at|date:"M d, Y" }}</small></td>
-            <td>
-              <a href="{% url 'doctor_patient_detail' rec.record_id %}" class="btn btn-sm btn-primary">
+<hr>
+
+<h3>Statistics</h3>
+<ul>
+    <li>Total Records: {{ total }}</li>
+    <li>Pending Review: {{ pending }}</li>
+    <li>Reviewed: {{ reviewed }}</li>
+</ul>
+
+<hr>
+
+<h3>Filter Records</h3>
+<form method="GET">
+    <label>Search Patient:</label>
+    <input type="text" name="search" value="{{ search }}">
+
+    <label>Status:</label>
+    <select name="status">
+        <option value="">All</option>
+        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="reviewed" {% if status_filter == 'reviewed' %}selected{% endif %}>Reviewed</option>
+    </select>
+
+    <button type="submit">Filter</button>
+    <a href="{% url 'doctor_dashboard' %}">Reset</a>
+</form>
+
+<hr>
+
+{% if not records %}
+    <p>No records found.</p>
+{% else %}
+
+<h3>Patient Records</h3>
+
+<table border="1">
+    <tr>
+        <th>Patient</th>
+        <th>ID</th>
+        <th>Age / Weight</th>
+        <th>Score</th>
+        <th>Risk Level</th>
+        <th>ML Prediction</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+    </tr>
+
+    {% for rec in records %}
+    <tr>
+        <td>{{ rec.patient.name }}</td>
+        <td>{{ rec.patient.user_id }}</td>
+        <td>{{ rec.age|floatformat:0 }} yr / {{ rec.weight }} kg</td>
+        <td>{{ rec.clinical_score }}</td>
+
+        <td>
+            {% if rec.clinical_risk_level == 'low' %}Low
+            {% elif rec.clinical_risk_level == 'possible' %}Possible
+            {% elif rec.clinical_risk_level == 'probable' %}Probable
+            {% else %}High{% endif %}
+        </td>
+
+        <td>
+            {% if rec.ml_prediction %}
+                {{ rec.ml_prediction }} ({{ rec.ml_confidence|floatformat:1 }}%)
+            {% else %}
+                —
+            {% endif %}
+        </td>
+
+        <td>
+            {% if rec.is_reviewed %}
+                Reviewed
+            {% else %}
+                Pending
+            {% endif %}
+        </td>
+
+        <td>{{ rec.created_at }}</td>
+
+        <td>
+            <a href="{% url 'doctor_patient_detail' rec.record_id %}">
                 {% if rec.is_reviewed %}View{% else %}Review{% endif %}
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% endif %}
-  </main>
-</div>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endif %}
+
+<br>
+
+<a href="{% url 'logout' %}">Logout</a>
+
 {% endblock %}

@@ -1,126 +1,113 @@
 {% extends 'core/base.html' %}
-{% block title %}Admin Dashboard — Dengue DSS{% endblock %}
-{% block body_class %}app-page admin-page{% endblock %}
+{% block title %}Admin Dashboard{% endblock %}
+
 {% block content %}
-<div class="app-layout">
-  <nav class="sidebar admin-sidebar">
-    <div class="sidebar-brand">Admin Panel</div>
-    <div class="sidebar-user">
-      <div class="user-avatar admin-avatar">A</div>
-      <div>
-        <div class="user-name">{{ admin_username }}</div>
-        <div class="user-role">System Administrator</div>
-      </div>
-    </div>
-    <ul class="sidebar-nav">
-      <li class="active"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
-      <li><a href="{% url 'admin_dataset_json' %}" target="_blank">Dataset JSON</a></li>
-      <li class="nav-separator"></li>
-      <li><a href="{% url 'admin_logout' %}">Logout</a></li>
+
+<h1>Admin Dashboard</h1>
+
+<p><strong>Welcome:</strong> {{ admin_username }}</p>
+
+<hr>
+
+<h3>System Statistics</h3>
+<ul>
+    <li>Total Patients: {{ total_patients }}</li>
+    <li>Total Doctors: {{ total_doctors }}</li>
+    <li>Total Records: {{ total_records }}</li>
+    <li>Reviewed Records: {{ reviewed_records }}</li>
+</ul>
+
+<hr>
+
+<h3>ML Model Status</h3>
+{% if model_trained %}
+    <p>Model is trained</p>
+{% else %}
+    <p>Model is NOT trained</p>
+{% endif %}
+
+{% if dataset_info %}
+    <h4>Dataset Info</h4>
+    <ul>
+        <li>File: {{ dataset_info.dataset_file }}</li>
+        <li>Total Rows: {{ dataset_info.total_rows }}</li>
+        <li>After Cleaning: {{ dataset_info.rows_after_outlier_removal }}</li>
+        <li>Outliers Removed: {{ dataset_info.outliers_removed }}</li>
+        <li>Accuracy: {{ dataset_info.model_accuracy_pct }}%</li>
+        <li>Features: {{ dataset_info.feature_columns|join:", " }}</li>
     </ul>
-  </nav>
+{% endif %}
 
-  <main class="app-main">
-    <header class="app-header">
-      <div>
-        <h1>System Administration</h1>
-        <p>Manage users, records, and view ML model statistics</p>
-      </div>
-    </header>
+<hr>
 
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num">{{ total_patients }}</div><div class="stat-label">Patients</div></div>
-      <div class="stat-card"><div class="stat-num">{{ total_doctors }}</div><div class="stat-label">Doctors</div></div>
-      <div class="stat-card"><div class="stat-num">{{ total_records }}</div><div class="stat-label">Total Records</div></div>
-      <div class="stat-card stat-success"><div class="stat-num">{{ reviewed_records }}</div><div class="stat-label">Reviewed</div></div>
-    </div>
+<h3>Users</h3>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>User ID</th>
+        <th>Role</th>
+        <th>Registered</th>
+        <th>Action</th>
+    </tr>
 
-    <div class="result-card">
-      <h3>
-        9ML Model Status</h3>
-      {% if model_trained %}
-      <div class="model-status-ok">Naive Bayes model is trained and ready</div>
-      {% else %}
-      <div class="model-status-err">❌ Model not trained. Run: <code>python ml_model/train_model.py</code></div>
-      {% endif %}
-      {% if dataset_info %}
-      <div class="dataset-stats">
-        <div class="ds-item"><label>Dataset File</label><span>{{ dataset_info.dataset_file }}</span></div>
-        <div class="ds-item"><label>Total Rows</label><span>{{ dataset_info.total_rows }}</span></div>
-        <div class="ds-item"><label>Rows After Cleaning</label><span>{{ dataset_info.rows_after_outlier_removal }}</span></div>
-        <div class="ds-item"><label>Outliers Removed</label><span>{{ dataset_info.outliers_removed }}</span></div>
-        <div class="ds-item"><label>Model Accuracy</label><span><strong>{{ dataset_info.model_accuracy_pct }}%</strong></span></div>
-        <div class="ds-item"><label>Features Used</label><span>{{ dataset_info.feature_columns|join:", " }}</span></div>
-        <div class="ds-item"><label>Dropped Columns</label><span>{{ dataset_info.dropped_columns|join:", " }}</span></div>
-        <div class="ds-item"><label>Class Distribution</label>
-          <span>{% for cls, cnt in dataset_info.class_distribution.items %}Class {{ cls }}: {{ cnt }} &nbsp;{% endfor %}</span>
-        </div>
-      </div>
-      <div class="json-link">
-        <a href="{% url 'admin_dataset_json' %}" target="_blank" class="btn btn-outline btn-sm">View Full Dataset JSON</a>
-      </div>
-      {% endif %}
-    </div>
+    {% for u in users %}
+    <tr>
+        <td>{{ u.name }}</td>
+        <td>{{ u.user_id }}</td>
+        <td>{{ u.role }}</td>
+        <td>{{ u.created_at }}</td>
+        <td>
+            <form method="POST" action="{% url 'admin_delete_user' u.user_id %}">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
-    <div class="result-card">
-      <h3>👥 Registered Users</h3>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr><th>Name</th><th>User ID</th><th>Role</th><th>Registered</th><th>Action</th></tr>
-          </thead>
-          <tbody>
-            {% for u in users %}
-            <tr>
-              <td><strong>{{ u.name }}</strong></td>
-              <td><code>{{ u.user_id }}</code></td>
-              <td><span class="role-chip role-{{ u.role }}">{{ u.role }}</span></td>
-              <td>{{ u.created_at|date:"M d, Y" }}</td>
-              <td>
-                <form method="POST" action="{% url 'admin_delete_user' u.user_id %}"
-                      onsubmit="return confirm('Delete {{ u.name }}? This will also delete all their records.')">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+<hr>
 
-    <div class="result-card">
-      <h3>📋 Patient Records</h3>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr><th>Patient</th><th>Score</th><th>Risk</th><th>ML Result</th><th>Confidence</th><th>Status</th><th>Date</th><th>Action</th></tr>
-          </thead>
-          <tbody>
-            {% for rec in records %}
-            <tr>
-              <td><strong>{{ rec.patient.name }}</strong></td>
-              <td><span class="score-chip risk-{{ rec.clinical_risk_level }}">{{ rec.clinical_score }}</span></td>
-              <td><span class="risk-pill risk-{{ rec.clinical_risk_level }}">{{ rec.clinical_risk_level }}</span></td>
-              <td>{{ rec.ml_prediction|default:"—" }}</td>
-              <td>{% if rec.ml_confidence %}{{ rec.ml_confidence|floatformat:1 }}%{% else %}—{% endif %}</td>
-              <td>{% if rec.is_reviewed %}<span class="status-dot reviewed">✓ Done</span>{% else %}<span class="status-dot pending">⏳</span>{% endif %}</td>
-              <td>{{ rec.created_at|date:"M d, Y" }}</td>
-              <td>
-                <form method="POST" action="{% url 'admin_delete_record' rec.record_id %}"
-                      onsubmit="return confirm('Delete this record permanently?')">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+<h3>Patient Records</h3>
+<table>
+    <tr>
+        <th>Patient</th>
+        <th>Score</th>
+        <th>Risk</th>
+        <th>ML Result</th>
+        <th>Confidence</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+    </tr>
 
-  </main>
-</div>
+    {% for rec in records %}
+    <tr>
+        <td>{{ rec.patient.name }}</td>
+        <td>{{ rec.clinical_score }}</td>
+        <td>{{ rec.clinical_risk_level }}</td>
+        <td>{{ rec.ml_prediction }}</td>
+        <td>{{ rec.ml_confidence }}</td>
+        <td>
+            {% if rec.is_reviewed %}
+                Done
+            {% else %}
+                Pending
+            {% endif %}
+        </td>
+        <td>{{ rec.created_at }}</td>
+        <td>
+            <form method="POST" action="{% url 'admin_delete_record' rec.record_id %}">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+
+<a href="{% url 'admin_logout' %}">Logout</a>
+
 {% endblock %}

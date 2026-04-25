@@ -1,50 +1,24 @@
 {% extends 'core/base.html' %}
-{% block title %}Admin Login — Dengue DSS{% endblock %}
-{% block body_class %}{% endblock %}
+{% block title %}Admin Login{% endblock %}
 
 {% block content %}
 
-<div>
-  <div>
-    <h1>Admin Panel</h1>
-    <p>Dengue DSS — System Administration</p>
-    <ul>
-      <li> Manage Users & Records</li>
-      <li> View Dataset Statistics</li>
-      <li> Monitor ML Model Status</li>
-    </ul>
-  </div>
+<h2>Admin Login</h2>
+<p>Authorized users only</p>
 
-  <div>
-    <div>
+<form method="POST">
+    {% csrf_token %}
 
-      <div>
-        <h2>Admin Login</h2>
-        <p>Restricted access — authorized personnel only</p>
-      </div>
+    <label>Username:</label><br>
+    <input type="text" name="username" required><br><br>
 
-      <form method="POST">
-        {% csrf_token %}
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
 
-        <div>
-          <label>Admin Username</label>
-          <input type="text" name="username" placeholder="Enter admin username" required/>
-        </div>
+    <button type="submit">Login</button>
+</form>
 
-        <div>
-          <label>Password</label>
-          <input type="password" name="password" placeholder="Enter password" required/>
-        </div>
-
-        <button type="submit">Access Admin Panel</button>
-      </form>
-
-      <div>
-        <a href="{% url 'login' %}">← Back to user login</a>
-      </div>
-
-    </div>
-  </div>
-</div>
+<br>
+<a href="{% url 'login' %}">← Back to user login</a>
 
 {% endblock %}
