@@ -149,6 +149,7 @@ def patient_dashboard(request):
 #  show 13 symptom checkboxes with live JS score,
 #  on POST creates PatientRecord and calls rec.save()
 #  which auto-calculates clinical_score and risk_level
+@never_cache
 @patient_required
 def patient_form(request):
     user = current_user(request)
@@ -312,6 +313,7 @@ def doctor_patient_detail(request, record_id):
 
 # show ML prediction banner, confidence %,
 # lab results, clinical score, full dosage section
+@never_cache
 @doctor_required
 def doctor_prediction_result(request, record_id):
     doctor = current_user(request)
@@ -354,6 +356,7 @@ def admin_dashboard(request):
     })
 
 # delete a User and all their records via CASCADE
+@never_cache
 @admin_required
 def admin_delete_user(request, user_id):
     if request.method == 'POST':
@@ -367,6 +370,7 @@ def admin_delete_user(request, user_id):
     return redirect('admin_dashboard')
 
 # delete a single PatientRecord
+@never_cache
 @admin_required
 def admin_delete_record(request, record_id):
     if request.method == 'POST':
@@ -379,6 +383,7 @@ def admin_delete_record(request, record_id):
     return redirect('admin_dashboard')
 
 #  return dataset_info.json as JSON API response
+@never_cache
 @admin_required
 def admin_dataset_json(request):
     info = get_dataset_info()
