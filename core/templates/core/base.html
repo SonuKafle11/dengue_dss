@@ -1,28 +1,33 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}Dengue DSS{% endblock %}</title>
-  {% load static %}
-  {% block extra_head %}{% endblock %}
+    <title>{% block title %}Dengue DSS{% endblock %}</title>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    <!-- Page-specific CSS -->
+    {% block extra_head %}{% endblock %}
 </head>
 
-<body class="{% block body_class %}{% endblock %}">
+<body>
 
+<!-- Django Messages -->
 {% if messages %}
-<div>
-  {% for msg in messages %}
-  <div>
-    <span>{{ msg }}</span>
-    <button onclick="this.parentElement.remove()">×</button>
-  </div>
-  {% endfor %}
-</div>
+    <div class="container">
+        {% for msg in messages %}
+            <p class="message">{{ msg }}</p>
+        {% endfor %}
+    </div>
 {% endif %}
 
-{% block content %}{% endblock %}
+<div class="container {% block container_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+</div>
 
-{% block extra_js %}{% endblock %}
+<!-- JS -->
+<script src="{% static 'js/main.js' %}"></script>
+
 </body>
 </html>

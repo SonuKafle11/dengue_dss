@@ -1,140 +1,128 @@
 {% extends 'core/base.html' %}
-{% block title %}Prediction Result — Dengue DSS{% endblock %}
-{% block body_class %}app-page{% endblock %}
+{% block title %}Prediction Result{% endblock %}
+
 {% block content %}
-<div class="app-layout">
-  <nav class="sidebar">
-    <div class="sidebar-brand"><strong>Dengue Decision Support System</strong></div>
-    <div class="sidebar-user">
-      
-      <div>
-        <div class="user-name">Dr. {{ doctor.name }}</div>
-      </div>
-    </div>
-    <ul class="sidebar-nav">
-      <li><a href="{% url 'doctor_dashboard' %}"> Patient List</a></li>
-      
-      <li><a href="{% url 'logout' %}"> Logout</a></li>
-    </ul>
-  </nav>
 
-  <main class="app-main">
-    <header class="app-header">
-      <div>
-        <h1>Prediction Result</h1>
-        <p>{{ record.patient.name }} &mdash; {{ record.created_at|date:"F j, Y" }}</p>
-      </div>
-      <a href="{% url 'doctor_dashboard' %}" class="btn btn-outline">← Back to List</a>
-    </header>
+<h1>Prediction Result</h1>
 
-    <div class="prediction-banner {% if record.ml_prediction == 'Dengue Present' %}banner-positive{% else %}banner-negative{% endif %}">
-      <div>
-        {% if record.ml_prediction == 'Dengue Present' %}{% else %}{% endif %}
-      </div>
-      <div class="prediction-text">
-        <div class="prediction-label">Naive Bayes ML Prediction</div>
-        <div class="prediction-value">{{ record.ml_prediction }}</div>
-      </div>
-    </div>
+<p><strong>Doctor:</strong> Dr. {{ doctor.name }}</p>
+<p><strong>Patient:</strong> {{ record.patient.name }}</p>
+<p><strong>Date:</strong> {{ record.created_at }}</p>
 
-    <p><strong>Clinical Score:</strong> {{ record.clinical_score }} &nbsp;&nbsp; <strong>Risk:</strong>
-      {% if record.clinical_risk_level == 'low' %} Low Risk
-      {% elif record.clinical_risk_level == 'possible' %} Possible Dengue
-      {% elif record.clinical_risk_level == 'probable' %} Probable Dengue
-      {% else %} High Risk{% endif %}
-    </p>
-        <h3>Lab Results</h3>
-<p>Platelet Count: {{ record.platelet_count|floatformat:0 }} /µL</p>
-<p>WBC Count: {{ record.wbc_count|floatformat:0 }} /µL</p>
-<p>IgG: {{ record.igg }}</p>
-<p>IgM: {{ record.igm }}</p>
+<a href="{% url 'doctor_dashboard' %}">← Back to Dashboard</a>
 
-      <div class="result-card">
-        <h3>Patient</h3>
-        <div class="detail-row"><span>Name:</span><strong>{{ record.patient.name }}</strong></div>
-        <div class="detail-row"><span>Age:</span><strong>{{ record.age|floatformat:0 }} yrs</strong></div>
-        <div class="detail-row"><span>Weight:</span><strong>{{ record.weight }} kg</strong></div>
-        <div class="detail-row"><span>Pregnant:</span><strong>{% if record.is_pregnant %}Yes {% else %}No{% endif %}</strong></div>
-        <div class="detail-row"><span>Reviewed By:</span><strong>Dr. {{ record.reviewed_by.name }}</strong></div>
-      </div>
-    </div>
+<hr>
 
-    {% if dosage %}
-    <div class="dosage-section">
-      <h2> Dosage Recommendation</h2>
-      <p class="dosage-sub">Based on weight of ({{ record.weight }} kg), age ({{ record.age|floatformat:0 }} yrs), risk level, and platelet count</p>
+<h3>ML Prediction</h3>
+<p><strong>Result:</strong> {{ record.ml_prediction }}</p>
+<p><strong>Confidence:</strong> {{ record.ml_confidence|floatformat:1 }}%</p>
 
-      {% if record.is_pregnant %}
-      <div class="pregnancy-warning"> {{ dosage.pregnancy_warning }}</div>
-      {% endif %}
+<hr>
 
-      <div class="dosage-grid">
-        <div class="dosage-card">
-          
-          <h4>{{ dosage.paracetamol.drug }}</h4>
-          <div class="dosage-detail"><label>Dose:</label><span>{{ dosage.paracetamol.dose }}</span></div>
-          <div class="dosage-detail"><label>Frequency:</label><span>{{ dosage.paracetamol.frequency }}</span></div>
-          <div class="dosage-detail"><label>Max Daily:</label><span>{{ dosage.paracetamol.max_daily }}</span></div>
-          <div class="dosage-note">{{ dosage.paracetamol.note }}</div>
-        </div>
-        <div class="dosage-card">
-          
-          <h4>Fluid Intake</h4>
-          <div class="dosage-detail"><label>Type:</label><span>{{ dosage.fluids.type }}</span></div>
-          <div class="dosage-detail"><label>Rate:</label><span>{{ dosage.fluids.rate }}</span></div>
-          <div class="dosage-detail"><label>Daily Target:</label><span>{{ dosage.fluids.daily_target }}</span></div>
-          <div class="dosage-note">{{ dosage.fluids.note }}</div>
-        </div>
-        {% if dosage.platelet_advice %}
-        <div class="dosage-card platelet-card platelet-{{ dosage.platelet_advice.color }}">
-          
-          <h4>Platelet Status</h4>
-          <div class="platelet-level">{{ dosage.platelet_advice.level }}</div>
-          <div class="dosage-note">{{ dosage.platelet_advice.advice }}</div>
-        </div>
-        {% endif %}
-      </div>
+<h3>Clinical Score</h3>
+<p>Score: {{ record.clinical_score }}</p>
+<p>
+Risk Level:
+{% if record.clinical_risk_level == 'low' %}Low
+{% elif record.clinical_risk_level == 'possible' %}Possible
+{% elif record.clinical_risk_level == 'probable' %}Probable
+{% else %}High{% endif %}
+</p>
 
-      <div class="contra-box">
-        <h4>Contraindicated Drugs (Do NOT give)</h4>
-        <div class="contra-list">
-          {% for drug in dosage.forbidden_drugs %}
-          <div class="contra-item">{{ drug }}</div>
-          {% endfor %}
-        </div>
-      </div>
+<hr>
 
-      <div class="hosp-box {% if dosage.hospitalization %}hosp-required{% else %}hosp-not-required{% endif %}">
-        {% if dosage.hospitalization %}
-        <strong>Hospitalization Required</strong>
-        {% else %}
-        <strong>Hospitalization Not Required</strong> — monitor closely at home
-        {% endif %}
-      </div>
+<h3>Lab Results</h3>
+<ul>
+    <li>Platelet Count: {{ record.platelet_count|floatformat:0 }}</li>
+    <li>WBC Count: {{ record.wbc_count|floatformat:0 }}</li>
+    <li>IgG: {{ record.igg }}</li>
+    <li>IgM: {{ record.igm }}</li>
+</ul>
 
-      <div class="advice-box">
-        <h4>General Advice</h4>
-        <ul>
-          {% for adv in dosage.general_advice %}
-          <li>{{ adv }}</li>
-          {% endfor %}
-        </ul>
-      </div>
+<hr>
 
-     <div class="danger-box">
-  <h4>Danger Signs — Seek Immediate Care If:</h4>
-  <ul>
+<h3>Patient Information</h3>
+<ul>
+    <li>Name: {{ record.patient.name }}</li>
+    <li>Age: {{ record.age|floatformat:0 }} years</li>
+    <li>Weight: {{ record.weight }} kg</li>
+    <li>Pregnant: {% if record.is_pregnant %}Yes{% else %}No{% endif %}</li>
+    <li>Reviewed By: Dr. {{ record.reviewed_by.name }}</li>
+</ul>
+
+<hr>
+
+{% if dosage %}
+<h2>Dosage Recommendation</h2>
+
+{% if record.is_pregnant %}
+<p><strong>Warning:</strong> {{ dosage.pregnancy_warning }}</p>
+{% endif %}
+
+<h4>Paracetamol</h4>
+<ul>
+    <li>Dose: {{ dosage.paracetamol.dose }}</li>
+    <li>Frequency: {{ dosage.paracetamol.frequency }}</li>
+    <li>Max Daily: {{ dosage.paracetamol.max_daily }}</li>
+    <li>Note: {{ dosage.paracetamol.note }}</li>
+</ul>
+
+<h4>Fluid Intake</h4>
+<ul>
+    <li>Type: {{ dosage.fluids.type }}</li>
+    <li>Rate: {{ dosage.fluids.rate }}</li>
+    <li>Daily Target: {{ dosage.fluids.daily_target }}</li>
+    <li>Note: {{ dosage.fluids.note }}</li>
+</ul>
+
+{% if dosage.platelet_advice %}
+<h4>Platelet Advice</h4>
+<p>{{ dosage.platelet_advice.level }}</p>
+<p>{{ dosage.platelet_advice.advice }}</p>
+{% endif %}
+
+<h4>Contraindicated Drugs</h4>
+<ul>
+    {% for drug in dosage.forbidden_drugs %}
+    <li>{{ drug }}</li>
+    {% endfor %}
+</ul>
+
+<h4>Hospitalization</h4>
+<p>
+{% if dosage.hospitalization %}
+    Hospitalization Required
+{% else %}
+    Not Required (monitor at home)
+{% endif %}
+</p>
+
+<h4>General Advice</h4>
+<ul>
+    {% for adv in dosage.general_advice %}
+    <li>{{ adv }}</li>
+    {% endfor %}
+</ul>
+
+<h4>Danger Signs</h4>
+<ul>
     {% for sign in dosage.danger_signs %}
     <li>{{ sign }}</li>
     {% endfor %}
-  </ul>
-</div>
-    {% endif %}
+</ul>
 
-    <div class="result-actions">
-      <a href="{% url 'doctor_patient_detail' record.record_id %}" class="btn btn-outline">← Re-enter Lab Values</a>
-      <a href="{% url 'doctor_dashboard' %}" class="btn btn-primary">Back to Patient List</a>
-    </div>
-  </main>
-</div>
+{% endif %}
+
+<hr>
+
+<a href="{% url 'doctor_patient_detail' record.record_id %}">
+    Re-enter Lab Values
+</a>
+
+<br><br>
+
+<a href="{% url 'doctor_dashboard' %}">
+    Back to Patient List
+</a>
+
 {% endblock %}

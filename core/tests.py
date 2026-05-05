@@ -129,7 +129,6 @@ class RegistrationTest(TestCase):
         })
         self.assertNotIn('registered_id', response.context)
 
-
 class LoginTest(TestCase):
     """Test Case 4: Login and session"""
 

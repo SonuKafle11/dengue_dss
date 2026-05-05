@@ -8,11 +8,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 
-# add project root to path so we can import our naive_bayes module
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ml_model.naive_bayes import GaussianNaiveBayes
 
-# file paths
 BASE         = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE)
 
@@ -22,29 +20,38 @@ scaler_path   = os.path.join(BASE, 'scaler.pkl')
 info_path     = os.path.join(BASE, 'dataset_info.json')
 features_path = os.path.join(BASE, 'feature_names.json')
 
-# these 4 columns are derived/calculated from other columns
-# if we keep them the model will cheat - this is called data leakage
-columns_to_drop = ['symptom_score', 'lab_probability',
-                   'symptom_probability', 'final_probability']
-
-# target column we want to predict (0 = no dengue, 1 = dengue)
 target_column = 'dengue'
 
-# the 9 features we will actually use for training
-feature_list = [
-    'fever',
-    'headache',
-    'joint_pain',
-    'muscle_pain',
-    'rash',
-    'nausea',
-    'vomiting',
-    'platelet_count',
-    'wbc_count'
+# drop derived columns — they would cause data leakage
+columns_to_drop = [
+    'symptom_score',
+    'lab_probability',
+    'symptom_probability',
+    'final_probability',
 ]
 
+# 13 patient form symptoms + 2 lab values = 15 features
+# LEFT SIDE  — symptoms patient selects on form
+# RIGHT SIDE — lab values doctor enters
+feature_list = [
+    # patient form symptoms — exact same names as patient form
+    'fever',
+    'severe_headache',
+    'joint_back_pain',
+    'nausea_vomiting',
+    'skin_rash',
+    'vomiting_more_than_3',
+    'bleeding',
+    'extreme_weakness',
+    'urine_output_low',
+    'fever_not_improving',
+    'drop_in_fever_with_weakness',
+    'cold_hands_feet',
+    'restless_drowsy',
+    'platelet_count',
+    'wbc_count',
+]
 
-# read csv manually without pandas
 def read_csv_file(filepath):
     all_rows = []
     header = []
@@ -58,7 +65,9 @@ def read_csv_file(filepath):
                     all_rows.append(values)
     return header, all_rows
 
+
 def remove_outliers(X, column_indices):
+    # IQR method on continuous columns only
     keep = np.ones(len(X), dtype=bool)
     outlier_info = {}
     for col_idx in column_indices:
@@ -68,7 +77,9 @@ def remove_outliers(X, column_indices):
         iqr = q3 - q1
         lower_fence = q1 - 1.5 * iqr
         upper_fence = q3 + 1.5 * iqr
-        num_outliers = np.sum((column_data < lower_fence) | (column_data > upper_fence))
+        num_outliers = np.sum(
+            (column_data < lower_fence) | (column_data > upper_fence)
+        )
         keep = keep & (column_data >= lower_fence) & (column_data <= upper_fence)
         if num_outliers > 0:
             outlier_info[feature_list[col_idx]] = int(num_outliers)
@@ -77,21 +88,18 @@ def remove_outliers(X, column_indices):
 
 def train():
 
-    # start timer for total training time
     total_start = time.time()
 
-    print("=" * 55)
+    print("=" * 60)
     print("  Dengue DSS - Training Naive Bayes Model")
-    print("=" * 55)
+    print("=" * 60)
 
-    # step 1: load the dataset
     print(f"\n[1] Loading dataset from: {dataset_path}")
     header, rows = read_csv_file(dataset_path)
     print(f"    Rows loaded  : {len(rows)}")
     print(f"    Columns      : {len(header)}")
     print(f"    Header       : {header}")
 
-    # step 2: build feature matrix and target array
     print("\n[2] Building feature matrix and target array...")
     feature_indices = [header.index(f) for f in feature_list]
     target_index    = header.index(target_column)
@@ -122,11 +130,9 @@ def train():
     print(f"    No Dengue(0) : {num_no_dengue} ({num_no_dengue/len(y)*100:.1f}%)")
     print(f"    Dengue(1)    : {num_dengue} ({num_dengue/len(y)*100:.1f}%)")
 
-    # step 3: drop derived columns (already excluded in feature_list)
     print("\n[3] Dropping derived columns to prevent data leakage...")
-    print(f"    Dropped : {sorted(columns_to_drop)}")
-    print(f"    Using   : {feature_list}")
-
+    print(f"    Dropped : {columns_to_drop}")
+    print(f"    Using   : {len(feature_list)} features (13 symptoms + platelet + WBC)")
 
     print("\n[4] Removing outliers using IQR method...")
     platelet_idx = feature_list.index('platelet_count')
@@ -140,9 +146,9 @@ def train():
     print(f"    Rows removed    : {rows_removed}")
     print(f"    Rows remaining  : {len(X)}")
     if outlier_counts:
-        print(f"   Outliers found  : {outlier_counts}")
+        print(f"    Outliers found  : {outlier_counts}")
     else:
-        print(f"   No outliers found - dataset was already clean")
+        print(f"    No outliers found - dataset was already clean")
 
     print("\n[5] Splitting into train/test sets (80/20)...")
     x_train, x_test, y_train, y_test = train_test_split(
@@ -153,20 +159,19 @@ def train():
     )
     print(f"    Training set : {len(x_train)} rows")
     print(f"    Testing set  : {len(x_test)} rows")
+
     print("\n[6] Scaling features using StandardScaler...")
     scaler = StandardScaler()
     x_train_scaled = scaler.fit_transform(x_train)
     x_test_scaled  = scaler.transform(x_test)
     print(f"    Scaling done (fit on train only)")
 
-    # step 7: train our Gaussian Naive Bayes from scratch
-    print("\n[7] Training Gaussian Naive Bayes (built from scratch)...")
+    print("\n[7] Training Gaussian Naive Bayes...")
     model = GaussianNaiveBayes()
     model.fit(x_train_scaled, y_train, feature_names=feature_list)
     print(f"    Classes : {model.classes}")
     print(f"    Priors  : { {k: round(v, 3) for k, v in model.class_priors.items()} }")
 
-    # step 8: evaluate on test set
     print("\n[8] Evaluating model on test set...")
     y_predicted = model.predict(x_test_scaled)
     accuracy    = accuracy_score(y_test, y_predicted)
@@ -177,7 +182,7 @@ def train():
     print(f"    Accuracy : {accuracy * 100:.2f}%")
     print(f"\n    Classification Report:")
     print(report)
-    print(f"    (72.8% no-dengue vs 27.2% dengue) - known limitation")
+    print(f"    Note: dengue recall lower due to class imbalance - known limitation")
 
     print("\n[9] Saving model and scaler...")
     with open(model_path, 'wb') as f:
@@ -190,7 +195,7 @@ def train():
     print(f"    Saved: scaler.pkl")
     print(f"    Saved: feature_names.json")
 
-    # step 10: save dataset info json for admin dashboard
+    total_time = time.time() - total_start
     class_distribution = {
         str(k): int(v)
         for k, v in zip(*np.unique(y_data, return_counts=True))
@@ -205,7 +210,7 @@ def train():
         "total_columns"              : len(header),
         "all_columns"                : header,
         "feature_columns"            : feature_list,
-        "dropped_columns"            : sorted(columns_to_drop),
+        "dropped_columns"            : columns_to_drop,
         "target_column"              : target_column,
         "class_distribution"         : class_distribution,
         "model_accuracy_pct"         : round(accuracy * 100, 2),
@@ -215,16 +220,13 @@ def train():
         json.dump(dataset_info, f, indent=2)
     print(f"    Saved: dataset_info.json")
 
-    # done - show total time taken
-    total_time = time.time() - total_start
-
-    print("\n" + "=" * 55)
+    print("\n ------------------------------------------")
     print("  Training complete!")
-    print("=" * 55)
-    print(f"\n  Accuracy           : {accuracy * 100:.2f}%")
-    print(f"  Total time taken   : {total_time:.2f} seconds")
+    print(f"\n  Accuracy         : {accuracy * 100:.2f}%")
+    print(f"  Total time taken : {total_time:.2f} seconds")
 
     return True
+
 
 if __name__ == '__main__':
     train()
