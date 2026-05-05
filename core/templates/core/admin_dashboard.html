@@ -1,12 +1,11 @@
 {% extends 'core/base.html' %}
-{% block title %}Admin Dashboard — Dengue DSS{% endblock %}
+{% block title %}Admin Dashboard — Dengue Decison Support System{% endblock %}
 {% block body_class %}app-page admin-page{% endblock %}
 {% block content %}
 <div class="app-layout">
   <nav class="sidebar admin-sidebar">
     <div class="sidebar-brand">Admin Panel</div>
     <div class="sidebar-user">
-      <div class="user-avatar admin-avatar">A</div>
       <div>
         <div class="user-name">{{ admin_username }}</div>
         <div class="user-role">System Administrator</div>
@@ -15,7 +14,7 @@
     <ul class="sidebar-nav">
       <li class="active"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
       <li><a href="{% url 'admin_dataset_json' %}" target="_blank">Dataset JSON</a></li>
-      <li class="nav-separator"></li>
+      
       <li><a href="{% url 'admin_logout' %}">Logout</a></li>
     </ul>
   </nav>
@@ -41,18 +40,18 @@
       {% if model_trained %}
       <div class="model-status-ok">Naive Bayes model is trained and ready</div>
       {% else %}
-      <div class="model-status-err">❌ Model not trained. Run: <code>python ml_model/train_model.py</code></div>
+      <div class="model-status-err"> Model not trained. Run: <code>python ml_model/train_model.py</code></div>
       {% endif %}
       {% if dataset_info %}
       <div class="dataset-stats">
-        <div class="ds-item"><label>Dataset File</label><span>{{ dataset_info.dataset_file }}</span></div>
-        <div class="ds-item"><label>Total Rows</label><span>{{ dataset_info.total_rows }}</span></div>
-        <div class="ds-item"><label>Rows After Cleaning</label><span>{{ dataset_info.rows_after_outlier_removal }}</span></div>
-        <div class="ds-item"><label>Outliers Removed</label><span>{{ dataset_info.outliers_removed }}</span></div>
-        <div class="ds-item"><label>Model Accuracy</label><span><strong>{{ dataset_info.model_accuracy_pct }}%</strong></span></div>
-        <div class="ds-item"><label>Features Used</label><span>{{ dataset_info.feature_columns|join:", " }}</span></div>
-        <div class="ds-item"><label>Dropped Columns</label><span>{{ dataset_info.dropped_columns|join:", " }}</span></div>
-        <div class="ds-item"><label>Class Distribution</label>
+        <div class="ds-item"><label>Dataset File:</label><span>{{ dataset_info.dataset_file }}</span></div>
+        <div class="ds-item"><label>Total Rows:</label><span>{{ dataset_info.total_rows }}</span></div>
+        <div class="ds-item"><label>Rows After Cleaning:</label><span>{{ dataset_info.rows_after_outlier_removal }}</span></div>
+        <div class="ds-item"><label>Outliers Removed:</label><span>{{ dataset_info.outliers_removed }}</span></div>
+        <div class="ds-item"><label>Model Accuracy:</label><span><strong>{{ dataset_info.model_accuracy_pct }}%</strong></span></div>
+        <div class="ds-item"><label>Features Used:</label><span>{{ dataset_info.feature_columns|join:", " }}</span></div>
+        <div class="ds-item"><label>Dropped Columns:</label><span>{{ dataset_info.dropped_columns|join:", " }}</span></div>
+        <div class="ds-item"><label>Class Distribution:</label>
           <span>{% for cls, cnt in dataset_info.class_distribution.items %}Class {{ cls }}: {{ cnt }} &nbsp;{% endfor %}</span>
         </div>
       </div>
@@ -91,7 +90,7 @@
     </div>
 
     <div class="result-card">
-      <h3>📋 Patient Records</h3>
+      <h3> Patient Records</h3>
       <div class="table-wrapper">
         <table class="data-table">
           <thead>
