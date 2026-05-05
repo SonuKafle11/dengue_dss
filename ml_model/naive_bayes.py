@@ -51,7 +51,7 @@ class GaussianNaiveBayes:
         return log_prob
 
     def _predict_single(self, x):
-        """Predicting class and log-probabilities for a single sample."""
+        #Predicting class and log-probabilities for a single sample.
         x = np.array(x, dtype=float)
         log_posteriors = {}
 
@@ -70,7 +70,6 @@ class GaussianNaiveBayes:
         return log_posteriors
 
     def predict(self, X):
-        """Predicting class labels for multiple samples."""
         X = np.array(X, dtype=float)
         predictions = []
         for x in X:
@@ -80,10 +79,6 @@ class GaussianNaiveBayes:
         return np.array(predictions)
 
     def predict_proba(self, X):
-        """
-        Predicting class probabilities using softmax over log-posteriors.
-        Returns array of shape (n_samples, n_classes).
-        """
         X = np.array(X, dtype=float)
         probabilities = []
 
@@ -102,9 +97,6 @@ class GaussianNaiveBayes:
         return np.array(probabilities)
 
     def predict_single_with_confidence(self, x):
-        """
-        Predicting a single sample and return (label, confidence_percent).
-        """
         proba = self.predict_proba([x])[0]
         class_idx = np.argmax(proba)
         predicted_class = self.classes[class_idx]
@@ -112,7 +104,6 @@ class GaussianNaiveBayes:
         return predicted_class, confidence
 
     def get_model_info(self):
-        """Return model metadata as a dict."""
         return {
             'classes': [str(c) for c in self.classes],
             'n_features': len(self.feature_names),

@@ -1,23 +1,9 @@
-"""
-dosage_engine.py
-----------------
-If-Then rule-based is used in dosage recommendation system for dengue patients.
-Based on standard dengue treatment protocol:
-  - Paracetamol dosage by weight.
-  - ORS fluid intake.
-  - Platelet-count-based precautions.
-  - Pregnancy warning is given if patient is pregnant.
-  - General advice based on risk level.
-  - Risk-level-based recommendations.
-"""
-
-
 def get_paracetamol_dosage(weight_kg, age):
     """
     Standard paracetamol dosage: 10-15 mg/kg every 4-6 hours, max 60 mg/kg/day.
     Returns dosage per dose and frequency.
     """
-    dose_per_kg = 10  # mg/kg (conservative)
+    dose_per_kg = 10  # mg/kg 
     dose_mg = weight_kg * dose_per_kg
 
     # Cap at 1000mg per dose for adults
@@ -240,9 +226,6 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
 
 
 def format_dosage_text(rec):
-    """
-    Convert recommendation dict to plain text for database storage.
-    """
     lines = []
     lines.append(f"=== DOSAGE RECOMMENDATION (Risk: {rec['risk_level'].upper()}) ===\n")
     p = rec['paracetamol']

@@ -21,17 +21,17 @@
     <h3>Basic Information</h3>
 
     <!-- Gender -->
-    <label>Gender:</label><br>
+    <label>Gender: <span class="required-star">*</span></label><br>
     <input type="radio" name="gender" value="male" required> Male<br>
     <input type="radio" name="gender" value="female"> Female<br>
     <input type="radio" name="gender" value="other"> Other<br><br>
 
     <!-- Age -->
-    <label>Age:</label><br>
+    <label>Age: <span class="required-star">*</span></label><br>
     <input type="number" id="age" name="age" required><br><br>
 
     <!-- Weight -->
-    <label>Weight (kg):</label><br>
+    <label>Weight (kg): <span class="required-star">*</span></label><br>
     <input type="number" name="weight" step="0.1" required><br><br>
 
     <!-- Pregnant -->
@@ -45,7 +45,7 @@
 
     <hr>
 
-    <h3>Symptoms</h3>
+    <h3>Symptoms <span class="required-star">*</span></h3>
     <label><input type="checkbox" name="fever"> Fever</label>
     <label><input type="checkbox" name="severe_headache"> Severe Headache</label>
     <label><input type="checkbox" name="joint_back_pain"> Joint/Back Pain</label>

@@ -7,7 +7,6 @@ SCALER_PKL = os.path.join(BASE, 'scaler.pkl')
 FEAT_JSON  = os.path.join(BASE, 'feature_names.json')
 INFO_JSON  = os.path.join(BASE, 'dataset_info.json')
 
-# must match training order in train_model.py exactly
 FEATURES = [
     'fever',
     'severe_headache',
@@ -41,10 +40,7 @@ def _load():
 
 
 def _build_vector(d):
-    """
-    Build 15-feature vector from patient form + doctor lab inputs.
-    Field names are identical to dataset column names — no mapping needed.
-    """
+
     mapping = {
         'fever'                       : float(d.get('fever', 0)),
         'severe_headache'             : float(d.get('severe_headache', 0)),
@@ -66,10 +62,7 @@ def _build_vector(d):
 
 
 def predict_dengue(input_dict):
-    """
-    Returns:
-      { prediction, confidence, raw_label, error }
-    """
+
     try:
         model, scaler = _load()
         vec = _build_vector(input_dict)

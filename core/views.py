@@ -22,7 +22,6 @@ def current_user(request):
     return None
 
 def patient_required(fn):
-    """Decorator — blocks access if user is not logged in as patient."""
     def wrap(request, *a, **kw):
         if not request.session.get('user_id') or request.session.get('role') != 'patient':
             return redirect('login')
@@ -31,7 +30,6 @@ def patient_required(fn):
     return wrap
 
 def doctor_required(fn):
-    """Decorator — blocks access if user is not logged in as doctor."""
     def wrap(request, *a, **kw):
         if not request.session.get('user_id') or request.session.get('role') != 'doctor':
             return redirect('login')
@@ -40,7 +38,6 @@ def doctor_required(fn):
     return wrap
 
 def admin_required(fn):
-    """Decorator — blocks access if admin is not logged in."""
     def wrap(request, *a, **kw):
         if not request.session.get('admin_logged_in'):
             return redirect('admin_login')
@@ -56,8 +53,8 @@ def index(request):
     return redirect('login')
 
 
-# What it does: shows registration form, creates User with hashed
-#               password, returns unique 8-char ID on success
+#  show registration form, creates User with hashed
+#  password, returns unique 8-char ID on success
 def register(request):
     if request.method == 'POST':
         name     = request.POST.get('name', '').strip()
@@ -81,17 +78,19 @@ def register(request):
         })
     return render(request, 'core/register.html')
 
-# What it does: accepts user_id or name + password, stores role
-#               in session, redirects to correct dashboard
+# accept user_id or name + password, stores role
+# in session, redirects to correct dashboard
 def login_view(request):
     if request.method == 'POST':
         identifier = request.POST.get('identifier', '').strip()
         password   = request.POST.get('password', '').strip()
         user = None
 
+        # Try by ID
         try:
             user = User.objects.get(user_id=identifier)
         except User.DoesNotExist:
+            # Try by name (may be ambiguous)
             qs = User.objects.filter(name__iexact=identifier)
             if qs.count() == 1:
                 user = qs.first()
@@ -107,14 +106,13 @@ def login_view(request):
 
         messages.error(request, 'Invalid credentials. Check your ID/name and password.')
     return render(request, 'core/login.html')
-
-# What it does: clears entire session and redirects to login
+# clear entire session and redirects to login
 def logout_view(request):
     request.session.flush()
     return redirect('login')
 
-# What it does: separate login for admin, stores admin_logged_in
-#               in session
+# separate login for admin, stores admin_logged_in
+# in session
 def admin_login(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -130,13 +128,14 @@ def admin_login(request):
             messages.error(request, 'Admin account not found.')
     return render(request, 'core/admin_login.html')
 
-# What it does: clears session and redirects to admin login
+# clear session and redirects to admin login
 def admin_logout(request):
     request.session.flush()
     return redirect('admin_login')
 
-# What it does: fetches all records for logged-in patient,
-#               shows them as cards with risk badges and review status
+# fetche all records for logged-in patient,
+# shows them as cards with risk badges and review status
+
 @patient_required
 def patient_dashboard(request):
     user    = current_user(request)
@@ -146,9 +145,9 @@ def patient_dashboard(request):
         'records': records
     })
 
-# What it does: shows 13 symptom checkboxes with live JS score,
-#               on POST creates PatientRecord and calls rec.save()
-#               which auto-calculates clinical_score and risk_level
+#  show 13 symptom checkboxes with live JS score,
+#  on POST creates PatientRecord and calls rec.save()
+#  which auto-calculates clinical_score and risk_level
 @patient_required
 def patient_form(request):
     user = current_user(request)
@@ -168,6 +167,7 @@ def patient_form(request):
                 if age < 10:
                     messages.error(request, "Pregnancy not valid for age below 10.")
                     return redirect('patient_form')
+                
             symptoms = [
                 'fever', 'severe_headache', 'joint_back_pain', 'nausea_vomiting',
                 'skin_rash', 'vomiting_more_than_3', 'bleeding',
@@ -201,8 +201,8 @@ def patient_form(request):
             messages.error(request, f'Invalid input: {e}')
     return render(request, 'core/patient_form.html', {'user': user})
 
-# What it does: fetches a single record by UUID, shows clinical
-#               score, reported symptoms, and review status
+# fetche a single record by UUID, shows clinical
+# score, reported symptoms, and review status
 @patient_required
 def patient_result(request, record_id):
     user = current_user(request)
@@ -212,8 +212,8 @@ def patient_result(request, record_id):
         'user'  : user
     })
 
-# What it does: fetches ALL patient records, supports search by
-#               name and filter by pending/reviewed, shows stats
+# fetche ALL patient records, supports search by
+# name and filter by pending/reviewed, shows stats
 @doctor_required
 def doctor_dashboard(request):
     user    = current_user(request)
@@ -238,10 +238,10 @@ def doctor_dashboard(request):
         'reviewed'     : PatientRecord.objects.filter(is_reviewed=True).count(),
     })
 
-# What it does: shows patient info + symptoms (read-only left side),
-#               on POST takes lab values, calls predict_dengue()
-#               from ml_model/predictor.py, calls recommend_dosage()
-#               from ml_model/dosage_engine.py, saves to database
+#  shows patient info + symptoms,
+#  on POST takes lab values, calls predict_dengue()
+#  from ml_model/predictor.py, calls recommend_dosage()
+#  from ml_model/dosage_engine.py, saves to database
 @doctor_required
 def doctor_patient_detail(request, record_id):
     doctor = current_user(request)
@@ -262,7 +262,7 @@ def doctor_patient_detail(request, record_id):
             rec.is_reviewed    = True
 
             # build feature dict and run Naive Bayes prediction
-            # NEW — all 13 symptoms now pass directly to ML
+            # all 13 symptoms pass directly to ML
             ml_input = {
                 'fever'                       : int(rec.fever),
                 'severe_headache'             : int(rec.severe_headache),
@@ -306,8 +306,8 @@ def doctor_patient_detail(request, record_id):
         'model_trained': is_model_trained()
     })
 
-# What it does: shows ML prediction banner, confidence %,
-#               lab results, clinical score, full dosage section
+# show ML prediction banner, confidence %,
+# lab results, clinical score, full dosage section
 @doctor_required
 def doctor_prediction_result(request, record_id):
     doctor = current_user(request)
@@ -330,8 +330,8 @@ def doctor_prediction_result(request, record_id):
         'dosage': dosage_rec
     })
 
-# What it does: shows all users, all records, ML model status,
-#               dataset info, stat counts
+# show all users, all records, ML model status,
+# dataset info, stat counts
 @admin_required
 def admin_dashboard(request):
     users   = User.objects.all().order_by('-created_at')
@@ -348,7 +348,7 @@ def admin_dashboard(request):
         'admin_username'  : request.session.get('admin_username'),
     })
 
-# What it does: deletes a User and all their records via CASCADE
+# delete a User and all their records via CASCADE
 @admin_required
 def admin_delete_user(request, user_id):
     if request.method == 'POST':
@@ -361,7 +361,7 @@ def admin_delete_user(request, user_id):
             messages.error(request, 'User not found.')
     return redirect('admin_dashboard')
 
-# What it does: deletes a single PatientRecord
+# delete a single PatientRecord
 @admin_required
 def admin_delete_record(request, record_id):
     if request.method == 'POST':
@@ -373,7 +373,7 @@ def admin_delete_record(request, record_id):
             messages.error(request, 'Record not found.')
     return redirect('admin_dashboard')
 
-# What it does: returns dataset_info.json as JSON API response
+#  return dataset_info.json as JSON API response
 @admin_required
 def admin_dataset_json(request):
     info = get_dataset_info()

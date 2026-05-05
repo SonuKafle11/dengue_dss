@@ -19,18 +19,64 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorBox = document.getElementById('error-msg');
     const symptomError = document.getElementById('symptom-error');
 
+    function updatePregnantAvailability() {
+        const selectedGender = document.querySelector('input[name="gender"]:checked');
+        const gender = selectedGender?.value?.trim().toLowerCase();
+        const ageValue = ageInput?.value?.trim();
+        const age = ageValue !== '' ? parseInt(ageValue) : null;
+
+        // Disable ONLY if gender is male OR age is entered and < 10
+        // If gender not selected yet or age not entered yet → keep enabled
+        const isMale = gender === 'male';
+        const isTooYoung = age !== null && age < 10;
+
+        const shouldDisable = isMale || isTooYoung;
+
+        if (pregnantInput) {
+            pregnantInput.disabled = shouldDisable;
+
+            if (shouldDisable) {
+                pregnantInput.checked = false;
+                errorBox.textContent = "";
+            }
+
+            const pregnantLabel = pregnantInput.closest('label') ||
+                                  document.querySelector('label[for="pregnant"]');
+            if (pregnantLabel) {
+                pregnantLabel.style.opacity = shouldDisable ? '0.4' : '1';
+                pregnantLabel.style.cursor = shouldDisable ? 'not-allowed' : 'pointer';
+            }
+        }
+    }
+
     function validate() {
-        const gender = document.querySelector('input[name="gender"]:checked')?.value;
-        const age = parseInt(ageInput?.value);
+        const selectedGender = document.querySelector('input[name="gender"]:checked');
+        const gender = selectedGender?.value?.trim().toLowerCase();
+        const ageValue = ageInput?.value?.trim();
+        const age = ageValue !== '' ? parseInt(ageValue) : null;
         const isPregnant = pregnantInput?.checked;
 
         const symptoms = document.querySelectorAll(
             'input[type="checkbox"]:not(#pregnant):checked'
         );
+
         errorBox.textContent = "";
         symptomError.textContent = "";
-        if (isPregnant && gender !== 'female') {
-            errorBox.textContent = "Only females can be pregnant.";
+
+        // Required fields check
+        if (!gender) {
+            errorBox.textContent = "Please select a gender.";
+            return false;
+        }
+
+        if (age === null || isNaN(age)) {
+            errorBox.textContent = "Please enter your age.";
+            return false;
+        }
+
+        // Backup guards
+        if (isPregnant && gender === 'male') {
+            errorBox.textContent = "Males cannot be pregnant.";
             return false;
         }
 
@@ -47,9 +93,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return true;
     }
 
-    genderInputs.forEach(i => i.addEventListener('change', validate));
+    genderInputs.forEach(i => i.addEventListener('change', () => {
+        updatePregnantAvailability();
+    }));
+
+    ageInput?.addEventListener('input', () => {
+        updatePregnantAvailability();
+    });
+
     pregnantInput?.addEventListener('change', validate);
-    ageInput?.addEventListener('input', validate);
 
     document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         cb.addEventListener('change', validate);
@@ -60,4 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
         }
     });
+
+    updatePregnantAvailability();
 });
