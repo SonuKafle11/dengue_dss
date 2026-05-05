@@ -1,3 +1,4 @@
+from django.views.decorators.cache import never_cache
 import hashlib
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
@@ -135,7 +136,7 @@ def admin_logout(request):
 
 # fetche all records for logged-in patient,
 # shows them as cards with risk badges and review status
-
+@never_cache
 @patient_required
 def patient_dashboard(request):
     user    = current_user(request)
@@ -203,6 +204,7 @@ def patient_form(request):
 
 # fetche a single record by UUID, shows clinical
 # score, reported symptoms, and review status
+@never_cache
 @patient_required
 def patient_result(request, record_id):
     user = current_user(request)
@@ -214,6 +216,7 @@ def patient_result(request, record_id):
 
 # fetche ALL patient records, supports search by
 # name and filter by pending/reviewed, shows stats
+@never_cache
 @doctor_required
 def doctor_dashboard(request):
     user    = current_user(request)
@@ -242,6 +245,7 @@ def doctor_dashboard(request):
 #  on POST takes lab values, calls predict_dengue()
 #  from ml_model/predictor.py, calls recommend_dosage()
 #  from ml_model/dosage_engine.py, saves to database
+@never_cache
 @doctor_required
 def doctor_patient_detail(request, record_id):
     doctor = current_user(request)
@@ -332,6 +336,7 @@ def doctor_prediction_result(request, record_id):
 
 # show all users, all records, ML model status,
 # dataset info, stat counts
+@never_cache
 @admin_required
 def admin_dashboard(request):
     users   = User.objects.all().order_by('-created_at')
