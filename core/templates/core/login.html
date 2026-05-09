@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-{% load static %} 
+{% load static %}
 {% block title %}Login{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
@@ -10,14 +10,20 @@
 
 <p>Please sign in to continue</p>
 
+{% if messages %}
+    <div class="error-box">
+        {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    </div>
+{% endif %}
+
 <form method="POST">
     {% csrf_token %}
 
-    <label>User ID or Name:</label><br>
-    <input type="text" name="identifier" required><br><br>
+    <label>User ID or Name:</label>
+    <input type="text" name="identifier" required>
 
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+    <label>Password:</label>
+    <input type="password" name="password" required>
 
     <button type="submit">Login</button>
 </form>

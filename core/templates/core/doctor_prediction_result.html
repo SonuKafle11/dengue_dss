@@ -25,7 +25,6 @@
 Risk Level:
 {% if record.clinical_risk_level == 'low' %}Low
 {% elif record.clinical_risk_level == 'possible' %}Possible
-{% elif record.clinical_risk_level == 'probable' %}Probable
 {% else %}High{% endif %}
 </p>
 
@@ -46,6 +45,8 @@ Risk Level:
     <li>Name: {{ record.patient.name }}</li>
     <li>Age: {{ record.age|floatformat:0 }} years</li>
     <li>Weight: {{ record.weight }} kg</li>
+    <li>Height: {{ record.height }} cm</li>
+    <li>BMI: {{ record.get_bmi }}</li>
     <li>Pregnant: {% if record.is_pregnant %}Yes{% else %}No{% endif %}</li>
     <li>Reviewed By: Dr. {{ record.reviewed_by.name }}</li>
 </ul>
@@ -54,6 +55,17 @@ Risk Level:
 
 {% if dosage %}
 <h2>Dosage Recommendation</h2>
+<h4>Dosing Basis (BMI-adjusted)</h4>
+<ul>
+    <li>BMI: {{ dosage.bmi }} ({{ dosage.bmi_category }})</li>
+    <li>Actual weight: {{ dosage.actual_weight }} kg</li>
+    <li>Height: {{ dosage.height_cm }} cm</li>
+    <li>Dosing weight used: {{ dosage.dosing_weight }} kg
+        {% if dosage.dosing_weight != dosage.actual_weight %}
+        <em>(adjusted toward healthy-BMI weight)</em>
+        {% endif %}
+    </li>
+</ul>
 
 {% if record.is_pregnant %}
 <p><strong>Warning:</strong> {{ dosage.pregnancy_warning }}</p>

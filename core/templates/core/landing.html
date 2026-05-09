@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dengue DSS</title>
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<header class="navbar">
+    <div class="nav-content">
+        <h2 class="logo">Dengue DSS</h2>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#about">About Us</a>
+            <a href="{% url 'public_symptom_check' %}">Explore Us</a>
+            <a href="{% url 'login' %}" class="login-link">Login</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Home / Hero section -->
+<section id="home" class="section home-section">
+    <h1>Dengue Decision Support System</h1>
+    <p class="tagline">A simple tool to help you understand your dengue risk early.</p>
+
+    <p class="intro">
+        Dengue is a mosquito-borne viral infection common in tropical countries.
+        Early detection of warning signs can save lives. This system lets you
+        check your symptoms quickly, get a clinical risk score, and decide
+        whether you need to see a doctor.
+    </p>
+
+    <div class="button-group">
+        <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">Check My Symptoms</a>
+        <a href="#about" class="btn btn-secondary">Learn More</a>
+    </div>
+</section>
+
+<!-- About section -->
+<section id="about" class="section about-section">
+    <h2>About Us</h2>
+
+    <p>
+        This Dengue Decision Support System is built as part of an academic
+        project to support the early detection and management of dengue fever.
+        Our aim is to provide patients and doctors with a simple, reliable tool
+        that combines clinical scoring with machine learning prediction.
+    </p>
+
+    <h3>What this system does</h3>
+    <ul>
+        <li>Allows patients to check symptoms without logging in.</li>
+        <li>Calculates a clinical risk score based on 13 standard dengue symptoms.</li>
+        <li>Classifies the result as Low Risk, Possible Dengue, or High Risk.</li>
+        <li>For high-risk cases, doctors review the case and provide medication dosage based on BMI.</li>
+        <li>Uses a Naive Bayes machine learning model trained on patient data.</li>
+    </ul>
+
+    <h3>Who can use this system</h3>
+    <ul>
+        <li><strong>Patients</strong> — to check symptoms and view their reports.</li>
+        <li><strong>Doctors</strong> — to review patients, enter lab results, and recommend treatment.</li>
+        <li><strong>Admins</strong> — to manage users and monitor the system.</li>
+    </ul>
+</section>
+
+<!-- Explore section -->
+<section id="explore" class="section explore-section">
+    <h2>Explore the System</h2>
+    <p>
+        You can start by checking your symptoms below. No login is required for
+        the initial symptom check. If the result shows High Risk, you will be
+        asked to log in so a doctor can review your case.
+    </p>
+    <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">Start Symptom Check</a>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>© 2026 Dengue Decision Support System</p>
+    <p class="disclaimer">
+        This system is for academic and informational purposes only. It does not
+        replace professional medical advice. If you feel seriously unwell, please
+        visit a hospital or clinic.
+    </p>
+</footer>
+
+</body>
+</html>

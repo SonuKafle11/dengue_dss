@@ -33,6 +33,8 @@ Risk Level:
 <ul>
     <li>Age: {{ record.age|floatformat:0 }} years</li>
     <li>Weight: {{ record.weight }} kg</li>
+    <li>Height: {{ record.height }} cm</li>
+    <li>BMI: {{ record.get_bmi }}</li>
     <li>Pregnant: {% if record.is_pregnant %}Yes{% else %}No{% endif %}</li>
 </ul>
 

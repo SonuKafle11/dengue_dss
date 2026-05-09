@@ -1,10 +1,76 @@
-def get_paracetamol_dosage(weight_kg, age):
+"""
+Dosage engine for the Dengue DSS.
+
+Dosage is calculated based on BMI (Body Mass Index) instead of raw body weight.
+    BMI = weight(kg) / height(cm)^2 * 10000
+
+A "dosing weight" is derived from BMI so that under/overweight patients are not
+under- or over-dosed when only raw weight is used. The dosing weight is the
+patient's actual weight adjusted toward a normal-BMI weight when their BMI
+falls outside the healthy range (18.5 - 24.9).
+"""
+
+# Healthy BMI range used as the reference for dosing
+BMI_HEALTHY_LOW  = 18.5
+BMI_HEALTHY_HIGH = 24.9
+# Mid-range BMI used as the target for adjusted dosing weight
+BMI_TARGET       = 22.0
+
+
+def calculate_bmi(weight_kg, height_cm):
+    """BMI = weight(kg) / height(cm)^2 * 10000. Returns 0 if height invalid."""
+    try:
+        if height_cm and height_cm > 0:
+            return round((weight_kg / (height_cm * height_cm)) * 10000, 2)
+    except (TypeError, ZeroDivisionError):
+        pass
+    return 0
+
+
+def get_bmi_category(bmi):
+    """Return human-readable BMI category."""
+    if bmi <= 0:
+        return "Unknown"
+    if bmi < 18.5:
+        return "Underweight"
+    if bmi < 25:
+        return "Normal"
+    if bmi < 30:
+        return "Overweight"
+    return "Obese"
+
+
+def get_dosing_weight(weight_kg, height_cm):
+    """
+    Return the BMI-adjusted weight that should be used for dosing.
+
+    - If BMI is within the healthy range (18.5 - 24.9), use actual weight.
+    - If BMI is below 18.5 (underweight), use a weight calculated from
+      BMI 18.5 at the patient's height (so they aren't under-dosed).
+    - If BMI is above 24.9 (overweight/obese), use a weight calculated from
+      BMI 24.9 at the patient's height (so they aren't over-dosed).
+    - If height is missing/invalid, fall back to raw weight.
+    """
+    if not height_cm or height_cm <= 0:
+        return weight_kg
+
+    bmi = calculate_bmi(weight_kg, height_cm)
+    height_m_sq = (height_cm / 100.0) ** 2
+
+    if bmi < BMI_HEALTHY_LOW:
+        return round(BMI_HEALTHY_LOW * height_m_sq, 2)
+    if bmi > BMI_HEALTHY_HIGH:
+        return round(BMI_HEALTHY_HIGH * height_m_sq, 2)
+    return weight_kg
+
+
+def get_paracetamol_dosage(dosing_weight, age):
     """
     Standard paracetamol dosage: 10-15 mg/kg every 4-6 hours, max 60 mg/kg/day.
-    Returns dosage per dose and frequency.
+    Uses BMI-adjusted dosing weight rather than raw body weight.
     """
-    dose_per_kg = 10  # mg/kg 
-    dose_mg = weight_kg * dose_per_kg
+    dose_per_kg = 10  # mg/kg
+    dose_mg = dosing_weight * dose_per_kg
 
     # Cap at 1000mg per dose for adults
     if age >= 18 and dose_mg > 1000:
@@ -14,47 +80,36 @@ def get_paracetamol_dosage(weight_kg, age):
     if age < 6 and dose_mg > 250:
         dose_mg = 250
 
-    # Frequency
     if age < 12:
         frequency = "every 6 hours"
-        max_daily = weight_kg * 60
+        max_daily = dosing_weight * 60
     else:
         frequency = "every 4-6 hours"
-        max_daily = min(weight_kg * 60, 4000)
+        max_daily = min(dosing_weight * 60, 4000)
 
     return round(dose_mg), frequency, round(max_daily)
 
 
-def get_fluid_intake(weight_kg, age, risk_level):
-    """
-    ORS / IV Fluid recommendation based on WHO dengue guidelines.
-    """
+def get_fluid_intake(dosing_weight, age, risk_level):
+    """ORS / IV Fluid recommendation, BMI-adjusted."""
     if risk_level == 'high':
-        ml_per_hour = weight_kg * 7
+        ml_per_hour = dosing_weight * 7
         return {
             'type': 'IV Isotonic Fluid (Normal Saline / Ringer\'s Lactate)',
             'rate': f"{round(ml_per_hour)} ml/hour",
             'daily_target': f"{round(ml_per_hour * 24)} ml/day",
             'note': 'Requires hospitalization and IV access. Monitor urine output every 1-2 hours.'
         }
-    elif risk_level == 'probable':
-        oral_ml = weight_kg * 50
-        return {
-            'type': 'Oral Rehydration Solution (ORS) or IV if oral not tolerated',
-            'rate': f"{round(oral_ml)} ml every 2-4 hours",
-            'daily_target': f"{round(oral_ml * 6)} ml/day",
-            'note': 'Switch to IV fluids if patient vomits repeatedly or oral intake drops.'
-        }
     elif risk_level == 'possible':
-        oral_ml = weight_kg * 60
+        oral_ml = dosing_weight * 60
         return {
             'type': 'Oral Rehydration Solution (ORS)',
             'rate': f"{round(oral_ml)} ml every 4-6 hours",
             'daily_target': f"{round(oral_ml * 4)} ml/day",
             'note': 'Maintain adequate oral hydration. Return if symptoms worsen.'
         }
-    else:
-        water_liters = max(2.0, round(weight_kg * 0.04, 1))
+    else:  # 'low'
+        water_liters = max(2.0, round(dosing_weight * 0.04, 1))
         return {
             'type': 'Oral fluids (water, coconut water, ORS)',
             'rate': f"{water_liters} liters/day minimum",
@@ -64,10 +119,7 @@ def get_fluid_intake(weight_kg, age, risk_level):
 
 
 def get_platelet_based_advice(platelet_count):
-    """
-    Platelet count-based clinical decisions.
-    Normal: 150,000 - 400,000 /uL
-    """
+    """Platelet count-based clinical decisions. Normal: 150,000 - 400,000 /uL."""
     if platelet_count is None:
         return None
 
@@ -97,11 +149,24 @@ def get_platelet_based_advice(platelet_count):
                 'color': 'yellow'}
 
 
-def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
+def recommend_dosage(weight_kg, age, risk_level, height_cm=0, platelet_count=None,
                      is_pregnant=False, ml_prediction=None):
     """
-    Main dosage recommendation function.
+    Main dosage recommendation function. Now uses BMI-based dosing.
+
+    Args:
+        weight_kg: actual patient weight in kg
+        age: patient age in years
+        risk_level: 'low', 'possible', or 'high'
+        height_cm: patient height in cm (used for BMI calculation)
+        platelet_count: platelet count in /uL (optional)
+        is_pregnant: bool
+        ml_prediction: ML prediction string (optional)
     """
+    bmi = calculate_bmi(weight_kg, height_cm)
+    bmi_category = get_bmi_category(bmi)
+    dosing_weight = get_dosing_weight(weight_kg, height_cm)
+
     recommendations = {
         'paracetamol': {},
         'fluids': {},
@@ -112,10 +177,15 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
         'forbidden_drugs': [],
         'hospitalization': False,
         'risk_level': risk_level,
+        'bmi': bmi,
+        'bmi_category': bmi_category,
+        'dosing_weight': dosing_weight,
+        'actual_weight': weight_kg,
+        'height_cm': height_cm,
     }
 
-    # Rule 1: Paracetamol
-    dose_mg, frequency, max_daily = get_paracetamol_dosage(weight_kg, age)
+    # Rule 1: Paracetamol (BMI-adjusted)
+    dose_mg, frequency, max_daily = get_paracetamol_dosage(dosing_weight, age)
     recommendations['paracetamol'] = {
         'drug': 'Paracetamol (Acetaminophen)',
         'dose': f"{dose_mg} mg",
@@ -124,8 +194,8 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
         'note': 'Do NOT exceed maximum daily dose. Do not use for more than 3 days without medical review.'
     }
 
-    # Rule 2: Fluids
-    recommendations['fluids'] = get_fluid_intake(weight_kg, age, risk_level)
+    # Rule 2: Fluids (BMI-adjusted)
+    recommendations['fluids'] = get_fluid_intake(dosing_weight, age, risk_level)
 
     # Rule 3: Platelet-based advice
     if platelet_count is not None:
@@ -158,15 +228,6 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
             'Avoid mosquito bites to prevent spread.',
         ]
         recommendations['hospitalization'] = False
-    elif risk_level == 'probable':
-        recommendations['general_advice'] = [
-            'Hospital admission strongly recommended.',
-            'Complete blood count (CBC) every 12-24 hours.',
-            'Monitor vital signs every 4-6 hours.',
-            'Strict bed rest and fall prevention.',
-            'Fluid intake chart must be maintained.',
-        ]
-        recommendations['hospitalization'] = True
     elif risk_level == 'high':
         recommendations['general_advice'] = [
             'IMMEDIATE hospitalization required.',
@@ -222,12 +283,35 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
             'Lower threshold for hospitalization. Monitor renal function.'
         )
 
+    # Rule 11: BMI-based note
+    if bmi > 0:
+        if bmi_category == 'Underweight':
+            recommendations['general_advice'].append(
+                f'BMI {bmi} ({bmi_category}): Dosing adjusted upward toward healthy-BMI weight '
+                'to avoid sub-therapeutic dosing.'
+            )
+        elif bmi_category in ('Overweight', 'Obese'):
+            recommendations['general_advice'].append(
+                f'BMI {bmi} ({bmi_category}): Dosing capped at healthy-BMI weight '
+                'to avoid risk of overdose.'
+            )
+
     return recommendations
 
 
 def format_dosage_text(rec):
     lines = []
     lines.append(f"=== DOSAGE RECOMMENDATION (Risk: {rec['risk_level'].upper()}) ===\n")
+
+    # BMI summary
+    if rec.get('bmi'):
+        lines.append(
+            f"PATIENT BMI: {rec['bmi']} ({rec['bmi_category']})  |  "
+            f"Actual weight: {rec['actual_weight']} kg  |  "
+            f"Height: {rec['height_cm']} cm  |  "
+            f"Dosing weight used: {rec['dosing_weight']} kg\n"
+        )
+
     p = rec['paracetamol']
     lines.append(f"PARACETAMOL:")
     lines.append(f"  Dose: {p['dose']} {p['frequency']}")

@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Check — Dengue DSS</title>
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <link rel="stylesheet" href="{% static 'css/public_check.css' %}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-content">
+        <h2 class="logo">Dengue DSS</h2>
+        <nav>
+            <a href="{% url 'landing' %}">Home</a>
+            <a href="{% url 'landing' %}#about">About Us</a>
+            <a href="{% url 'public_symptom_check' %}">Explore Us</a>
+            <a href="{% url 'login' %}" class="login-link">Login</a>
+        </nav>
+    </div>
+</header>
+
+<main class="check-page">
+    <a href="{% url 'landing' %}" class="back-link">← Back to home</a>
+
+    <h1>Symptom Check</h1>
+    <p class="lead">
+        Tick all the symptoms you currently have. We'll calculate a clinical
+        score and tell you the risk level. No login required.
+    </p>
+
+    {% if messages %}
+        <div class="error-box">
+            {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" id="checkForm">
+        {% csrf_token %}
+
+        <div class="symptom-list">
+            <label><input type="checkbox" name="fever" {% if 'fever' in selected %}checked{% endif %}> Fever</label>
+            <label><input type="checkbox" name="severe_headache" {% if 'severe_headache' in selected %}checked{% endif %}> Severe Headache</label>
+            <label><input type="checkbox" name="joint_back_pain" {% if 'joint_back_pain' in selected %}checked{% endif %}> Joint or Back Pain</label>
+            <label><input type="checkbox" name="nausea_vomiting" {% if 'nausea_vomiting' in selected %}checked{% endif %}> Nausea or Vomiting</label>
+            <label><input type="checkbox" name="skin_rash" {% if 'skin_rash' in selected %}checked{% endif %}> Skin Rash</label>
+            <label><input type="checkbox" name="vomiting_more_than_3" {% if 'vomiting_more_than_3' in selected %}checked{% endif %}> Vomiting more than 3 times</label>
+            <label><input type="checkbox" name="bleeding" {% if 'bleeding' in selected %}checked{% endif %}> Bleeding (nose, gums, vomit, stool)</label>
+            <label><input type="checkbox" name="extreme_weakness" {% if 'extreme_weakness' in selected %}checked{% endif %}> Extreme Weakness</label>
+            <label><input type="checkbox" name="urine_output_low" {% if 'urine_output_low' in selected %}checked{% endif %}> Low Urine Output</label>
+            <label><input type="checkbox" name="fever_not_improving" {% if 'fever_not_improving' in selected %}checked{% endif %}> Fever Not Improving (after 3 days)</label>
+            <label><input type="checkbox" name="drop_in_fever_with_weakness" {% if 'drop_in_fever_with_weakness' in selected %}checked{% endif %}> Drop in Fever with Weakness</label>
+            <label><input type="checkbox" name="cold_hands_feet" {% if 'cold_hands_feet' in selected %}checked{% endif %}> Cold Hands or Feet</label>
+            <label><input type="checkbox" name="restless_drowsy" {% if 'restless_drowsy' in selected %}checked{% endif %}> Restless or Drowsy</label>
+        </div>
+
+        <p id="sym-error" class="error-text"></p>
+
+        <div class="form-actions">
+            <a href="{% url 'landing' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Get My Risk Read</button>
+        </div>
+
+        <p class="note">
+            <strong>Note:</strong> This is not a medical diagnosis. If you feel
+            seriously unwell, please go to a hospital right away.
+        </p>
+    </form>
+</main>
+
+<script>
+document.getElementById('checkForm').addEventListener('submit', function(e) {
+    var checked = this.querySelectorAll('input[type="checkbox"]:checked');
+    var err = document.getElementById('sym-error');
+    if (checked.length === 0) {
+        e.preventDefault();
+        err.textContent = 'Please select at least one symptom.';
+    } else {
+        err.textContent = '';
+    }
+});
+</script>
+
+</body>
+</html>

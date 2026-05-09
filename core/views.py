@@ -8,12 +8,26 @@ from .models import User, AdminUser, PatientRecord
 from ml_model.predictor import predict_dengue, is_model_trained, get_dataset_info
 from ml_model.dosage_engine import recommend_dosage, format_dosage_text
 
+SYMPTOM_FIELDS = [
+    'fever', 'severe_headache', 'joint_back_pain', 'nausea_vomiting',
+    'skin_rash', 'vomiting_more_than_3', 'bleeding',
+    'extreme_weakness', 'urine_output_low', 'fever_not_improving',
+    'drop_in_fever_with_weakness', 'cold_hands_feet', 'restless_drowsy',
+]
+
+# Must match weights in PatientRecord.calculate_clinical_score()
+SYMPTOM_WEIGHTS = {
+    'fever': 2, 'severe_headache': 1, 'joint_back_pain': 1,
+    'nausea_vomiting': 1, 'skin_rash': 1, 'vomiting_more_than_3': 2,
+    'bleeding': 3, 'extreme_weakness': 2, 'urine_output_low': 2,
+    'fever_not_improving': 1, 'drop_in_fever_with_weakness': 3,
+    'cold_hands_feet': 2, 'restless_drowsy': 2,
+}
+
 def hash_password(raw):
-    """Convert plain text password to SHA-256 hash before saving."""
     return hashlib.sha256(raw.encode()).hexdigest()
 
 def current_user(request):
-    """Return the logged-in User object from session, or None."""
     uid = request.session.get('user_id')
     if uid:
         try:
@@ -46,16 +60,52 @@ def admin_required(fn):
     wrap.__name__ = fn.__name__
     return wrap
 
+def landing(request):
+    return render(request, 'core/landing.html')
+
 def index(request):
     role = request.session.get('role')
-    if role == 'patient':   return redirect('patient_dashboard')
-    if role == 'doctor':    return redirect('doctor_dashboard')
-    if request.session.get('admin_logged_in'): return redirect('admin_dashboard')
-    return redirect('login')
+    if role == 'patient':
+        return redirect('patient_dashboard')
+    if role == 'doctor':
+        return redirect('doctor_dashboard')
+    if request.session.get('admin_logged_in'):
+        return redirect('admin_dashboard')
+    return redirect('landing')
 
+def public_symptom_check(request):
+    if request.method == 'POST':
+        selected = [s for s in SYMPTOM_FIELDS if s in request.POST]
 
-#  show registration form, creates User with hashed
-#  password, returns unique 8-char ID on success
+        if not selected:
+            messages.error(request, 'Please select at least one symptom.')
+            return render(request, 'core/public_symptom_form.html', {
+                'symptoms': SYMPTOM_FIELDS, 'selected': [],
+            })
+
+        score = sum(SYMPTOM_WEIGHTS.get(s, 0) for s in selected)
+
+        if score <= 4:
+            risk_key, risk_label = 'low', 'Low Risk'
+        elif score <= 8:
+            risk_key, risk_label = 'possible', 'Possible Dengue'
+        else:
+            risk_key, risk_label = 'high', 'High Risk'
+
+        # Stash so they carry over after login (only useful for High Risk)
+        request.session['pending_symptoms'] = selected
+        request.session['pending_score']    = score
+        request.session['pending_risk']     = risk_key
+
+        return render(request, 'core/public_symptom_result.html', {
+            'selected': selected, 'score': score,
+            'risk_key': risk_key, 'risk_label': risk_label,
+        })
+
+    return render(request, 'core/public_symptom_form.html', {
+        'symptoms': SYMPTOM_FIELDS, 'selected': [],
+    })
+
 def register(request):
     if request.method == 'POST':
         name     = request.POST.get('name', '').strip()
@@ -75,23 +125,19 @@ def register(request):
         return render(request, 'core/register.html', {
             'registered_id'  : user.user_id,
             'registered_name': name,
-            'registered_role': role
+            'registered_role': role,
         })
     return render(request, 'core/register.html')
 
-# accept user_id or name + password, stores role
-# in session, redirects to correct dashboard
 def login_view(request):
     if request.method == 'POST':
         identifier = request.POST.get('identifier', '').strip()
         password   = request.POST.get('password', '').strip()
         user = None
 
-        # Try by ID
         try:
             user = User.objects.get(user_id=identifier)
         except User.DoesNotExist:
-            # Try by name (may be ambiguous)
             qs = User.objects.filter(name__iexact=identifier)
             if qs.count() == 1:
                 user = qs.first()
@@ -103,17 +149,18 @@ def login_view(request):
             request.session['user_id']   = user.user_id
             request.session['role']      = user.role
             request.session['user_name'] = user.name
+            # Patient came in via High-Risk public check → send to form directly
+            if user.role == 'patient' and request.session.get('pending_symptoms'):
+                return redirect('patient_form')
             return redirect('patient_dashboard' if user.role == 'patient' else 'doctor_dashboard')
 
         messages.error(request, 'Invalid credentials. Check your ID/name and password.')
     return render(request, 'core/login.html')
-# clear entire session and redirects to login
+
 def logout_view(request):
     request.session.flush()
-    return redirect('login')
+    return redirect('landing')
 
-# separate login for admin, stores admin_logged_in
-# in session
 def admin_login(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -129,60 +176,51 @@ def admin_login(request):
             messages.error(request, 'Admin account not found.')
     return render(request, 'core/admin_login.html')
 
-# clear session and redirects to admin login
 def admin_logout(request):
     request.session.flush()
     return redirect('admin_login')
 
-# fetche all records for logged-in patient,
-# shows them as cards with risk badges and review status
 @never_cache
 @patient_required
 def patient_dashboard(request):
     user    = current_user(request)
     records = PatientRecord.objects.filter(patient=user).order_by('-created_at')
     return render(request, 'core/patient_dashboard.html', {
-        'user'   : user,
-        'records': records
+        'user': user, 'records': records,
     })
 
-#  show 13 symptom checkboxes with live JS score,
-#  on POST creates PatientRecord and calls rec.save()
-#  which auto-calculates clinical_score and risk_level
 @never_cache
 @patient_required
 def patient_form(request):
     user = current_user(request)
+    pending_symptoms = request.session.get('pending_symptoms', [])
+
     if request.method == 'POST':
         try:
             gender = request.POST.get("gender")
             age    = float(request.POST.get('age', 0))
             weight = float(request.POST.get('weight', 0))
+            height = float(request.POST.get('height', 0))
             if age <= 0 or weight <= 0:
                 raise ValueError("Age and weight must be positive.")
+            if height <= 0:
+                raise ValueError("Height must be positive (in cm).")
             is_pregnant = request.POST.get('is_pregnant') == 'on'
             if is_pregnant:
                 if gender != "female":
                     messages.error(request, "Only females can be pregnant.")
                     return redirect('patient_form')
-
                 if age < 10:
                     messages.error(request, "Pregnancy not valid for age below 10.")
                     return redirect('patient_form')
-                
-            symptoms = [
-                'fever', 'severe_headache', 'joint_back_pain', 'nausea_vomiting',
-                'skin_rash', 'vomiting_more_than_3', 'bleeding',
-                'extreme_weakness', 'urine_output_low', 'fever_not_improving',
-                'drop_in_fever_with_weakness', 'cold_hands_feet', 'restless_drowsy'
-            ]
 
-            if not any(symptom in request.POST for symptom in symptoms):
+            if not any(symptom in request.POST for symptom in SYMPTOM_FIELDS):
                 messages.error(request, "Please select at least one symptom.")
                 return redirect('patient_form')
 
             rec = PatientRecord(
-                patient=user, age=age, weight=weight, is_pregnant=is_pregnant,
+                patient=user, age=age, weight=weight, height=height,
+                gender=gender, is_pregnant=is_pregnant,
                 fever                       = 'fever' in request.POST,
                 severe_headache             = 'severe_headache' in request.POST,
                 joint_back_pain             = 'joint_back_pain' in request.POST,
@@ -197,26 +235,28 @@ def patient_form(request):
                 cold_hands_feet             = 'cold_hands_feet' in request.POST,
                 restless_drowsy             = 'restless_drowsy' in request.POST,
             )
-            rec.save()  # triggers calculate_clinical_score() and get_risk_level()
+            rec.save()
+
+            # Clear stashed symptoms — they've been consumed
+            for k in ('pending_symptoms', 'pending_score', 'pending_risk'):
+                request.session.pop(k, None)
+
             return redirect('patient_result', record_id=rec.record_id)
         except (ValueError, TypeError) as e:
             messages.error(request, f'Invalid input: {e}')
-    return render(request, 'core/patient_form.html', {'user': user})
 
-# fetche a single record by UUID, shows clinical
-# score, reported symptoms, and review status
+    return render(request, 'core/patient_form.html', {
+        'user': user,
+        'pending_symptoms': pending_symptoms,
+    })
+
 @never_cache
 @patient_required
 def patient_result(request, record_id):
     user = current_user(request)
     rec  = get_object_or_404(PatientRecord, record_id=record_id, patient=user)
-    return render(request, 'core/patient_result.html', {
-        'record': rec,
-        'user'  : user
-    })
+    return render(request, 'core/patient_result.html', {'record': rec, 'user': user})
 
-# fetche ALL patient records, supports search by
-# name and filter by pending/reviewed, shows stats
 @never_cache
 @doctor_required
 def doctor_dashboard(request):
@@ -233,19 +273,13 @@ def doctor_dashboard(request):
         records = records.filter(is_reviewed=False)
 
     return render(request, 'core/doctor_dashboard.html', {
-        'user'         : user,
-        'records'      : records,
-        'search'       : search,
-        'status_filter': status,
-        'total'        : PatientRecord.objects.count(),
-        'pending'      : PatientRecord.objects.filter(is_reviewed=False).count(),
-        'reviewed'     : PatientRecord.objects.filter(is_reviewed=True).count(),
+        'user': user, 'records': records,
+        'search': search, 'status_filter': status,
+        'total'   : PatientRecord.objects.count(),
+        'pending' : PatientRecord.objects.filter(is_reviewed=False).count(),
+        'reviewed': PatientRecord.objects.filter(is_reviewed=True).count(),
     })
 
-#  shows patient info + symptoms,
-#  on POST takes lab values, calls predict_dengue()
-#  from ml_model/predictor.py, calls recommend_dosage()
-#  from ml_model/dosage_engine.py, saves to database
 @never_cache
 @doctor_required
 def doctor_patient_detail(request, record_id):
@@ -266,8 +300,6 @@ def doctor_patient_detail(request, record_id):
             rec.reviewed_by    = doctor
             rec.is_reviewed    = True
 
-            # build feature dict and run Naive Bayes prediction
-            # all 13 symptoms pass directly to ML
             ml_input = {
                 'fever'                       : int(rec.fever),
                 'severe_headache'             : int(rec.severe_headache),
@@ -289,11 +321,11 @@ def doctor_patient_detail(request, record_id):
             rec.ml_prediction = ml_res['prediction']
             rec.ml_confidence = ml_res['confidence']
 
-            # generate dosage using if-then rules
             dosage_rec = recommend_dosage(
                 weight_kg=rec.weight,
                 age=rec.age,
                 risk_level=rec.clinical_risk_level,
+                height_cm=rec.height,
                 platelet_count=platelet,
                 is_pregnant=rec.is_pregnant,
                 ml_prediction=ml_res['prediction'],
@@ -306,56 +338,47 @@ def doctor_patient_detail(request, record_id):
             messages.error(request, f'Invalid input: {e}')
 
     return render(request, 'core/doctor_patient_detail.html', {
-        'record'       : rec,
-        'doctor'       : doctor,
-        'model_trained': is_model_trained()
+        'record': rec, 'doctor': doctor,
+        'model_trained': is_model_trained(),
     })
 
-# show ML prediction banner, confidence %,
-# lab results, clinical score, full dosage section
 @never_cache
 @doctor_required
 def doctor_prediction_result(request, record_id):
     doctor = current_user(request)
     rec    = get_object_or_404(PatientRecord, record_id=record_id)
 
-    # rebuild dosage dict from saved record for template display
     dosage_rec = None
     if rec.platelet_count is not None:
         dosage_rec = recommend_dosage(
             weight_kg=rec.weight,
             age=rec.age,
             risk_level=rec.clinical_risk_level,
+            height_cm=rec.height,
             platelet_count=rec.platelet_count,
             is_pregnant=rec.is_pregnant,
             ml_prediction=rec.ml_prediction,
         )
     return render(request, 'core/doctor_prediction_result.html', {
-        'record': rec,
-        'doctor': doctor,
-        'dosage': dosage_rec
+        'record': rec, 'doctor': doctor, 'dosage': dosage_rec,
     })
 
-# show all users, all records, ML model status,
-# dataset info, stat counts
 @never_cache
 @admin_required
 def admin_dashboard(request):
     users   = User.objects.all().order_by('-created_at')
     records = PatientRecord.objects.select_related('patient').order_by('-created_at')
     return render(request, 'core/admin_dashboard.html', {
-        'users'           : users,
-        'records'         : records,
-        'dataset_info'    : get_dataset_info(),
-        'model_trained'   : is_model_trained(),
-        'total_patients'  : User.objects.filter(role='patient').count(),
-        'total_doctors'   : User.objects.filter(role='doctor').count(),
-        'total_records'   : records.count(),
+        'users': users, 'records': records,
+        'dataset_info' : get_dataset_info(),
+        'model_trained': is_model_trained(),
+        'total_patients' : User.objects.filter(role='patient').count(),
+        'total_doctors'  : User.objects.filter(role='doctor').count(),
+        'total_records'  : records.count(),
         'reviewed_records': records.filter(is_reviewed=True).count(),
-        'admin_username'  : request.session.get('admin_username'),
+        'admin_username' : request.session.get('admin_username'),
     })
 
-# delete a User and all their records via CASCADE
 @never_cache
 @admin_required
 def admin_delete_user(request, user_id):
@@ -369,7 +392,6 @@ def admin_delete_user(request, user_id):
             messages.error(request, 'User not found.')
     return redirect('admin_dashboard')
 
-# delete a single PatientRecord
 @never_cache
 @admin_required
 def admin_delete_record(request, record_id):
@@ -382,7 +404,6 @@ def admin_delete_record(request, record_id):
             messages.error(request, 'Record not found.')
     return redirect('admin_dashboard')
 
-#  return dataset_info.json as JSON API response
 @never_cache
 @admin_required
 def admin_dataset_json(request):
