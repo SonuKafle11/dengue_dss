@@ -65,7 +65,6 @@ def read_csv_file(filepath):
                     all_rows.append(values)
     return header, all_rows
 
-
 def remove_outliers(X, column_indices):
     # IQR method on continuous columns only
     keep = np.ones(len(X), dtype=bool)
