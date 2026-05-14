@@ -30,10 +30,9 @@ class AdminUser(models.Model):
 
 class PatientRecord(models.Model):
     RISK_CHOICES = [
-        ('low', 'Low Risk (0-3)'),
-        ('possible', 'Possible Dengue (4-6)'),
-        ('probable', 'Probable Dengue (7-9)'),
-        ('high', 'High Risk of Dengue (>=10)'),
+        ('low', 'Low Risk (0-4)'),
+        ('possible', 'Possible Dengue (5-8)'),
+        ('high', 'High Risk of Dengue (>8)'),
     ]
 
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='records')
@@ -41,6 +40,7 @@ class PatientRecord(models.Model):
 
     age = models.FloatField()
     weight = models.FloatField()
+    height = models.FloatField(default=0) 
     gender = models.CharField(
     max_length=10,
     choices=[('male','Male'), ('female','Female'), ('other','Other')]
@@ -100,14 +100,21 @@ class PatientRecord(models.Model):
         return score
 
     def get_risk_level(self, score):
-        if score <= 3:
+        if score <= 4:
             return 'low'
-        elif score <= 6:
+        elif score <= 8:
             return 'possible'
-        elif score <= 9:
-            return 'probable'
         else:
             return 'high'
+        
+    def get_bmi(self):
+        """Body Mass Index = weight(kg) / height(cm)^2 * 10000"""
+        try:
+            if self.height and self.height > 0:
+                return round((self.weight / (self.height * self.height)) * 10000, 2)
+        except (TypeError, ZeroDivisionError):
+            pass
+        return 0
 
     def save(self, *args, **kwargs):
         self.clinical_score = self.calculate_clinical_score()

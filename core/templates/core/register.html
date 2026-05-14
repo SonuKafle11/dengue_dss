@@ -1,43 +1,53 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block title %}Register{% endblock %}
-
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
 {% block content %}
 
 <h1>Register</h1>
 
 {% if registered_id %}
 
-    <h3>Registration Successful</h3>
-
-    <p><strong>Name:</strong> {{ registered_name }}</p>
-    <p><strong>Role:</strong> {{ registered_role }}</p>
-    <p><strong>Your ID:</strong> {{ registered_id }}</p>
-
-    <p>Please save this ID. You will need it to log in.</p>
-
-    <a href="{% url 'login' %}">Go to Login</a>
+    <div class="success-box">
+        <h3>Registration successful!</h3>
+        <p>Hi <strong>{{ registered_name }}</strong>, your account has been created as a <strong>{{ registered_role }}</strong>.</p>
+        <p>Your User ID is:</p>
+        <p class="user-id">{{ registered_id }}</p>
+        <p><strong>Important:</strong> Save this ID somewhere safe. You can log in with either your name or this ID — but if multiple people share your name, the ID is the only reliable way to log in.</p>
+        <p><a href="{% url 'login' %}">Go to Login</a></p>
+    </div>
 
 {% else %}
 
-<form method="POST">
-    {% csrf_token %}
+    {% if messages %}
+        <div class="error-box">
+            {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+        </div>
+    {% endif %}
 
-    <label>Role:</label><br>
-    <input type="radio" name="role" value="patient" required> Patient<br>
-    <input type="radio" name="role" value="doctor" required> Doctor<br><br>
+    <form method="POST">
+        {% csrf_token %}
 
-    <label>Full Name:</label><br>
-    <input type="text" name="name" required><br><br>
+        <label>Role:</label>
+        <div style="margin: 8px 0 15px;">
+            <label><input type="radio" name="role" value="patient" required> Patient</label>
+            &nbsp;&nbsp;
+            <label><input type="radio" name="role" value="doctor"> Doctor</label>
+        </div>
 
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+        <label>Full Name:</label>
+        <input type="text" name="name" required>
 
-    <button type="submit">Register</button>
-</form>
+        <label>Password:</label>
+        <input type="password" name="password" required>
 
-<br>
+        <button type="submit">Register</button>
+    </form>
 
-<p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    <br>
+    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
 
 {% endif %}
 

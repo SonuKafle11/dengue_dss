@@ -6,25 +6,92 @@ h1, p {
 /* Form */
 form {
     margin-top: 20px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* Inputs */
-input {
+/* Text inputs only — do NOT match radios/checkboxes */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"] {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
-/* Button center */
+input[type="radio"] {
+    width: auto;
+    margin: 0 6px 0 0;
+    vertical-align: middle;
+}
+
+label {
+    display: inline-block;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
 button {
     display: block;
-    margin: 10px auto;
+    margin: 15px auto;
+    padding: 10px 24px;
+    background: #2c5aa0;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
 }
+
+button:hover { background: #234a86; }
 
 /* Links center */
 p {
     margin-top: 15px;
+}
+
+.success-box {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-left: 4px solid #2e7d32;
+    padding: 20px;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.success-box h3 {
+    color: #2e7d32;
+    margin-bottom: 10px;
+}
+
+.success-box .user-id {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c5aa0;
+    background: white;
+    padding: 10px 15px;
+    border: 1px dashed #2c5aa0;
+    display: inline-block;
+    margin: 10px 0;
+    letter-spacing: 2px;
+}
+
+.error-box {
+    background: #fdecea;
+    border: 1px solid #f5c6cb;
+    border-left: 4px solid #c0392b;
+    padding: 12px 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.error-box p {
+    margin: 0;
+    color: #c0392b;
 }

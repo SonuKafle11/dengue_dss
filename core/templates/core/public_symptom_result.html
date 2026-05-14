@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Result — Dengue DSS</title>
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <link rel="stylesheet" href="{% static 'css/public_check.css' %}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-content">
+        <h2 class="logo">Dengue DSS</h2>
+        <nav>
+            <a href="{% url 'landing' %}">Home</a>
+            <a href="{% url 'landing' %}#about">About Us</a>
+            <a href="{% url 'public_symptom_check' %}">Explore Us</a>
+            <a href="{% url 'login' %}" class="login-link">Login</a>
+        </nav>
+    </div>
+</header>
+
+<main class="check-page">
+    <a href="{% url 'public_symptom_check' %}" class="back-link">← Back to symptom check</a>
+
+    <h1>Your Result</h1>
+
+    <div class="result-card result-{{ risk_key }}">
+        <p class="result-label">Risk Level</p>
+        <h2 class="result-risk">{{ risk_label }}</h2>
+        <p class="result-score">
+            Clinical Score: <strong>{{ score }}</strong>
+            &nbsp;|&nbsp;
+            Symptoms Reported: <strong>{{ selected|length }}</strong>
+        </p>
+
+        {% if risk_key == 'low' %}
+            <p>
+                Your symptoms suggest a <strong>low risk</strong> of severe dengue
+                right now. Rest, drink fluids, and watch your symptoms over the next
+                24 to 48 hours.
+            </p>
+            <ul>
+                <li>Take paracetamol for fever — not aspirin or ibuprofen.</li>
+                <li>Drink water, ORS, or coconut water regularly.</li>
+                <li>Re-check here if new symptoms appear, especially bleeding or vomiting.</li>
+            </ul>
+
+        {% elif risk_key == 'possible' %}
+            <p>
+                Your symptoms are <strong>consistent with possible dengue</strong>.
+                Please see a doctor within the next 24 to 48 hours for a check-up
+                and a blood test.
+            </p>
+            <ul>
+                <li>Visit a clinic in the next 24-48 hours.</li>
+                <li>Stay well hydrated and rest.</li>
+                <li>Avoid all NSAIDs (ibuprofen, aspirin, diclofenac).</li>
+                <li>Watch for warning signs: bleeding, severe abdominal pain, repeated vomiting.</li>
+            </ul>
+
+        {% else %}
+            <p>
+                Your symptoms suggest a <strong>high risk of severe dengue</strong>.
+                A doctor needs to review your case. Please don't delay.
+            </p>
+        {% endif %}
+    </div>
+
+    {% if risk_key == 'high' %}
+        <div class="high-callout">
+            <h3>Sign in to continue</h3>
+            <p>
+                Because the risk is high, the next step is to register your case
+                so a doctor can review it. Sign in (or create a free patient account)
+                and the symptoms you just selected will be carried into your full
+                assessment automatically — you won't have to tick them again.
+            </p>
+            <div class="form-actions">
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign in to continue</a>
+                <a href="{% url 'register' %}" class="btn btn-secondary">Create patient account</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="form-actions">
+            <a href="{% url 'public_symptom_check' %}" class="btn btn-secondary">Re-do check</a>
+            <a href="{% url 'landing' %}" class="btn btn-primary">Back to home</a>
+        </div>
+    {% endif %}
+
+    <p class="note">
+        <strong>Note:</strong> This tool helps you understand risk — it is not a
+        diagnosis. If your condition gets worse, go to a hospital immediately.
+    </p>
+</main>
+
+</body>
+</html>
