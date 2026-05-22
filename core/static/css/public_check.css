@@ -1,5 +1,4 @@
 /* Public symptom check page — student-style */
-
 .check-page {
     max-width: 800px;
     margin: 0 auto;
@@ -94,24 +93,33 @@
 }
 
 /* Result card */
+
 .result-card {
-    background: white;
+    background: #ffffff;
     border: 1px solid #ddd;
+    border-top: none !important;   /* removes red top border */
     border-radius: 6px;
     padding: 30px;
     margin-bottom: 20px;
 }
-
-.result-card.result-low {
-    border-top: 6px solid #27ae60;
-}
-
-.result-card.result-possible {
-    border-top: 6px solid #f39c12;
-}
-
+/* Remove the colored top border */
+.result-card.result-low,
+.result-card.result-possible,
 .result-card.result-high {
-    border-top: 6px solid #c0392b;
+    border-top: none;
+}
+
+/* Keep only text colors */
+.result-card.result-low .result-risk {
+    color: #27ae60;
+}
+
+.result-card.result-possible .result-risk {
+    color: #f39c12;
+}
+
+.result-card.result-high .result-risk {
+    color: #c0392b;
 }
 
 .result-label {
@@ -149,14 +157,15 @@
 /* High-risk callout */
 .high-callout {
     background: #fff5f5;
-    border-left: 4px solid #c0392b;
+    border: none !important;      
+    box-shadow: none !important;   
     padding: 20px;
     border-radius: 4px;
     margin-bottom: 20px;
 }
 
 .high-callout h3 {
-    color: #c0392b;
+    color: #4b6d5c;
     margin-bottom: 8px;
 }
 
