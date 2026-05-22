@@ -1,68 +1,209 @@
-/* Form container */
-form {
-    background: white;
-    padding: 25px;
-    border: 1px solid #ddd;
-    max-width: 550px;
-    margin: 20px auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+/* Page heading */
+h1 {
+    text-align: center;
+    color: #1e3a5f;
+    margin: 20px 0 10px;
+    font-size: 42px;
+    font-weight: 700;
 }
 
-/* Headings inside form */
+/* User info */
+p {
+    max-width: 900px;
+    margin: 6px auto;
+    font-size: 15px;
+    color: #333;
+}
+
+p strong {
+    color: #1e3a5f;
+}
+
+/* Back link */
+a {
+    display: block;
+    max-width: 900px;
+    margin: 10px auto;
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* High-risk follow-up message */
+.prefill-banner {
+    max-width: 900px;
+    margin: 8px auto 20px;
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+/* Main form container */
+form {
+    background: #ffffff;
+    max-width: 900px;
+    margin: 20px auto 40px;
+    padding: 35px 40px;
+    border: 1px solid #dcdfe3;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Section headings */
 h3 {
-    margin-top: 20px;
-    color: #2c3e50;
+    font-size: 30px;
+    color: #1e3a5f;
+    margin: 0 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* Form group spacing */
+.form-group {
+    margin-bottom: 18px;
 }
 
 /* Labels */
 label {
-    font-weight: bold;
     display: block;
-    margin-top: 10px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
 }
 
-/* Inputs */
-input[type="number"],
-input[type="text"] {
+/* Input fields */
+input[type="text"],
+input[type="number"] {
     width: 100%;
-    padding: 7px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px 12px;
+    border: 1px solid #cfd4da;
+    border-radius: 6px;
+    font-size: 15px;
+    box-sizing: border-box;
 }
 
-/* Radio & checkbox alignment */
-input[type="radio"],
-input[type="checkbox"] {
-    margin-right: 6px;
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 4px rgba(13, 110, 253, 0.15);
+}
+
+/* Required star */
+.required-star {
+    color: red;
+}
+
+/* Gender radio buttons */
+.radio-group {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+/* Age, Weight, Height in 3 columns */
+.three-column {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* Pregnant checkbox */
+.checkbox-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+/* BMI text */
+.bmi-display {
+    color: #0d6efd;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+/* Symptoms in 3 columns */
+.symptom-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 30px;
+}
+
+.symptom-grid label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    margin-bottom: 0;
 }
 
 /* Error messages */
 #error-msg,
 #symptom-error {
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-/* Button */
+/* Submit button */
 button {
-    margin-top: 15px;
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
+    width: 100%;
+    margin-top: 25px;
+    padding: 12px;
+    background-color: #0d6efd;
+    color: #ffffff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #0b5ed7;
 }
 
-.required-star{
-    color: red;
-     margin-left: 2px;
+/* Mobile responsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 30px;
+    }
+
+    form {
+        margin: 20px 15px;
+        padding: 25px 20px;
+    }
+
+    .three-column,
+    .symptom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    p,
+    a,
+    .prefill-banner {
+        margin-left: 15px;
+        margin-right: 15px;
+        max-width: none;
+    }
 }

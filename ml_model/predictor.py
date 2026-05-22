@@ -23,6 +23,8 @@ FEATURES = [
     'restless_drowsy',
     'platelet_count',
     'wbc_count',
+    'IgM_value',          
+    'IgG_value',
 ]
 
 _model = _scaler = None
@@ -57,9 +59,10 @@ def _build_vector(d):
         'restless_drowsy'             : float(d.get('restless_drowsy', 0)),
         'platelet_count'              : float(d.get('platelet_count', 150000)),
         'wbc_count'                   : float(d.get('wbc_count', 6000)),
+        'IgM_value'                   : float(d.get('IgM_value', 1.0)),    
+        'IgG_value'                   : float(d.get('IgG_value', 1.0)),    
     }
     return [mapping[f] for f in FEATURES]
-
 
 def predict_dengue(input_dict):
 

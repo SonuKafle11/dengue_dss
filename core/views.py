@@ -116,6 +116,10 @@ def register(request):
             messages.error(request, 'All fields are required.')
             return render(request, 'core/register.html')
 
+        if User.objects.filter(name__iexact=name, role=role).exists():
+            messages.error(request, f'A {role} with the name "{name}" already exists.')
+            return render(request, 'core/register.html')
+
         user = User(name=name, password=hash_password(password), role=role)
         user.save()
         return render(request, 'core/register.html', {
@@ -134,29 +138,12 @@ def login_view(request):
         try:
             user = User.objects.get(user_id=identifier)
         except User.DoesNotExist:
-            # Identifier wasn't a User ID — try matching by name.
-            # Several users may share a name, so try each one against the password.
-            candidates = User.objects.filter(name__iexact=identifier)
-            if candidates.count() == 0:
-                user = None
-            elif candidates.count() == 1:
-                user = candidates.first()
-            else:
-                # Multiple users share this name. Pick the one whose password matches.
-                hashed = hash_password(password)
-                matches = candidates.filter(password=hashed)
-                if matches.count() == 1:
-                    user = matches.first()
-                elif matches.count() > 1:
-                    # Same name AND same password — extremely rare, but ambiguous
-                    messages.error(
-                        request,
-                        'Multiple accounts share that name and password. Please log in using your unique User ID.'
-                    )
-                    return render(request, 'core/login.html')
-                else:
-                    # Name matched but password didn't — generic invalid creds message below
-                    user = None
+            qs = User.objects.filter(name__iexact=identifier)
+            if qs.count() == 1:
+                user = qs.first()
+            elif qs.count() > 1:
+                messages.error(request, 'Multiple accounts share that name. Please log in using your unique ID.')
+                return render(request, 'core/login.html')
 
         if user and user.password == hash_password(password):
             request.session['user_id']   = user.user_id
@@ -329,6 +316,8 @@ def doctor_patient_detail(request, record_id):
                 'restless_drowsy'             : int(rec.restless_drowsy),
                 'platelet_count'              : platelet,
                 'wbc_count'                   : wbc,
+                'IgM_value'                   : igm, 
+                'IgG_value'                   : igg,       
             }
             ml_res = predict_dengue(ml_input)
             rec.ml_prediction = ml_res['prediction']

@@ -50,6 +50,8 @@ feature_list = [
     'restless_drowsy',
     'platelet_count',
     'wbc_count',
+    'IgM_value',          # NEW
+    'IgG_value', 
 ]
 
 def read_csv_file(filepath):
@@ -137,8 +139,9 @@ def train():
     print("\n[4] Removing outliers using IQR method...")
     platelet_idx = feature_list.index('platelet_count')
     wbc_idx      = feature_list.index('wbc_count')
-
-    keep_mask, outlier_counts = remove_outliers(X, [platelet_idx, wbc_idx])
+    igm_idx      = feature_list.index('IgM_value')     # NEW
+    igg_idx      = feature_list.index('IgG_value')     # NEW
+    keep_mask, outlier_counts = remove_outliers(X, [platelet_idx, wbc_idx,  igm_idx, igg_idx])
     X = X[keep_mask]
     y = y[keep_mask]
     rows_removed = int(np.sum(~keep_mask))
