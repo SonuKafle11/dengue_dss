@@ -373,6 +373,8 @@ def doctor_patient_detail(request, record_id):
                 'restless_drowsy'             : int(rec.restless_drowsy),
                 'platelet_count'              : platelet,
                 'wbc_count'                   : wbc,
+                'IgM_value'                   : igm, 
+                'IgG_value'                   : igg,       
             }
             ml_res = predict_dengue(ml_input)
             rec.ml_prediction = ml_res['prediction']
