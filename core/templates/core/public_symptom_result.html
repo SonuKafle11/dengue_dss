@@ -14,6 +14,7 @@
     <div class="nav-content">
         <h2 class="logo">Dengue DSS</h2>
         <nav>
+            <a href="{% url 'register' %}?as=patient" class="btn btn-secondary">Create patient account</a>
             <a href="{% url 'landing' %}">Home</a>
             <a href="{% url 'landing' %}#about">About Us</a>
             <a href="{% url 'public_symptom_check' %}">Explore Us</a>
@@ -69,26 +70,23 @@
         {% endif %}
     </div>
 
-    {% if risk_key == 'high' %}
-        <div class="high-callout">
-            <h3>Sign in to continue</h3>
-            <p>
-                Because the risk is high, the next step is to register your case
-                so a doctor can review it. Sign in (or create a free patient account)
-                and the symptoms you just selected will be carried into your full
-                assessment automatically — you won't have to tick them again.
-            </p>
-            <div class="form-actions">
-                <a href="{% url 'login' %}" class="btn btn-primary">Sign in to continue</a>
-                <a href="{% url 'register' %}" class="btn btn-secondary">Create patient account</a>
-            </div>
+    {% if risk_key == 'high' or risk_key == 'possible' %}
+    <div class="high-callout">
+        <h3>Sign in to continue</h3>
+        <p>
+            {% if risk_key == 'high' %}
+                Because the risk is high, please register your case so a doctor can review it within the next 24 hours.
+            {% else %}
+                Because the risk is possible, please register your case so a doctor can review it within the next 24-48 hours.
+            {% endif %}
+            Sign in (or create a free patient account) and the symptoms you just selected will be carried into your full assessment automatically — you won't have to tick them again.
+        </p>
+        <div class="cta-row">
+            <a href="{% url 'login' %}" class="btn btn-primary">Sign in to continue</a>
+            <a href="{% url 'register' %}?as=patient" class="btn btn-secondary">Create patient account</a>
         </div>
-    {% else %}
-        <div class="form-actions">
-            <a href="{% url 'public_symptom_check' %}" class="btn btn-secondary">Re-do check</a>
-            <a href="{% url 'landing' %}" class="btn btn-primary">Back to home</a>
-        </div>
-    {% endif %}
+    </div>
+{% endif %}
 
     <p class="note">
         <strong>Note:</strong> This tool helps you understand risk — it is not a

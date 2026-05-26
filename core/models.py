@@ -11,11 +11,26 @@ class User(models.Model):
         ('patient', 'Patient'),
         ('doctor', 'Doctor'),
     ]
-    user_id = models.CharField(max_length=10, unique=True, default=generate_user_id, primary_key=True)
-    name = models.CharField(max_length=100)
+    GENDER_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other'),
+    ]
+
+    user_id  = models.CharField(max_length=10, unique=True, default=generate_user_id, primary_key=True)
+    name     = models.CharField(max_length=100)
     password = models.CharField(max_length=255)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
-    created_at = models.DateTimeField(auto_now_add=True)
+    role     = models.CharField(max_length=10, choices=ROLE_CHOICES)
+
+    # NEW — patient profile fields (used when role = 'patient')
+    age         = models.FloatField(null=True, blank=True)
+    weight      = models.FloatField(null=True, blank=True)
+    height      = models.FloatField(null=True, blank=True)
+    gender      = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
+    is_pregnant = models.BooleanField(default=False)
+
+    created_at  = models.DateTimeField(auto_now_add=True)
+    updated_at  = models.DateTimeField(auto_now=True)   # NEW
 
     def __str__(self):
         return f"{self.name} ({self.role}) - {self.user_id}"
