@@ -13,15 +13,6 @@
 
 <body>
 
-<!-- Django Messages -->
-{% if messages %}
-    <div class="container">
-        {% for msg in messages %}
-            <p class="message">{{ msg }}</p>
-        {% endfor %}
-    </div>
-{% endif %}
-
 <div class="container {% block container_class %}{% endblock %}">
     {% block content %}{% endblock %}
 </div>

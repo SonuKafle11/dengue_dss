@@ -1,68 +1,319 @@
-/* Form container */
+/* ============================================================
+   Patient Form Styling
+   ============================================================ */
+
+body {
+    background: #f4f6f8;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #1f2937;
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Override the narrow .container from main.css */
+body > .container {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+/* ===== Top bar ===== */
+.form-topbar {
+    background: #ffffff;
+    color: #1f2937;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.form-topbar .brand {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.form-topbar .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.form-topbar .user-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background: #f3f4f6;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    line-height: 1.3;
+}
+
+.form-topbar .user-chip .name {
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-topbar .user-chip .uid {
+    color: #6b7280;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.3px;
+}
+
+.form-topbar .back-link {
+    color: #374151;
+    text-decoration: none;
+    font-weight: 500;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.form-topbar .back-link:hover {
+    background: #f3f4f6;
+}
+
+/* ===== Page header ===== */
+.page-header {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 32px 0;
+}
+
+.page-header h1 {
+    color: #1f2937;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-header .subtitle {
+    color: #6b7280;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* ===== Banners ===== */
+.banner-area {
+    max-width: 1400px;
+    margin: 18px auto 0;
+    padding: 0 32px;
+}
+
+.prefill-banner {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.welcome-banner {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ===== Stacked form layout — Basic Info on top, Symptoms below ===== */
 form {
-    background: white;
-    padding: 25px;
-    border: 1px solid #ddd;
-    max-width: 550px;
-    margin: 20px auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* Headings inside form */
-h3 {
-    margin-top: 20px;
-    color: #2c3e50;
-}
-
-/* Labels */
-label {
-    font-weight: bold;
-    display: block;
-    margin-top: 10px;
-}
-
-/* Inputs */
-input[type="number"],
-input[type="text"] {
-    width: 100%;
-    padding: 7px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-/* Radio & checkbox alignment */
-input[type="radio"],
-input[type="checkbox"] {
-    margin-right: 6px;
-}
-
-/* Error messages */
-#error-msg,
-#symptom-error {
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-/* Button */
-button {
-    margin-top: 15px;
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
+    max-width: 1400px;
+    margin: 22px auto 60px;
+    padding: 0 32px;
+    background: transparent;
+    box-shadow: none;
     border: none;
-    border-radius: 4px;
+    border-radius: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+/* ===== Card ===== */
+.card {
+    background: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    padding: 22px 26px;
+}
+
+.card h3 {
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 16px;
+    padding: 0 0 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* ===== Labels and inputs ===== */
+.form-group { margin-bottom: 16px; }
+.form-group:last-child { margin-bottom: 0; }
+
+label {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.required-star { color: #dc2626; margin-left: 2px; }
+
+/* ===== Gender radios (plain inline) ===== */
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.radio-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
     cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
 }
 
-button:hover {
-    background-color: #0056b3;
+.radio-group input[type="radio"] {
+    margin: 0;
 }
 
-.required-star{
-    color: red;
-     margin-left: 2px;
+/* ===== Age / Weight / Height in a 3-col grid ===== */
+.three-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+/* ===== BMI display ===== */
+.bmi-display {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 13px;
+    margin: 8px 0 0;
+    display: inline-block;
+}
+
+.bmi-display:empty { display: none; }
+
+/* ===== Pregnant checkbox ===== */
+.checkbox-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 0;
+}
+.checkbox-inline input[type="checkbox"] { margin: 0; }
+
+/* ===== Symptoms in a multi-column grid (full-width card) ===== */
+.symptom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px 24px;
+}
+
+.symptom-grid label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0;
+}
+
+.symptom-grid input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+}
+
+/* ===== Submit button ===== */
+.submit-row {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+button {
+    padding: 10px 22px;
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+button:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
+/* ===== Error messages ===== */
+#error-msg, #symptom-error {
+    color: #dc2626;
+    font-weight: 500;
+    font-size: 13.5px;
+    margin: 6px 0 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+    .form-topbar { padding: 12px 16px; }
+    .page-header, .banner-area, form { padding-left: 16px; padding-right: 16px; }
+    .page-header h1 { font-size: 22px; }
+    .three-column { grid-template-columns: 1fr; }
 }

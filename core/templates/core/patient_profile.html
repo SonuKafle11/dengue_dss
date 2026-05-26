@@ -1,0 +1,98 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}My Profile{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% endblock %}
+{% block content %}
+
+<div class="app-topbar">
+    <div class="brand">Dengue DSS — Patient</div>
+    <div class="user-info">
+        <span class="user-chip">
+            <span class="name">{{ user.name }}</span>
+            <span class="uid">{{ user.user_id }}</span>
+        </span>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
+
+<div class="app-wrapper app-wrapper-narrow">
+
+    <a href="{% url 'patient_dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+    <div class="page-header">
+        <div>
+            <h1>My Profile</h1>
+            <div class="subtitle">Update your personal information. These details will be pre-filled on your next assessment.</div>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="banner banner-info"><strong>{{ msg }}</strong></div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card form-card">
+        <h3>Personal Information</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" value="{{ user.name }}" disabled>
+                <small style="color:#6b7280;">Your name cannot be changed.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Gender</label>
+                <div style="display: flex; gap: 16px; margin-top: 4px;">
+                    <label style="display:inline-flex; align-items:center; gap:6px; font-weight:500;">
+                        <input type="radio" name="gender" value="male" {% if user.gender == 'male' %}checked{% endif %}>
+                        Male
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; font-weight:500;">
+                        <input type="radio" name="gender" value="female" {% if user.gender == 'female' %}checked{% endif %}>
+                        Female
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:6px; font-weight:500;">
+                        <input type="radio" name="gender" value="other" {% if user.gender == 'other' %}checked{% endif %}>
+                        Other
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" name="age" value="{{ user.age|default:'' }}" min="0" max="120" placeholder="e.g. 28">
+            </div>
+
+            <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" name="weight" step="0.1" value="{{ user.weight|default:'' }}" min="1" max="300" placeholder="e.g. 58.5">
+            </div>
+
+            <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" name="height" step="0.1" value="{{ user.height|default:'' }}" min="30" max="250" placeholder="e.g. 160">
+            </div>
+
+            <div class="form-group">
+                <label style="display:inline-flex; align-items:center; gap:8px; font-weight:500;">
+                    <input type="checkbox" name="is_pregnant" {% if user.is_pregnant %}checked{% endif %}>
+                    Pregnant
+                </label>
+            </div>
+
+            <div class="btn-row" style="margin-top: 18px;">
+                <button type="submit" class="btn">Save Profile</button>
+                <a href="{% url 'patient_dashboard' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,54 +1,55 @@
 {% extends 'core/base.html' %}
 {% load static %}
+
 {% block title %}Register{% endblock %}
+
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 {% endblock %}
+
 {% block content %}
 
-<h1>Register</h1>
-
 {% if registered_id %}
-
-    <div class="success-box">
-        <h3>Registration successful!</h3>
-        <p>Hi <strong>{{ registered_name }}</strong>, your account has been created as a <strong>{{ registered_role }}</strong>.</p>
-        <p>Your User ID is:</p>
-        <p class="user-id">{{ registered_id }}</p>
-        <p><strong>Important:</strong> Please save this ID. You will need it to log in.</p>
-        <p><a href="{% url 'login' %}">Go to Login</a></p>
-    </div>
-
+<div class="success-box">
+    <h2>Registration Successful</h2>
+    <p>Your unique ID is: <strong>{{ registered_id }}</strong></p>
+    <p>Please save this ID. You'll use it to log in.</p>
+    <p><a href="{% url 'login' %}" class="btn">Go to Login</a></p>
+</div>
 {% else %}
 
-    {% if messages %}
-        <div class="error-box">
-            {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
-        </div>
+<h1>{% if as_role == 'doctor' %}Doctor{% else %}Patient{% endif %} Registration</h1>
+
+<p style="margin-bottom: 18px; color:#374151;">
+    Registering as a <strong>{{ as_role }}</strong>.
+    {% if as_role == 'patient' %}
+        <a href="{% url 'register' %}?as=doctor">Sign up as doctor instead</a>
+    {% else %}
+        <a href="{% url 'register' %}?as=patient">Sign up as patient instead</a>
     {% endif %}
+</p>
 
-    <form method="POST">
-        {% csrf_token %}
-
-        <label>Role:</label>
-        <div style="margin: 8px 0 15px;">
-            <label><input type="radio" name="role" value="patient" required> Patient</label>
-            &nbsp;&nbsp;
-            <label><input type="radio" name="role" value="doctor"> Doctor</label>
-        </div>
-
-        <label>Full Name:</label>
-        <input type="text" name="name" required>
-
-        <label>Password:</label>
-        <input type="password" name="password" required>
-
-        <button type="submit">Register</button>
-    </form>
-
-    <br>
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
-
+{% if messages %}
+    <div class="error-box">
+        {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    </div>
 {% endif %}
 
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="role" value="{{ as_role }}">
+
+    <label>Full Name:</label>
+    <input type="text" name="name" required autofocus>
+
+    <label>Password:</label>
+    <input type="password" name="password" required>
+
+    <button type="submit">Register</button>
+</form>
+
+<br>
+<p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+
+{% endif %}
 {% endblock %}

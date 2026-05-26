@@ -1,75 +1,104 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Patient Dashboard{% endblock %}
-{% block container_class %}container-wide{% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
 {% block content %}
 
-<h1>Patient Dashboard</h1>
+<div class="app-topbar">
+    <div class="brand">Dengue DSS — Patient</div>
+    <div class="user-info">
+        <span class="user-chip"><span class="name">{{ user.name }}</span><span class="uid">{{ user.user_id }}</span></span>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
 
-<p><strong>Name:</strong> {{ user.name }}</p>
-<p><strong>User ID:</strong> {{ user.user_id }}</p>
+<div class="app-wrapper">
 
-<br>
+    <div class="page-header">
+        <div>
+            <h1>Welcome back, {{ user.name }}</h1>
+            <div class="subtitle">Track your symptom assessments and view your medical recommendations here.</div>
+        </div>
+        <a href="{% url 'patient_form' %}" class="btn">+ New Assessment</a>
+    </div>
 
-<a href="{% url 'patient_form' %}">+ New Assessment</a> |
-<a href="{% url 'logout' %}">Logout</a>
+    <!-- Quick-action banner card -->
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+        <div>
+            <h3 style="margin:0; padding:0; border:none; font-size:17px;">Feeling unwell?</h3>
+            <div style="color:#6b7280; font-size:14px; margin-top:4px;">Start a new dengue risk assessment and a doctor will review it.</div>
+        </div>
+        <a href="{% url 'patient_form' %}" class="btn">Start Assessment</a>
+    </div>
 
-<hr>
+    {% if not records %}
+    <div class="card">
+        <div class="empty-state">
+            <h3>No assessments yet</h3>
+            <p>You haven't taken any dengue risk assessments yet. Start one whenever you have symptoms to check.</p>
+            <a href="{% url 'patient_form' %}" class="btn">Start Your First Assessment</a>
+        </div>
+    </div>
+    {% else %}
 
-{% if not records %}
-    <p>No assessments yet.</p>
-    <a href="{% url 'patient_form' %}">Start Assessment</a>
-{% else %}
+    <div class="card">
+        <h3>Your Assessment History</h3>
+        <div class="table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Score</th>
+                        <th>Risk Level</th>
+                        <th>ML Result</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for rec in records %}
+                <tr>
+                    <td>{{ rec.created_at|date:"M d, Y H:i" }}</td>
+                    <td><strong>{{ rec.clinical_score }}</strong></td>
+                    <td>
+                        {% if rec.clinical_risk_level == 'low' %}
+                            <span class="badge badge-low">Low</span>
+                        {% elif rec.clinical_risk_level == 'possible' %}
+                            <span class="badge badge-possible">Possible</span>
+                        {% else %}
+                            <span class="badge badge-high">High</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rec.ml_prediction %}
+                            {% if "Present" in rec.ml_prediction %}
+                                <span class="badge badge-positive">{{ rec.ml_prediction }}</span>
+                            {% else %}
+                                <span class="badge badge-negative">{{ rec.ml_prediction }}</span>
+                            {% endif %}
+                            <small style="color:#6b7280; margin-left:4px;">({{ rec.ml_confidence|floatformat:1 }}%)</small>
+                        {% else %}
+                            <span style="color:#9ca3af;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rec.is_reviewed %}
+                            <span class="badge badge-reviewed">Reviewed</span>
+                        {% else %}
+                            <span class="badge badge-pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'patient_result' rec.record_id %}" class="action-link">View →</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<h3>Your Records</h3>
-
-<table border="1">
-    <tr>
-        <th>Date</th>
-        <th>Score</th>
-        <th>Risk Level</th>
-        <th>ML Result</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-
-    {% for rec in records %}
-    <tr>
-        <td>{{ rec.created_at }}</td>
-        <td>{{ rec.clinical_score }}</td>
-
-        <td>
-            {% if rec.clinical_risk_level == 'low' %}Low
-            {% elif rec.clinical_risk_level == 'possible' %}Possible
-            {% else %}High{% endif %}
-        </td>
-
-        <td>
-            {% if rec.ml_prediction %}
-                {{ rec.ml_prediction }} ({{ rec.ml_confidence|floatformat:1 }}%)
-            {% else %}
-                —
-            {% endif %}
-        </td>
-
-        <td>
-            {% if rec.is_reviewed %}
-                Reviewed
-            {% else %}
-                Pending
-            {% endif %}
-        </td>
-
-        <td>
-            <a href="{% url 'patient_result' rec.record_id %}">View</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-
-{% endif %}
+    {% endif %}
+</div>
 
 {% endblock %}
