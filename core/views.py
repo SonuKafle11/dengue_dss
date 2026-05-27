@@ -107,24 +107,37 @@ def public_symptom_check(request):
     })
 
 def register(request):
+    # Default to patient unless explicitly requested via ?as=doctor
+    requested_as = request.GET.get('as', 'patient')
+    if requested_as not in ('patient', 'doctor'):
+        requested_as = 'patient'
+
     if request.method == 'POST':
         name     = request.POST.get('name', '').strip()
         password = request.POST.get('password', '').strip()
-        role     = request.POST.get('role', '').strip()
+        role     = request.POST.get('role', 'patient').strip()
 
-        if not name or not password or role not in ('patient', 'doctor'):
-            messages.error(request, 'All fields are required.')
-            return render(request, 'core/register.html')
+        if role not in ('patient', 'doctor'):
+            role = 'patient'
+
+        if not name or not password:
+            messages.error(request, 'Name and password are required.')
+            return render(request, 'core/register.html', {'as_role': role})
+
+        if User.objects.filter(name=name, role=role).exists():
+            messages.error(request, f'A {role} account with this name already exists.')
+            return render(request, 'core/register.html', {'as_role': role})
 
         user = User(name=name, password=hash_password(password), role=role)
         user.save()
-        return render(request, 'core/register.html', {
-            'registered_id'  : user.user_id,
-            'registered_name': name,
-            'registered_role': role,
-        })
-    return render(request, 'core/register.html')
 
+        return render(request, 'core/register.html', {
+            'registered_id': user.user_id,
+            'registered_role': role,
+            'as_role': role,
+        })
+
+    return render(request, 'core/register.html', {'as_role': requested_as})
 def login_view(request):
     if request.method == 'POST':
         identifier = request.POST.get('identifier', '').strip()
@@ -134,29 +147,12 @@ def login_view(request):
         try:
             user = User.objects.get(user_id=identifier)
         except User.DoesNotExist:
-            # Identifier wasn't a User ID — try matching by name.
-            # Several users may share a name, so try each one against the password.
-            candidates = User.objects.filter(name__iexact=identifier)
-            if candidates.count() == 0:
-                user = None
-            elif candidates.count() == 1:
-                user = candidates.first()
-            else:
-                # Multiple users share this name. Pick the one whose password matches.
-                hashed = hash_password(password)
-                matches = candidates.filter(password=hashed)
-                if matches.count() == 1:
-                    user = matches.first()
-                elif matches.count() > 1:
-                    # Same name AND same password — extremely rare, but ambiguous
-                    messages.error(
-                        request,
-                        'Multiple accounts share that name and password. Please log in using your unique User ID.'
-                    )
-                    return render(request, 'core/login.html')
-                else:
-                    # Name matched but password didn't — generic invalid creds message below
-                    user = None
+            qs = User.objects.filter(name__iexact=identifier)
+            if qs.count() == 1:
+                user = qs.first()
+            elif qs.count() > 1:
+                messages.error(request, 'Multiple accounts share that name. Please log in using your unique ID.')
+                return render(request, 'core/login.html')
 
         if user and user.password == hash_password(password):
             request.session['user_id']   = user.user_id
@@ -249,7 +245,12 @@ def patient_form(request):
                 restless_drowsy             = 'restless_drowsy' in request.POST,
             )
             rec.save()
-
+            user.age         = age
+            user.weight      = weight
+            user.height      = height
+            user.gender      = gender
+            user.is_pregnant = is_pregnant
+            user.save()
             # Clear stashed symptoms — they've been consumed
             for k in ('pending_symptoms', 'pending_score', 'pending_risk'):
                 request.session.pop(k, None)
@@ -258,9 +259,25 @@ def patient_form(request):
         except (ValueError, TypeError) as e:
             messages.error(request, f'Invalid input: {e}')
 
+    last_record = PatientRecord.objects.filter(patient=user).order_by('-created_at').first()
+    last_symptoms = []
+    if last_record:
+        for s in SYMPTOM_FIELDS:
+            if getattr(last_record, s, False):
+                last_symptoms.append(s)
+    prefill_symptoms = list(set(last_symptoms) | set(pending_symptoms))
     return render(request, 'core/patient_form.html', {
         'user': user,
         'pending_symptoms': pending_symptoms,
+        'prefill_symptoms': prefill_symptoms,
+        'has_previous_record': last_record is not None,
+        'profile': {                                          
+        'age':         user.age or '',
+        'weight':      user.weight or '',
+        'height':      user.height or '',
+        'gender':      user.gender or '',
+        'is_pregnant': user.is_pregnant,
+    },
     })
 
 @never_cache
@@ -269,6 +286,33 @@ def patient_result(request, record_id):
     user = current_user(request)
     rec  = get_object_or_404(PatientRecord, record_id=record_id, patient=user)
     return render(request, 'core/patient_result.html', {'record': rec, 'user': user})
+
+@never_cache
+@patient_required
+def patient_profile(request):
+    user = current_user(request)
+
+    if request.method == 'POST':
+        try:
+            age_str    = request.POST.get('age', '').strip()
+            weight_str = request.POST.get('weight', '').strip()
+            height_str = request.POST.get('height', '').strip()
+            gender     = request.POST.get('gender', '').strip()
+            is_pregnant = request.POST.get('is_pregnant') == 'on'
+
+            user.age    = float(age_str)    if age_str    else None
+            user.weight = float(weight_str) if weight_str else None
+            user.height = float(height_str) if height_str else None
+            user.gender = gender if gender in ('male', 'female', 'other') else ''
+            user.is_pregnant = is_pregnant
+            user.save()
+
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('patient_dashboard')
+        except (ValueError, TypeError) as e:
+            messages.error(request, f'Invalid input: {e}')
+
+    return render(request, 'core/patient_profile.html', {'user': user})
 
 @never_cache
 @doctor_required
@@ -329,6 +373,8 @@ def doctor_patient_detail(request, record_id):
                 'restless_drowsy'             : int(rec.restless_drowsy),
                 'platelet_count'              : platelet,
                 'wbc_count'                   : wbc,
+                'IgM_value'                   : igm, 
+                'IgG_value'                   : igg,       
             }
             ml_res = predict_dengue(ml_input)
             rec.ml_prediction = ml_res['prediction']

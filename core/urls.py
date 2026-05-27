@@ -10,7 +10,8 @@ urlpatterns = [
 
     # Internal entry point — routes logged-in users to their dashboard
     path('home/', views.index, name='index'),
-
+    
+    path('patient/profile/', views.patient_profile, name='patient_profile'),
     # Auth
     path('register/', views.register,    name='register'),
     path('login/',    views.login_view,  name='login'),

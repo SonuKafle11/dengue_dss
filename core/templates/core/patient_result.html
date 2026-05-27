@@ -1,81 +1,129 @@
 {% extends 'core/base.html' %}
-{% load static %} 
+{% load static %}
 {% block title %}Assessment Result{% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/result.css' %}">
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
 {% block content %}
 
-<h1>Assessment Result</h1>
+<div class="app-topbar">
+    <div class="brand">Dengue DSS — Result</div>
+    <div class="user-info">
+        <span class="user-chip"><span class="name">{{ user.name }}</span><span class="uid">{{ user.user_id }}</span></span>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
 
-<p><strong>Name:</strong> {{ user.name }}</p>
-<p><strong>User ID:</strong> {{ user.user_id }}</p>
-<p><strong>Date:</strong> {{ record.created_at }}</p>
+<div class="app-wrapper app-wrapper-narrow">
 
-<a href="{% url 'patient_dashboard' %}">← Back to Dashboard</a>
+    <a href="{% url 'patient_dashboard' %}" class="back-link">← Back to Dashboard</a>
 
-<hr>
+    <div class="page-header">
+        <div>
+            <h1>Assessment Result</h1>
+            <div class="subtitle">{{ record.created_at|date:"l, F d, Y · H:i" }}</div>
+        </div>
+    </div>
 
-<h3>Clinical Score</h3>
-<p>Score: {{ record.clinical_score }}</p>
+    <!-- Hero: Clinical Risk Level -->
+    <div class="result-hero">
+        <div class="label">Clinical Risk Level</div>
+        <div class="outcome">
+            {% if record.clinical_risk_level == 'low' %}Low Risk
+            {% elif record.clinical_risk_level == 'possible' %}Possible Dengue
+            {% elif record.clinical_risk_level == 'probable' %}Probable Dengue
+            {% else %}High Risk{% endif %}
+        </div>
+        <div class="confidence">Symptom score: <strong>{{ record.clinical_score }}</strong></div>
+    </div>
 
-<p>
-Risk Level:
-{% if record.clinical_risk_level == 'low' %}Low
-{% elif record.clinical_risk_level == 'possible' %}Possible Dengue
-{% elif record.clinical_risk_level == 'probable' %}Probable Dengue
-{% else %}High Risk{% endif %}
-</p>
-
-<hr>
-
-<h3>Patient Details</h3>
-<ul>
-    <li>Age: {{ record.age|floatformat:0 }} years</li>
-    <li>Weight: {{ record.weight }} kg</li>
-    <li>Height: {{ record.height }} cm</li>
-    <li>BMI: {{ record.get_bmi }}</li>
-    <li>Pregnant: {% if record.is_pregnant %}Yes{% else %}No{% endif %}</li>
-</ul>
-
-<hr>
-
-<h3>Symptoms Reported</h3>
-<ul>
-    {% if record.fever %}<li>Fever (+2)</li>{% endif %}
-    {% if record.severe_headache %}<li>Severe Headache (+1)</li>{% endif %}
-    {% if record.joint_back_pain %}<li>Joint/Back Pain (+1)</li>{% endif %}
-    {% if record.nausea_vomiting %}<li>Nausea/Vomiting (+1)</li>{% endif %}
-    {% if record.skin_rash %}<li>Skin Rash (+1)</li>{% endif %}
-    {% if record.vomiting_more_than_3 %}<li>Vomiting >3 times (+2)</li>{% endif %}
-    {% if record.bleeding %}<li>Bleeding (+3)</li>{% endif %}
-    {% if record.extreme_weakness %}<li>Extreme Weakness (+2)</li>{% endif %}
-    {% if record.urine_output_low %}<li>Low Urine Output (+2)</li>{% endif %}
-    {% if record.fever_not_improving %}<li>Fever Not Improving (+1)</li>{% endif %}
-    {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness (+3)</li>{% endif %}
-    {% if record.cold_hands_feet %}<li>Cold Hands/Feet (+2)</li>{% endif %}
-    {% if record.restless_drowsy %}<li>Restless/Drowsy (+2)</li>{% endif %}
-</ul>
-
-<hr>
-
-<h3>Doctor Review Status</h3>
-
-{% if record.is_reviewed %}
-    <p>Reviewed by: Dr. {{ record.reviewed_by.name }}</p>
-
-    {% if record.ml_prediction %}
-        <p><strong>ML Prediction:</strong> {{ record.ml_prediction }}</p>
-        <p><strong>Confidence:</strong> {{ record.ml_confidence|floatformat:1 }}%</p>
+    <!-- ML Prediction (if reviewed) -->
+    {% if record.is_reviewed and record.ml_prediction %}
+    <div class="card">
+        <h3>Machine Learning Prediction</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Result</div>
+                <div class="info-value">
+                    {% if "Present" in record.ml_prediction %}
+                        <span class="badge badge-positive">{{ record.ml_prediction }}</span>
+                    {% else %}
+                        <span class="badge badge-negative">{{ record.ml_prediction }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Confidence</div>
+                <div class="info-value">{{ record.ml_confidence|floatformat:1 }}%</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Reviewed By</div>
+                <div class="info-value">Dr. {{ record.reviewed_by.name }}</div>
+            </div>
+        </div>
+        <div class="confidence-bar" style="background:#f3f4f6; margin-top:14px;">
+            <div style="width:{{ record.ml_confidence|floatformat:0 }}%; background:#2c5aa0;"></div>
+        </div>
+    </div>
+    {% else %}
+    <div class="banner banner-info">
+        <strong>Pending doctor review.</strong>
+        Your assessment has been submitted. A doctor will review it shortly and add lab-based predictions.
+    </div>
     {% endif %}
-{% else %}
-    <p>Pending doctor review</p>
-{% endif %}
 
-<hr>
+    <!-- Patient Details -->
+    <div class="card">
+        <h3>Patient Details</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Age</div>
+                <div class="info-value">{{ record.age|floatformat:0 }} yrs</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Weight</div>
+                <div class="info-value">{{ record.weight }} kg</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Height</div>
+                <div class="info-value">{{ record.height }} cm</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">BMI</div>
+                <div class="info-value">{{ record.get_bmi }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Pregnant</div>
+                <div class="info-value">{% if record.is_pregnant %}Yes{% else %}No{% endif %}</div>
+            </div>
+        </div>
+    </div>
 
-<a href="{% url 'patient_form' %}">+ New Assessment</a>
-<br><br>
-<a href="{% url 'patient_dashboard' %}">Back to Dashboard</a>
+    <!-- Symptoms Reported -->
+    <div class="card">
+        <h3>Symptoms Reported</h3>
+        <ul class="pill-list">
+            {% if record.fever %}<li>Fever (+2)</li>{% endif %}
+            {% if record.severe_headache %}<li>Severe Headache (+1)</li>{% endif %}
+            {% if record.joint_back_pain %}<li>Joint/Back Pain (+1)</li>{% endif %}
+            {% if record.nausea_vomiting %}<li>Nausea/Vomiting (+1)</li>{% endif %}
+            {% if record.skin_rash %}<li>Skin Rash (+1)</li>{% endif %}
+            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times (+2)</li>{% endif %}
+            {% if record.bleeding %}<li>Bleeding (+3)</li>{% endif %}
+            {% if record.extreme_weakness %}<li>Extreme Weakness (+2)</li>{% endif %}
+            {% if record.urine_output_low %}<li>Low Urine Output (+2)</li>{% endif %}
+            {% if record.fever_not_improving %}<li>Fever Not Improving (+1)</li>{% endif %}
+            {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness (+3)</li>{% endif %}
+            {% if record.cold_hands_feet %}<li>Cold Hands/Feet (+2)</li>{% endif %}
+            {% if record.restless_drowsy %}<li>Restless/Drowsy (+2)</li>{% endif %}
+        </ul>
+    </div>
+
+    <div class="btn-row">
+        <a href="{% url 'patient_form' %}" class="btn">+ New Assessment</a>
+        <a href="{% url 'patient_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+</div>
 
 {% endblock %}

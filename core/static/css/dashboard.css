@@ -7,7 +7,7 @@
 /* Table styling */
 table {
     width: 100%;
-    min-width: 800px; /* prevents breaking */
+    min-width: 800px; 
     border-collapse: collapse;
     background: white;
 }
