@@ -4,13 +4,16 @@ from . import views
 urlpatterns = [
     # Public landing page — first thing visitors see
     path('', views.landing, name='landing'),
+    path('about/',   views.about,   name='about'),
+    path('explore/', views.explore, name='explore'),
 
     # Public symptom checker (no login required)
     path('check/', views.public_symptom_check, name='public_symptom_check'),
 
     # Internal entry point — routes logged-in users to their dashboard
     path('home/', views.index, name='index'),
-
+    
+    path('patient/profile/', views.patient_profile, name='patient_profile'),
     # Auth
     path('register/', views.register,    name='register'),
     path('login/',    views.login_view,  name='login'),

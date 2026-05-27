@@ -14,16 +14,16 @@
     <div class="nav-content">
         <h2 class="logo">Dengue DSS</h2>
         <nav>
-            <a href="#home">Home</a>
-            <a href="#about">About Us</a>
-            <a href="{% url 'public_symptom_check' %}">Explore Us</a>
+            <a href="{% url 'landing' %}" class="active">Home</a>
+            <a href="{% url 'about' %}">About Us</a>
+            <a href="{% url 'explore' %}">Explore Us</a>
             <a href="{% url 'login' %}" class="login-link">Login</a>
         </nav>
     </div>
 </header>
 
 <!-- Home / Hero section -->
-<section id="home" class="section home-section">
+<section class="section home-section">
     <h1>Dengue Decision Support System</h1>
     <p class="tagline">A simple tool to help you understand your dengue risk early.</p>
 
@@ -36,47 +36,8 @@
 
     <div class="button-group">
         <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">Check My Symptoms</a>
-        <a href="#about" class="btn btn-secondary">Learn More</a>
+        <a href="{% url 'about' %}" class="btn btn-secondary">Learn More</a>
     </div>
-</section>
-
-<!-- About section -->
-<section id="about" class="section about-section">
-    <h2>About Us</h2>
-
-    <p>
-        This Dengue Decision Support System is built as part of an academic
-        project to support the early detection and management of dengue fever.
-        Our aim is to provide patients and doctors with a simple, reliable tool
-        that combines clinical scoring with machine learning prediction.
-    </p>
-
-    <h3>What this system does</h3>
-    <ul>
-        <li>Allows patients to check symptoms without logging in.</li>
-        <li>Calculates a clinical risk score based on 13 standard dengue symptoms.</li>
-        <li>Classifies the result as Low Risk, Possible Dengue, or High Risk.</li>
-        <li>For high-risk cases, doctors review the case and provide medication dosage based on BMI.</li>
-        <li>Uses a Naive Bayes machine learning model trained on patient data.</li>
-    </ul>
-
-    <h3>Who can use this system</h3>
-    <ul>
-        <li><strong>Patients</strong> — to check symptoms and view their reports.</li>
-        <li><strong>Doctors</strong> — to review patients, enter lab results, and recommend treatment.</li>
-        <li><strong>Admins</strong> — to manage users and monitor the system.</li>
-    </ul>
-</section>
-
-<!-- Explore section -->
-<section id="explore" class="section explore-section">
-    <h2>Explore the System</h2>
-    <p>
-        You can start by checking your symptoms below. No login is required for
-        the initial symptom check. If the result shows High Risk, you will be
-        asked to log in so a doctor can review your case.
-    </p>
-    <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">Start Symptom Check</a>
 </section>
 
 <!-- Footer -->

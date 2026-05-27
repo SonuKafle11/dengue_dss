@@ -63,6 +63,12 @@ def admin_required(fn):
 def landing(request):
     return render(request, 'core/landing.html')
 
+def about(request):
+    return render(request, 'core/about.html')
+
+def explore(request):
+    return render(request, 'core/explore.html')
+
 def index(request):
     role = request.session.get('role')
     if role == 'patient':
@@ -256,6 +262,33 @@ def patient_result(request, record_id):
     user = current_user(request)
     rec  = get_object_or_404(PatientRecord, record_id=record_id, patient=user)
     return render(request, 'core/patient_result.html', {'record': rec, 'user': user})
+
+@never_cache
+@patient_required
+def patient_profile(request):
+    user = current_user(request)
+
+    if request.method == 'POST':
+        try:
+            age_str    = request.POST.get('age', '').strip()
+            weight_str = request.POST.get('weight', '').strip()
+            height_str = request.POST.get('height', '').strip()
+            gender     = request.POST.get('gender', '').strip()
+            is_pregnant = request.POST.get('is_pregnant') == 'on'
+
+            user.age    = float(age_str)    if age_str    else None
+            user.weight = float(weight_str) if weight_str else None
+            user.height = float(height_str) if height_str else None
+            user.gender = gender if gender in ('male', 'female', 'other') else ''
+            user.is_pregnant = is_pregnant
+            user.save()
+
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('patient_dashboard')
+        except (ValueError, TypeError) as e:
+            messages.error(request, f'Invalid input: {e}')
+
+    return render(request, 'core/patient_profile.html', {'user': user})
 
 @never_cache
 @doctor_required
