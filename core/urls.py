@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
     # Public landing page — first thing visitors see
     path('', views.landing, name='landing'),
+    path('about/',   views.about,   name='about'),
+    path('explore/', views.explore, name='explore'),
 
     # Public symptom checker (no login required)
     path('check/', views.public_symptom_check, name='public_symptom_check'),
