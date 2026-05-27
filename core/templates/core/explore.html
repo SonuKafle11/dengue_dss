@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore — Dengue DSS</title>
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-content">
+        <h2 class="logo">Dengue DSS</h2>
+        <nav>
+            <a href="{% url 'landing' %}">Home</a>
+            <a href="{% url 'about' %}">About Us</a>
+            <a href="{% url 'explore' %}" class="active">Explore Us</a>
+            <a href="{% url 'login' %}" class="login-link">Login</a>
+        </nav>
+    </div>
+</header>
+
+<section class="section explore-section">
+    <h2>Explore the System</h2>
+    <p>
+        You can start by checking your symptoms below. No login is required for
+        the initial symptom check. If the result shows High Risk or Possible Dengue,
+        you will be asked to log in so a doctor can review your case.
+    </p>
+    <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">Start Symptom Check</a>
+</section>
+
+<footer class="footer">
+    <p>© 2026 Dengue Decision Support System</p>
+    <p class="disclaimer">
+        This system is for academic and informational purposes only. It does not
+        replace professional medical advice. If you feel seriously unwell, please
+        visit a hospital or clinic.
+    </p>
+</footer>
+
+</body>
+</html>

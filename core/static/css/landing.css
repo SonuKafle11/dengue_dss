@@ -5,24 +5,32 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
     color: #333;
     background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* Navigation bar */
+/* ===== Navigation bar — full width ===== */
 .navbar {
     background-color: #2c5aa0;
     color: white;
     padding: 15px 0;
+    width: 100%;
 }
 
 .nav-content {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
+    width: 100%;
+    max-width: none;
+    padding: 0 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -43,6 +51,11 @@ body {
     text-decoration: underline;
 }
 
+.navbar nav a.active {
+    color: #cbd9ed;
+    font-weight: 600;
+}
+
 .login-link {
     background-color: #ffffff;
     color: #2c5aa0 !important;
@@ -56,50 +69,58 @@ body {
     text-decoration: none !important;
 }
 
-/* Sections */
+/* ===== Sections — full width, fill remaining height ===== */
 .section {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 50px 20px;
+    width: 100%;
+    max-width: none;
+    padding: 60px 40px;
+    flex: 1;
 }
 
+/* Home section */
 .home-section {
     text-align: center;
     background-color: #ffffff;
-    padding: 60px 20px;
-    border-bottom: 1px solid #ddd;
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 0;
 }
 
 .home-section h1 {
-    font-size: 32px;
+    font-size: 42px;
     color: #2c5aa0;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .tagline {
-    font-size: 18px;
+    font-size: 20px;
     color: #555;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .intro {
-    max-width: 700px;
-    margin: 0 auto 30px;
+    max-width: 800px;
+    margin: 0 auto 35px;
     color: #444;
+    font-size: 16px;
 }
 
 /* Buttons */
 .button-group {
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .btn {
     display: inline-block;
-    padding: 10px 22px;
+    padding: 12px 28px;
     margin: 5px;
     text-decoration: none;
     border-radius: 4px;
-    font-size: 15px;
+    font-size: 16px;
     border: none;
     cursor: pointer;
 }
@@ -123,52 +144,72 @@ body {
     background-color: #f0f4fa;
 }
 
-/* About section */
+/* About section — full width */
 .about-section {
+    max-width: 900px;
+    width: calc(100% - 40px);
+    margin: 30px auto;
+    margin-bottom: auto;
     background-color: #ffffff;
     border: 1px solid #ddd;
-    margin-top: 30px;
-    margin-bottom: 30px;
     border-radius: 6px;
+    padding: 40px 30px;
 }
-
 .about-section h2 {
     color: #2c5aa0;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 32px;
+}
+
+.about-section > p {
+    max-width: 1100px;
+    margin-bottom: 25px;
+    font-size: 16px;
+    line-height: 1.7;
 }
 
 .about-section h3 {
     color: #333;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin-top: 28px;
+    margin-bottom: 14px;
+    font-size: 20px;
 }
 
 .about-section ul {
     margin-left: 25px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .about-section li {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    font-size: 15px;
 }
 
-/* Explore section */
+/* Explore section — full width */
 .explore-section {
     background-color: #eaf1fb;
     text-align: center;
-    border-radius: 6px;
-    padding: 40px 20px;
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 0;
 }
 
 .explore-section h2 {
     color: #2c5aa0;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 32px;
 }
 
 .explore-section p {
-    max-width: 650px;
-    margin: 0 auto 20px;
+    max-width: 750px;
+    margin: 0 auto 30px;
     color: #444;
+    font-size: 16px;
+    line-height: 1.7;
 }
 
 /* Footer */
@@ -176,13 +217,24 @@ body {
     background-color: #2c5aa0;
     color: white;
     text-align: center;
-    padding: 20px;
-    margin-top: 40px;
+    padding: 24px 40px;
     font-size: 14px;
+    width: 100%;
 }
 
 .disclaimer {
     margin-top: 8px;
     font-size: 13px;
     opacity: 0.85;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .nav-content { padding: 0 16px; flex-wrap: wrap; gap: 10px; }
+    .section, .home-section, .about-section, .explore-section { padding: 40px 20px; }
+    .home-section h1 { font-size: 28px; }
+    .about-section h2, .explore-section h2 { font-size: 24px; }
 }
