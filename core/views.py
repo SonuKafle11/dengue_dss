@@ -63,6 +63,12 @@ def admin_required(fn):
 def landing(request):
     return render(request, 'core/landing.html')
 
+def about(request):
+    return render(request, 'core/about.html')
+
+def explore(request):
+    return render(request, 'core/explore.html')
+
 def index(request):
     role = request.session.get('role')
     if role == 'patient':
