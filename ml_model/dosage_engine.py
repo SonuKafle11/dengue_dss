@@ -66,57 +66,94 @@ def get_dosing_weight(weight_kg, height_cm):
 
 def get_paracetamol_dosage(dosing_weight, age):
     """
-    Standard paracetamol dosage: 10-15 mg/kg every 4-6 hours, max 60 mg/kg/day.
-    Uses BMI-adjusted dosing weight rather than raw body weight.
+    PCM dose based on practical weight table (using BMI-adjusted dosing weight).
     """
-    dose_per_kg = 10  # mg/kg
-    dose_mg = dosing_weight * dose_per_kg
-
-    # Cap at 1000mg per dose for adults
-    if age >= 18 and dose_mg > 1000:
-        dose_mg = 1000
-
-    # Cap at 250mg for children under 6
-    if age < 6 and dose_mg > 250:
-        dose_mg = 250
-
-    if age < 12:
-        frequency = "every 6 hours"
-        max_daily = dosing_weight * 60
+    if dosing_weight < 10:
+        dose_str = "Syrup only (consult doctor for exact ml)"
+        max_daily = None
+        frequency = "every 6-8 hours"
+    elif dosing_weight <= 15:
+        dose_str = "120-250 mg"
+        max_daily = 1000
+        frequency = "every 6-8 hours"
+    elif dosing_weight <= 24:
+        dose_str = "250 mg"
+        max_daily = 1000
+        frequency = "every 6-8 hours"
+    elif dosing_weight <= 32:
+        dose_str = "375 mg"
+        max_daily = 1500
+        frequency = "every 6-8 hours"
+    elif dosing_weight <= 50:
+        dose_str = "500 mg"
+        max_daily = 2000
+        frequency = "every 6-8 hours"
+    elif dosing_weight <= 65:
+        dose_str = "500-650 mg"
+        max_daily = 2600
+        frequency = "every 6-8 hours"
+    elif dosing_weight <= 100:
+        dose_str = "650 mg-1 g"
+        max_daily = 4000
+        frequency = "every 6-8 hours"
     else:
-        frequency = "every 4-6 hours"
-        max_daily = min(dosing_weight * 60, 4000)
+        dose_str = "1 g (max per dose)"
+        max_daily = 4000
+        frequency = "every 6-8 hours"
 
-    return round(dose_mg), frequency, round(max_daily)
+    return dose_str, frequency, max_daily
 
+def holliday_segar(weight_kg):
+    """
+    Holliday-Segar method for maintenance fluid calculation.
+    Daily (ml/day):  first 10kg x100, next 10kg x50, above 20kg x20
+    Hourly (ml/hr):  4-2-1 rule
+    """
+    if weight_kg <= 10:
+        daily  = weight_kg * 100
+        hourly = weight_kg * 4
+    elif weight_kg <= 20:
+        daily  = 1000 + (weight_kg - 10) * 50
+        hourly = 40   + (weight_kg - 10) * 2
+    else:
+        daily  = 1500 + (weight_kg - 20) * 20
+        hourly = 60   + (weight_kg - 20) * 1
+    return round(daily), round(hourly)
 
 def get_fluid_intake(dosing_weight, age, risk_level):
-    """ORS / IV Fluid recommendation, BMI-adjusted."""
+    
+    daily_ml, hourly_ml = holliday_segar(dosing_weight)
+
     if risk_level == 'high':
-        ml_per_hour = dosing_weight * 7
         return {
-            'type': 'IV Isotonic Fluid (Normal Saline / Ringer\'s Lactate)',
-            'rate': f"{round(ml_per_hour)} ml/hour",
-            'daily_target': f"{round(ml_per_hour * 24)} ml/day",
-            'note': 'Requires hospitalization and IV access. Monitor urine output every 1-2 hours.'
+            'type': "IV Isotonic Fluid (Normal Saline / Ringer's Lactate)",
+            'rate': f"{hourly_ml} ml/hr",
+            'daily_target': f"{daily_ml} ml/day (~{round(daily_ml/1000, 1)} L)",
+            'note': (
+                'Requires hospitalization and IV access. '
+                'Taper to maintenance once stable. Monitor urine output every 1-2 hours.'
+            )
         }
     elif risk_level == 'possible':
-        oral_ml = dosing_weight * 60
         return {
             'type': 'Oral Rehydration Solution (ORS)',
-            'rate': f"{round(oral_ml)} ml every 4-6 hours",
-            'daily_target': f"{round(oral_ml * 4)} ml/day",
-            'note': 'Maintain adequate oral hydration. Return if symptoms worsen.'
+            'rate': f"{hourly_ml} ml/hr  (or {round(daily_ml/6)} ml every 4 hours)",
+            'daily_target': f"{daily_ml} ml/day (~{round(daily_ml/1000, 1)} L)",
+            'note': (
+                'Holliday-Segar maintenance via ORS. '
+                'Switch to IV if vomiting prevents oral intake. Return if symptoms worsen.'
+            )
         }
-    else:  # 'low'
-        water_liters = max(2.0, round(dosing_weight * 0.04, 1))
+    else:  # low
         return {
             'type': 'Oral fluids (water, coconut water, ORS)',
-            'rate': f"{water_liters} liters/day minimum",
-            'daily_target': f"{round(water_liters * 1000)} ml/day",
-            'note': 'Rest and stay well hydrated. Monitor for worsening symptoms.'
+            'rate': f"{hourly_ml} ml/hr  (or {round(daily_ml/6)} ml every 4 hours)",
+            'daily_target': f"{daily_ml} ml/day (~{round(daily_ml/1000, 1)} L)",
+            'note': (
+                'Holliday-Segar maintenance. Rest and stay well hydrated. '
+                'Monitor for worsening symptoms.'
+            )
         }
-
 
 def get_platelet_based_advice(platelet_count):
     """Platelet count-based clinical decisions. Normal: 150,000 - 400,000 /uL."""
@@ -185,12 +222,12 @@ def recommend_dosage(weight_kg, age, risk_level, height_cm=0, platelet_count=Non
     }
 
     # Rule 1: Paracetamol (BMI-adjusted)
-    dose_mg, frequency, max_daily = get_paracetamol_dosage(dosing_weight, age)
+    dose_str, frequency, max_daily = get_paracetamol_dosage(dosing_weight, age)
     recommendations['paracetamol'] = {
         'drug': 'Paracetamol (Acetaminophen)',
-        'dose': f"{dose_mg} mg",
+        'dose': dose_str,
         'frequency': frequency,
-        'max_daily': f"{max_daily} mg/day maximum",
+        'max_daily': f"{max_daily} mg/day maximum" if max_daily else "As directed by doctor",
         'note': 'Do NOT exceed maximum daily dose. Do not use for more than 3 days without medical review.'
     }
 
