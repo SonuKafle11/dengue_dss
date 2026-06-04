@@ -2,11 +2,11 @@
   "dataset_file": "dengue_dataset.csv",
   "total_rows": 10000,
   "usable_rows": 10000,
-  "rows_after_outlier_removal": 8525,
-  "outliers_removed": 1475,
+  "rows_after_outlier_removal": 8529,
+  "outliers_removed": 1471,
   "outlier_per_column": {
-    "IgM_value": 798,
-    "IgG_value": 731
+    "IgM_value": 794,
+    "IgG_value": 732
   },
   "total_columns": 18,
   "all_columns": [
@@ -59,7 +59,7 @@
     "0": 6700,
     "1": 3300
   },
-  "model_accuracy_pct": 84.69,
+  "model_accuracy_pct": 85.05,
   "model_info": {
     "classes": [
       "0",
@@ -86,8 +86,8 @@
       "IgG_value"
     ],
     "class_priors": {
-      "0": 0.6570381231671554,
-      "1": 0.34296187683284457
+      "0": 0.6568957936391616,
+      "1": 0.3431042063608383
     }
   }
 }
