@@ -136,18 +136,23 @@
                 </div>
 
                 <div class="form-group">
-                    <label>IgG Level <small style="color:#6b7280;">(ratio)</small></label>
-                    <input type="number" step="0.01" name="igg"
-                           value="{{ record.igg|default:'' }}"
-                           placeholder="e.g. 1.5-3.5" required>
-                </div>
-
-                <div class="form-group">
-                    <label>IgM Level <small style="color:#6b7280;">(ratio)</small></label>
-                    <input type="number" step="0.01" name="igm"
-                           value="{{ record.igm|default:'' }}"
-                           placeholder="e.g. 1.5-3.5" required>
-                </div>
+  <label>IgG Result</label>
+  <select name="igg_status" required>
+    <option value="">-- Select --</option>
+    <option value="positive">Positive </option>
+    <option value="negative">Negative </option>
+  </select>
+  <small class="hint">Positive = past/secondary dengue exposure</small>
+</div>
+<div class="form-group">
+  <label>IgM Result</label>
+  <select name="igm_status" required>
+    <option value="">-- Select --</option>
+    <option value="positive">Positive </option>
+    <option value="negative">Negative </option>
+  </select>
+  <small class="hint">Positive = recent/active dengue infection</small>
+</div>
             </div>
 
             <div class="btn-row" style="margin-top: 18px;">
