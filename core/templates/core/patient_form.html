@@ -133,7 +133,9 @@
             else if (bmi < 30) cat = 'Overweight';
             else cat = 'Obese';
             out.textContent = 'BMI: ' + bmi.toFixed(1) + ' (' + cat + ')';
-        } else { out.textContent = ''; }
+        } else {
+            out.textContent = '';
+        }
     }
     if (w) w.addEventListener('input', update);
     if (h) h.addEventListener('input', update);

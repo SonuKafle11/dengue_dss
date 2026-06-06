@@ -13,5 +13,7 @@
   "cold_hands_feet",
   "restless_drowsy",
   "platelet_count",
-  "wbc_count"
+  "wbc_count",
+  "IgM_value",
+  "IgG_value"
 ]

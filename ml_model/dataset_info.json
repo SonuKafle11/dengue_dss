@@ -2,10 +2,13 @@
   "dataset_file": "dengue_dataset.csv",
   "total_rows": 10000,
   "usable_rows": 10000,
-  "rows_after_outlier_removal": 10000,
-  "outliers_removed": 0,
-  "outlier_per_column": {},
-  "total_columns": 20,
+  "rows_after_outlier_removal": 8525,
+  "outliers_removed": 1475,
+  "outlier_per_column": {
+    "IgM_value": 798,
+    "IgG_value": 731
+  },
+  "total_columns": 18,
   "all_columns": [
     "fever",
     "severe_headache",
@@ -22,10 +25,8 @@
     "restless_drowsy",
     "platelet_count",
     "wbc_count",
-    "symptom_score",
-    "lab_probability",
-    "symptom_probability",
-    "final_probability",
+    "IgM_value",
+    "IgG_value",
     "dengue"
   ],
   "feature_columns": [
@@ -43,7 +44,9 @@
     "cold_hands_feet",
     "restless_drowsy",
     "platelet_count",
-    "wbc_count"
+    "wbc_count",
+    "IgM_value",
+    "IgG_value"
   ],
   "dropped_columns": [
     "symptom_score",
@@ -53,16 +56,16 @@
   ],
   "target_column": "dengue",
   "class_distribution": {
-    "0": 6699,
-    "1": 3301
+    "0": 6700,
+    "1": 3300
   },
-  "model_accuracy_pct": 80.3,
+  "model_accuracy_pct": 84.69,
   "model_info": {
     "classes": [
       "0",
       "1"
     ],
-    "n_features": 15,
+    "n_features": 17,
     "feature_names": [
       "fever",
       "severe_headache",
@@ -78,11 +81,13 @@
       "cold_hands_feet",
       "restless_drowsy",
       "platelet_count",
-      "wbc_count"
+      "wbc_count",
+      "IgM_value",
+      "IgG_value"
     ],
     "class_priors": {
-      "0": 0.669875,
-      "1": 0.330125
+      "0": 0.6570381231671554,
+      "1": 0.34296187683284457
     }
   }
 }
