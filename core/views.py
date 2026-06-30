@@ -353,8 +353,12 @@ def doctor_patient_detail(request, record_id):
         try:
             platelet = float(request.POST.get('platelet_count', 0))
             wbc      = float(request.POST.get('wbc_count', 0))
-            igg      = float(request.POST.get('igg', 0))
-            igm      = float(request.POST.get('igm', 0))
+            # Convert Positive/Negative selection to representative OD ratio
+            # (model was trained on OD values: negatives ~0.5, positives ~4.0)
+            igg_status = request.POST.get('igg_status', 'negative')
+            igm_status = request.POST.get('igm_status', 'negative')
+            igg = 4.0 if igg_status == 'positive' else 0.5
+            igm = 4.0 if igm_status == 'positive' else 0.5
 
             rec.platelet_count = platelet
             rec.wbc_count      = wbc
