@@ -79,10 +79,8 @@
                 <div class="info-item">
                     <div class="info-label">Risk Level</div>
                     <div class="info-value">
-                        {% if record.clinical_risk_level == 'low' %}
+                       {% if record.clinical_risk_level == 'low' %}
                             <span class="badge badge-low">Low</span>
-                        {% elif record.clinical_risk_level == 'possible' %}
-                            <span class="badge badge-possible">Possible</span>
                         {% else %}
                             <span class="badge badge-high">High</span>
                         {% endif %}
@@ -97,19 +95,20 @@
     <div class="card">
         <h3>Symptoms Reported by Patient</h3>
         <ul class="pill-list">
-            {% if record.fever %}<li>Fever (+2)</li>{% endif %}
-            {% if record.severe_headache %}<li>Severe Headache (+1)</li>{% endif %}
+            {% if record.fever %}<li>Fever (+1)</li>{% endif %}
+            {% if record.severe_headache %}<li>Severe Headache (+3)</li>{% endif %}
             {% if record.joint_back_pain %}<li>Joint/Back Pain (+1)</li>{% endif %}
-            {% if record.nausea_vomiting %}<li>Nausea/Vomiting (+1)</li>{% endif %}
+            {% if record.nausea_vomiting %}<li>Nausea/Vomiting (+3)</li>{% endif %}
             {% if record.skin_rash %}<li>Skin Rash (+1)</li>{% endif %}
-            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times (+2)</li>{% endif %}
+            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times (+3)</li>{% endif %}
             {% if record.bleeding %}<li>Bleeding (+3)</li>{% endif %}
-            {% if record.extreme_weakness %}<li>Extreme Weakness (+2)</li>{% endif %}
-            {% if record.urine_output_low %}<li>Low Urine Output (+2)</li>{% endif %}
+            {% if record.extreme_weakness %}<li>Extreme Weakness (+3)</li>{% endif %}
+            {% if record.urine_output_low %}<li>Low Urine Output (+3)</li>{% endif %}
             {% if record.fever_not_improving %}<li>Fever Not Improving (+1)</li>{% endif %}
             {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness (+3)</li>{% endif %}
-            {% if record.cold_hands_feet %}<li>Cold Hands/Feet (+2)</li>{% endif %}
-            {% if record.restless_drowsy %}<li>Restless/Drowsy (+2)</li>{% endif %}
+            {% if record.cold_hands_feet %}<li>Cold Hands/Feet (+3)</li>{% endif %}
+            {% if record.restless_drowsy %}<li>Restless/Drowsy (+3)</li>{% endif %}
+            {% if record.abdominal_pain %}<li>Abdominal Pain (+3)</li>{% endif %}
         </ul>
     </div>
 
@@ -121,6 +120,16 @@
             {% csrf_token %}
 
             <div class="two-col">
+                <div class="form-group">
+                    <label>NS1 Antigen Result</label>
+                    <select name="ns1_status" required>
+                        <option value="">-- Select --</option>
+                        <option value="positive">Positive</option>
+                        <option value="negative">Negative</option>
+                    </select>
+                    <small class="hint">Positive = early/active dengue infection</small>
+                </div>
+
                 <div class="form-group">
                     <label>Platelet Count <small style="color:#6b7280;">(per µL)</small></label>
                     <input type="number" name="platelet_count"
@@ -136,23 +145,25 @@
                 </div>
 
                 <div class="form-group">
-  <label>IgG Result</label>
-  <select name="igg_status" required>
-    <option value="">-- Select --</option>
-    <option value="positive">Positive </option>
-    <option value="negative">Negative </option>
-  </select>
-  <small class="hint">Positive = past/secondary dengue exposure</small>
-</div>
-<div class="form-group">
-  <label>IgM Result</label>
-  <select name="igm_status" required>
-    <option value="">-- Select --</option>
-    <option value="positive">Positive </option>
-    <option value="negative">Negative </option>
-  </select>
-  <small class="hint">Positive = recent/active dengue infection</small>
-</div>
+                    <label>IgG Result</label>
+                    <select name="igg_status" required>
+                        <option value="">-- Select --</option>
+                        <option value="positive">Positive</option>
+                        <option value="negative">Negative</option>
+                    </select>
+                    <small class="hint">Positive = past/secondary dengue exposure</small>
+                </div>
+
+                <div class="form-group">
+                    <label>IgM Result</label>
+                    <select name="igm_status" required>
+                        <option value="">-- Select --</option>
+                        <option value="positive">Positive</option>
+                        <option value="negative">Negative</option>
+                    </select>
+                    <small class="hint">Positive = recent/active dengue infection</small>
+                </div>
+            </div>
             </div>
 
             <div class="btn-row" style="margin-top: 18px;">
@@ -163,7 +174,7 @@
 
         <p style="margin-top:18px; font-size:13px; color:#6b7280;">
             <strong>Model Used:</strong> Gaussian Naive Bayes &nbsp;·&nbsp;
-            <strong>Features:</strong> 13 symptoms + 4 lab values (platelet, WBC, IgG, IgM)
+            <strong>Features:</strong> 5 lab values (NS1, IgG, IgM, platelet, WBC)
         </p>
     </div>
 

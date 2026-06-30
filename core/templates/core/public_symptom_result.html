@@ -49,18 +49,7 @@
                 <li>Re-check here if new symptoms appear, especially bleeding or vomiting.</li>
             </ul>
 
-        {% elif risk_key == 'possible' %}
-            <p>
-                Your symptoms are <strong>consistent with possible dengue</strong>.
-                Please see a doctor within the next 24 to 48 hours for a check-up
-                and a blood test.
-            </p>
-            <ul>
-                <li>Visit a clinic in the next 24-48 hours.</li>
-                <li>Stay well hydrated and rest.</li>
-                <li>Avoid all NSAIDs (ibuprofen, aspirin, diclofenac).</li>
-                <li>Watch for warning signs: bleeding, severe abdominal pain, repeated vomiting.</li>
-            </ul>
+        
 
         {% else %}
             <p>
@@ -70,14 +59,13 @@
         {% endif %}
     </div>
 
-    {% if risk_key == 'high' or risk_key == 'possible' %}
+    {% if risk_key == 'high' %}
     <div class="high-callout">
         <h3>Sign in to continue</h3>
         <p>
             {% if risk_key == 'high' %}
                 Because the risk is high, please register your case so a doctor can review it within the next 24 hours.
-            {% else %}
-                Because the risk is possible, please register your case so a doctor can review it within the next 24-48 hours.
+            
             {% endif %}
             Sign in (or create a free patient account) and the symptoms you just selected will be carried into your full assessment automatically — you won't have to tick them again.
         </p>

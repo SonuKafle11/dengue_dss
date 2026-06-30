@@ -12,16 +12,16 @@ SYMPTOM_FIELDS = [
     'fever', 'severe_headache', 'joint_back_pain', 'nausea_vomiting',
     'skin_rash', 'vomiting_more_than_3', 'bleeding',
     'extreme_weakness', 'urine_output_low', 'fever_not_improving',
-    'drop_in_fever_with_weakness', 'cold_hands_feet', 'restless_drowsy',
+    'drop_in_fever_with_weakness', 'cold_hands_feet', 'restless_drowsy', 'abdominal_pain',
 ]
 
 # Must match weights in PatientRecord.calculate_clinical_score()
 SYMPTOM_WEIGHTS = {
-    'fever': 2, 'severe_headache': 1, 'joint_back_pain': 1,
-    'nausea_vomiting': 1, 'skin_rash': 1, 'vomiting_more_than_3': 2,
-    'bleeding': 3, 'extreme_weakness': 2, 'urine_output_low': 2,
+    'fever': 1, 'severe_headache': 3, 'joint_back_pain': 1,
+    'nausea_vomiting': 3, 'skin_rash': 1, 'vomiting_more_than_3': 3,
+    'bleeding': 3, 'extreme_weakness': 3, 'urine_output_low': 3,
     'fever_not_improving': 1, 'drop_in_fever_with_weakness': 3,
-    'cold_hands_feet': 2, 'restless_drowsy': 2,
+    'cold_hands_feet': 3, 'restless_drowsy': 3, 'abdominal_pain': 3,
 }
 
 def hash_password(raw):
@@ -83,25 +83,31 @@ def public_symptom_check(request):
     if request.method == 'POST':
         selected = [s for s in SYMPTOM_FIELDS if s in request.POST]
 
-        if not selected:
-            messages.error(request, 'Please select at least one symptom.')
-            return render(request, 'core/public_symptom_form.html', {
-                'symptoms': SYMPTOM_FIELDS, 'selected': [],
-            })
+        age_str = request.POST.get('age', '').strip()
+        gender  = request.POST.get('gender', '')
+        pregnant = 'pregnant' in request.POST
+
+        # Validate age
+        try:
+            age = float(age_str) if age_str else None
+        except ValueError:
+            age = None
 
         score = sum(SYMPTOM_WEIGHTS.get(s, 0) for s in selected)
+        if age and age >= 70:
+            score += 2
+        if pregnant:
+            score += 2
 
-        if score <= 4:
-            risk_key, risk_label = 'low', 'Low Risk'
-        elif score <= 8:
-            risk_key, risk_label = 'possible', 'Possible Dengue'
-        else:
-            risk_key, risk_label = 'high', 'High Risk'
+        risk_key   = 'high' if score >= 3 else 'low'
+        risk_label = 'High Risk' if score >= 3 else 'Low Risk'
 
-        # Stash so they carry over after login (only useful for High Risk)
         request.session['pending_symptoms'] = selected
         request.session['pending_score']    = score
         request.session['pending_risk']     = risk_key
+        request.session['pending_age']      = age_str
+        request.session['pending_gender']   = gender
+        request.session['pending_pregnant'] = pregnant
 
         return render(request, 'core/public_symptom_result.html', {
             'selected': selected, 'score': score,
@@ -249,6 +255,7 @@ def patient_form(request):
                 drop_in_fever_with_weakness = 'drop_in_fever_with_weakness' in request.POST,
                 cold_hands_feet             = 'cold_hands_feet' in request.POST,
                 restless_drowsy             = 'restless_drowsy' in request.POST,
+                abdominal_pain              = 'abdominal_pain' in request.POST,
             )
             rec.save()
             user.age         = age
@@ -258,7 +265,8 @@ def patient_form(request):
             user.is_pregnant = is_pregnant
             user.save()
             # Clear stashed symptoms — they've been consumed
-            for k in ('pending_symptoms', 'pending_score', 'pending_risk'):
+            for k in ('pending_symptoms', 'pending_score', 'pending_risk',
+                      'pending_age', 'pending_gender', 'pending_pregnant'):
                 request.session.pop(k, None)
 
             return redirect('patient_result', record_id=rec.record_id)
@@ -277,12 +285,12 @@ def patient_form(request):
         'pending_symptoms': pending_symptoms,
         'prefill_symptoms': prefill_symptoms,
         'has_previous_record': last_record is not None,
-        'profile': {                                          
-        'age':         user.age or '',
+        'profile': {
+        'age':         request.session.get('pending_age') or user.age or '',
         'weight':      user.weight or '',
         'height':      user.height or '',
-        'gender':      user.gender or '',
-        'is_pregnant': user.is_pregnant,
+        'gender':      request.session.get('pending_gender') or user.gender or '',
+        'is_pregnant': request.session.get('pending_pregnant', user.is_pregnant),
     },
     })
 
@@ -355,10 +363,9 @@ def doctor_patient_detail(request, record_id):
             wbc      = float(request.POST.get('wbc_count', 0))
             # Convert Positive/Negative selection to representative OD ratio
             # (model was trained on OD values: negatives ~0.5, positives ~4.0)
-            igg_status = request.POST.get('igg_status', 'negative')
-            igm_status = request.POST.get('igm_status', 'negative')
-            igg = 4.0 if igg_status == 'positive' else 0.5
-            igm = 4.0 if igm_status == 'positive' else 0.5
+            ns1 = 1 if request.POST.get('ns1_status') == 'positive' else 0
+            igg = 1 if request.POST.get('igg_status') == 'positive' else 0
+            igm = 1 if request.POST.get('igm_status') == 'positive' else 0
 
             rec.platelet_count = platelet
             rec.wbc_count      = wbc
@@ -368,27 +375,30 @@ def doctor_patient_detail(request, record_id):
             rec.is_reviewed    = True
 
             ml_input = {
-                'fever'                       : int(rec.fever),
-                'severe_headache'             : int(rec.severe_headache),
-                'joint_back_pain'             : int(rec.joint_back_pain),
-                'nausea_vomiting'             : int(rec.nausea_vomiting),
-                'skin_rash'                   : int(rec.skin_rash),
-                'vomiting_more_than_3'        : int(rec.vomiting_more_than_3),
-                'bleeding'                    : int(rec.bleeding),
-                'extreme_weakness'            : int(rec.extreme_weakness),
-                'urine_output_low'            : int(rec.urine_output_low),
-                'fever_not_improving'         : int(rec.fever_not_improving),
-                'drop_in_fever_with_weakness' : int(rec.drop_in_fever_with_weakness),
-                'cold_hands_feet'             : int(rec.cold_hands_feet),
-                'restless_drowsy'             : int(rec.restless_drowsy),
-                'platelet_count'              : platelet,
-                'wbc_count'                   : wbc,
-                'IgM_value'                   : igm, 
-                'IgG_value'                   : igg,       
+                'NS1'            : ns1,
+                'IgG'            : igg,
+                'IgM'            : igm,
+                'Platelet_Count' : platelet,
+                'WBC_Count'      : wbc,
             }
             ml_res = predict_dengue(ml_input)
-            rec.ml_prediction = ml_res['prediction']
-            rec.ml_confidence = ml_res['confidence']
+
+            # Rule-based interpretation (priority order)
+            platelet_low = platelet < 150000      
+            wbc_low      = wbc < 4000              
+
+            if ns1 == 1 or igm == 1:
+                rec.ml_prediction = 'Diagnosed Dengue'
+                rec.ml_confidence = 100.0
+            elif platelet_low or wbc_low:
+                rec.ml_prediction = 'Dengue Highly Likely'
+                rec.ml_confidence = ml_res['confidence']
+            elif igg == 1:
+                rec.ml_prediction = 'Past or Recent Dengue'
+                rec.ml_confidence = ml_res['confidence']
+            else:
+                rec.ml_prediction = 'Dengue Less Likely'
+                rec.ml_confidence = ml_res['confidence']
 
             dosage_rec = recommend_dosage(
                 weight_kg=rec.weight,

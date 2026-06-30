@@ -231,8 +231,9 @@ def recommend_dosage(weight_kg, age, risk_level, height_cm=0, platelet_count=Non
         'note': 'Do NOT exceed maximum daily dose. Do not use for more than 3 days without medical review.'
     }
 
-    # Rule 2: Fluids (BMI-adjusted)
-    recommendations['fluids'] = get_fluid_intake(dosing_weight, age, risk_level)
+    
+    # Rule 2: Fluids (use ACTUAL weight — Holliday-Segar is based on real body weight)
+    recommendations['fluids'] = get_fluid_intake(weight_kg, age, risk_level)
 
     # Rule 3: Platelet-based advice
     if platelet_count is not None:

@@ -45,9 +45,8 @@ class AdminUser(models.Model):
 
 class PatientRecord(models.Model):
     RISK_CHOICES = [
-        ('low', 'Low Risk (0-4)'),
-        ('possible', 'Possible Dengue (5-8)'),
-        ('high', 'High Risk of Dengue (>8)'),
+        ('low', 'Low Risk'),
+        ('high', 'High Risk'),
     ]
 
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='records')
@@ -75,6 +74,7 @@ class PatientRecord(models.Model):
     drop_in_fever_with_weakness = models.BooleanField(default=False)
     cold_hands_feet = models.BooleanField(default=False)
     restless_drowsy = models.BooleanField(default=False)
+    abdominal_pain = models.BooleanField(default=False)   
 
     clinical_score = models.IntegerField(default=0)
     clinical_risk_level = models.CharField(max_length=20, choices=RISK_CHOICES, blank=True)
@@ -99,26 +99,30 @@ class PatientRecord(models.Model):
 
     def calculate_clinical_score(self):
         score = 0
-        score += 2 if self.fever else 0
-        score += 1 if self.severe_headache else 0
+        score += 1 if self.fever else 0
+        score += 3 if self.severe_headache else 0
         score += 1 if self.joint_back_pain else 0
-        score += 1 if self.nausea_vomiting else 0
+        score += 3 if self.nausea_vomiting else 0
         score += 1 if self.skin_rash else 0
-        score += 2 if self.vomiting_more_than_3 else 0
+        score += 3 if self.vomiting_more_than_3 else 0
         score += 3 if self.bleeding else 0
-        score += 2 if self.extreme_weakness else 0
-        score += 2 if self.urine_output_low else 0
+        score += 3 if self.extreme_weakness else 0
+        score += 3 if self.urine_output_low else 0
         score += 1 if self.fever_not_improving else 0
         score += 3 if self.drop_in_fever_with_weakness else 0
-        score += 2 if self.cold_hands_feet else 0
-        score += 2 if self.restless_drowsy else 0
+        score += 3 if self.cold_hands_feet else 0
+        score += 3 if self.restless_drowsy else 0
+        score += 3 if self.abdominal_pain else 0
+        # Age and pregnancy bonuses
+        if self.age and self.age > 70:
+            score += 1
+        if self.is_pregnant:
+            score += 1
         return score
 
     def get_risk_level(self, score):
-        if score <= 4:
+        if score < 3:
             return 'low'
-        elif score <= 8:
-            return 'possible'
         else:
             return 'high'
         

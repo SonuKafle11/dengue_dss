@@ -8,23 +8,11 @@ FEAT_JSON  = os.path.join(BASE, 'feature_names.json')
 INFO_JSON  = os.path.join(BASE, 'dataset_info.json')
 
 FEATURES = [
-    'fever',
-    'severe_headache',
-    'joint_back_pain',
-    'nausea_vomiting',
-    'skin_rash',
-    'vomiting_more_than_3',
-    'bleeding',
-    'extreme_weakness',
-    'urine_output_low',
-    'fever_not_improving',
-    'drop_in_fever_with_weakness',
-    'cold_hands_feet',
-    'restless_drowsy',
-    'platelet_count',
-    'wbc_count',
-    'IgM_value',          
-    'IgG_value',
+    'NS1',
+    'IgG',
+    'IgM',
+    'Platelet_Count',
+    'WBC_Count',
 ]
 
 _model = _scaler = None
@@ -42,25 +30,12 @@ def _load():
 
 
 def _build_vector(d):
-
     mapping = {
-        'fever'                       : float(d.get('fever', 0)),
-        'severe_headache'             : float(d.get('severe_headache', 0)),
-        'joint_back_pain'             : float(d.get('joint_back_pain', 0)),
-        'nausea_vomiting'             : float(d.get('nausea_vomiting', 0)),
-        'skin_rash'                   : float(d.get('skin_rash', 0)),
-        'vomiting_more_than_3'        : float(d.get('vomiting_more_than_3', 0)),
-        'bleeding'                    : float(d.get('bleeding', 0)),
-        'extreme_weakness'            : float(d.get('extreme_weakness', 0)),
-        'urine_output_low'            : float(d.get('urine_output_low', 0)),
-        'fever_not_improving'         : float(d.get('fever_not_improving', 0)),
-        'drop_in_fever_with_weakness' : float(d.get('drop_in_fever_with_weakness', 0)),
-        'cold_hands_feet'             : float(d.get('cold_hands_feet', 0)),
-        'restless_drowsy'             : float(d.get('restless_drowsy', 0)),
-        'platelet_count'              : float(d.get('platelet_count', 150000)),
-        'wbc_count'                   : float(d.get('wbc_count', 6000)),
-        'IgM_value'                   : float(d.get('IgM_value', 1.0)),    
-        'IgG_value'                   : float(d.get('IgG_value', 1.0)),    
+        'NS1'            : float(d.get('NS1', 0)),
+        'IgG'            : float(d.get('IgG', 0)),
+        'IgM'            : float(d.get('IgM', 0)),
+        'Platelet_Count' : float(d.get('Platelet_Count', 150000)),
+        'WBC_Count'      : float(d.get('WBC_Count', 6000)),
     }
     return [mapping[f] for f in FEATURES]
 
@@ -73,7 +48,7 @@ def predict_dengue(input_dict):
         Xs  = scaler.transform(X)
         label, confidence = model.predict_single_with_confidence(Xs[0])
         label_str = str(label).strip()
-        readable  = 'Dengue Present' if label_str == '1' else 'Not Present'
+        readable  = 'Highly Likely Dengue' if label_str == '1' else 'Dengue Unlikely'
         return {
             'prediction': readable,
             'confidence': round(confidence, 2),

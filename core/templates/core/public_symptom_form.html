@@ -39,6 +39,37 @@
 
     <form method="POST" id="checkForm">
         {% csrf_token %}
+        <form method="POST" id="checkForm">
+        {% csrf_token %}
+
+        <!-- ADD THIS BLOCK HERE -->
+        <div class="patient-info-section">
+            <div class="info-field">
+                <label for="age">Age <span class="required">*</span></label>
+                <input type="number" id="age" name="age" min="0" max="120"
+                       value="{{ age|default:'' }}" placeholder="Enter your age">
+            </div>
+
+            <div class="info-field">
+                <label>Sex <span class="required">*</span></label>
+                <div class="radio-group">
+                    <label><input type="radio" name="gender" value="male"
+                        {% if gender == 'male' %}checked{% endif %}> Male</label>
+                    <label><input type="radio" name="gender" value="female"
+                        {% if gender == 'female' %}checked{% endif %}> Female</label>
+                    <label><input type="radio" name="gender" value="other"
+                        {% if gender == 'other' %}checked{% endif %}> Other</label>
+                </div>
+            </div>
+
+            <div class="info-field">
+                <label><input type="checkbox" name="pregnant"
+                    {% if pregnant %}checked{% endif %}> Pregnant</label>
+            </div>
+        </div>
+        <!-- END OF ADDED BLOCK -->
+
+        <div class="symptom-list">
 
         <div class="symptom-list">
             <label><input type="checkbox" name="fever" {% if 'fever' in selected %}checked{% endif %}> Fever</label>
@@ -54,6 +85,7 @@
             <label><input type="checkbox" name="drop_in_fever_with_weakness" {% if 'drop_in_fever_with_weakness' in selected %}checked{% endif %}> Drop in Fever with Weakness</label>
             <label><input type="checkbox" name="cold_hands_feet" {% if 'cold_hands_feet' in selected %}checked{% endif %}> Cold Hands or Feet</label>
             <label><input type="checkbox" name="restless_drowsy" {% if 'restless_drowsy' in selected %}checked{% endif %}> Restless or Drowsy</label>
+            <label><input type="checkbox" name="abdominal_pain" {% if 'abdominal_pain' in selected %}checked{% endif %}> Abdominal Pain</label>
         </div>
 
         <p id="sym-error" class="error-text"></p>
