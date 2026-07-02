@@ -4,50 +4,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dengue DSS</title>
+    <title>Dengue DSS — Early Detection &amp; Decision Support</title>
     <link rel="stylesheet" href="{% static 'css/landing.css' %}">
 </head>
 <body>
 
-<!-- Top navigation bar -->
-<header class="navbar">
-    <div class="nav-content">
-        <h2 class="logo">Dengue DSS</h2>
-        <nav>
-            <a href="{% url 'landing' %}" class="active">Home</a>
-            <a href="{% url 'about' %}">About Us</a>
-            <a href="{% url 'explore' %}">Explore Us</a>
-            <a href="{% url 'login' %}" class="login-link">Login</a>
-        </nav>
-    </div>
-</header>
+    <!-- ======================================================
+         NAVBAR
+    ====================================================== -->
+    <header class="navbar">
+        <div class="nav-content">
 
-<!-- Home / Hero section -->
-<section class="section home-section">
-    <h1>Dengue Decision Support System</h1>
-    <p class="tagline">A simple tool to help you understand your dengue risk early.</p>
+            <h2 class="logo">Dengue DSS</h2>
 
-    <p class="intro">
-        Dengue is a mosquito-borne viral infection common in tropical countries.
-        Early detection of warning signs can save lives. This system lets you
-        check your symptoms quickly, get a clinical risk score, and decide
-        whether you need to see a doctor.
-    </p>
+            <!-- hamburger button -->
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
 
-    <div class="button-group">
-        <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">Check My Symptoms</a>
-        <a href="{% url 'about' %}" class="btn btn-secondary">Learn More</a>
-    </div>
-</section>
+            <ul class="nav-links" id="navLinks" role="list">
+                <li><a href="{% url 'landing' %}" class="active">Home</a></li>
+                <li><a href="{% url 'about' %}">About Us</a></li>
+                <li><a href="{% url 'explore' %}">Explore</a></li>
+                <li><a href="{% url 'login' %}" class="login-link">Login</a></li>
+            </ul>
 
-<!-- Footer -->
-<footer class="footer">
-    <p>© 2026 Dengue Decision Support System</p>
-    <p class="disclaimer">
-        This system is for academic and informational purposes only. It does not
-        replace professional medical advice. If you feel seriously unwell, please
-        visit a hospital or clinic.
-    </p>
-</footer>
+        </div>
+    </header>
+
+    <!-- ======================================================
+         HERO
+    ====================================================== -->
+    <section class="home-section">
+
+        <img
+            src="{% static 'images/hero-bg.png' %}"
+            alt=""
+            class="hero-background"
+            aria-hidden="true"
+        >
+        <div class="hero-overlay" aria-hidden="true"></div>
+
+        <div class="hero-content">
+
+            <span class="hero-eyebrow">Clinical Risk Assessment Tool</span>
+
+            <h1>Know Your Dengue Risk<br>Before It Gets Serious</h1>
+
+            <p class="tagline">
+                Fast, symptom-based screening — no login required.
+            </p>
+
+            <p class="intro">
+                Dengue fever spreads through mosquito bites and can escalate quickly.
+                This system checks your symptoms against a clinical scoring model,
+                flags warning signs early, and tells you whether you need to see a doctor right away.
+            </p>
+
+            <div class="button-group">
+                <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">
+                    Check My Symptoms
+                </a>
+                <a href="{% url 'about' %}" class="btn btn-secondary">
+                    How It Works
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ======================================================
+         FOOTER
+    ====================================================== -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2026 Dengue Decision Support System</p>
+            <p class="disclaimer">
+                This system is developed for academic and informational purposes only.
+                It does not replace professional medical advice, diagnosis, or treatment.
+                If you are experiencing severe symptoms, please visit your nearest hospital immediately.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const toggle = document.getElementById('navToggle');
+        const links  = document.getElementById('navLinks');
+
+        toggle.addEventListener('click', function () {
+            const isOpen = links.classList.toggle('open');
+            toggle.classList.toggle('open', isOpen);
+            toggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        // close menu when a link is tapped on mobile
+        links.querySelectorAll('a').forEach(function (a) {
+            a.addEventListener('click', function () {
+                links.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+    </script>
+
 </body>
 </html>

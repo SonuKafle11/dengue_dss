@@ -1,24 +1,40 @@
 {% extends 'core/base.html' %}
-{% block title %}Admin Login{% endblock %}
-
+{% load static %}
+{% block title %}Admin Login — Dengue DSS{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
 {% block content %}
 
-<h2>Admin Login</h2>
-<p>Authorized users only</p>
+<div style="text-align:center; margin-bottom:6px;">
+    <div style="display:inline-block; background:#2c5aa0; color:#fff; font-size:11px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; padding:4px 12px; border-radius:20px; margin-bottom:14px;">
+        Restricted Access
+    </div>
+</div>
+
+<h2 style="text-align:center;">Admin Login</h2>
+<p>This area is for authorised administrators only.</p>
+
+{% if messages %}
+<div class="error-box">
+    {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+</div>
+{% endif %}
 
 <form method="POST">
     {% csrf_token %}
 
-    <label>Username:</label><br>
-    <input type="text" name="username" required><br><br>
+    <label>Username</label>
+    <input type="text" name="username" required autofocus placeholder="Enter admin username">
 
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+    <label>Password</label>
+    <input type="password" name="password" required placeholder="Enter password">
 
-    <button type="submit">Login</button>
+    <button type="submit">Sign In</button>
 </form>
 
-<br>
-<a href="{% url 'login' %}">← Back to user login</a>
+<p style="margin-top:20px;">
+    <a href="{% url 'login' %}" style="color:#2c5aa0; text-decoration:none; font-size:13px;">&larr; Back to user login</a>
+</p>
 
 {% endblock %}

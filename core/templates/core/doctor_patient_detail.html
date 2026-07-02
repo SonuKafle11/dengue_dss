@@ -1,41 +1,47 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Patient Detail{% endblock %}
+{% block title %}Review — {{ record.patient.name }}{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
 {% block content %}
 
 <div class="app-topbar">
-    <div class="brand">Dengue DSS — Doctor Review</div>
+    <div class="brand">Dengue DSS</div>
     <div class="user-info">
-        <span class="user-chip"><span class="name">Dr. {{ doctor.name }}</span><span class="uid">{{ doctor.user_id }}</span></span>
+        <span class="user-chip">
+            <span class="name">Dr. {{ doctor.name }}</span>
+            <span class="uid">{{ doctor.user_id }}</span>
+        </span>
         <a href="{% url 'logout' %}">Logout</a>
     </div>
 </div>
 
 <div class="app-wrapper">
 
-    <a href="{% url 'doctor_dashboard' %}" class="back-link">← Back to Dashboard</a>
+    <a href="{% url 'doctor_dashboard' %}" class="back-link">&larr; Back to Queue</a>
 
     <div class="page-header">
         <div>
-            <h1>Patient Review — {{ record.patient.name }}</h1>
-            <div class="subtitle">{{ record.created_at|date:"l, F d, Y · H:i" }} · Patient ID: {{ record.patient.user_id }}</div>
+            <h1>{{ record.patient.name }}</h1>
+            <div class="subtitle">
+                {{ record.created_at|date:"l, F d, Y · H:i" }}
+                &nbsp;&middot;&nbsp; ID: {{ record.patient.user_id }}
+            </div>
         </div>
     </div>
 
     {% if not model_trained %}
     <div class="banner banner-warning">
-        <strong>Warning:</strong> ML model is not trained. Predictions will not work.
+        <strong>ML model not trained.</strong>
+        Predictions will not run until the model is trained from the admin panel.
     </div>
     {% endif %}
 
     <div class="two-col">
 
-        <!-- Patient information -->
         <div class="card">
-            <h3>Patient Information</h3>
+            <h3>Patient Details</h3>
             <div class="info-grid">
                 <div class="info-item">
                     <div class="info-label">Name</div>
@@ -43,7 +49,7 @@
                 </div>
                 <div class="info-item">
                     <div class="info-label">Patient ID</div>
-                    <div class="info-value">{{ record.patient.user_id }}</div>
+                    <div class="info-value" style="font-family:'Courier New',monospace; font-size:13px;">{{ record.patient.user_id }}</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Age</div>
@@ -68,13 +74,12 @@
             </div>
         </div>
 
-        <!-- Clinical score -->
         <div class="card">
             <h3>Clinical Score</h3>
             <div class="info-grid">
                 <div class="info-item">
                     <div class="info-label">Score</div>
-                    <div class="info-value">{{ record.clinical_score }}</div>
+                    <div class="info-value" style="font-size:28px; font-weight:700;">{{ record.clinical_score }}</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Risk Level</div>
@@ -93,78 +98,91 @@
 
     </div>
 
-    <!-- Symptoms reported -->
     <div class="card">
         <h3>Symptoms Reported by Patient</h3>
         <ul class="pill-list">
-            {% if record.fever %}<li>Fever (+2)</li>{% endif %}
-            {% if record.severe_headache %}<li>Severe Headache (+1)</li>{% endif %}
-            {% if record.joint_back_pain %}<li>Joint/Back Pain (+1)</li>{% endif %}
-            {% if record.nausea_vomiting %}<li>Nausea/Vomiting (+1)</li>{% endif %}
-            {% if record.skin_rash %}<li>Skin Rash (+1)</li>{% endif %}
-            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times (+2)</li>{% endif %}
-            {% if record.bleeding %}<li>Bleeding (+3)</li>{% endif %}
-            {% if record.extreme_weakness %}<li>Extreme Weakness (+2)</li>{% endif %}
-            {% if record.urine_output_low %}<li>Low Urine Output (+2)</li>{% endif %}
-            {% if record.fever_not_improving %}<li>Fever Not Improving (+1)</li>{% endif %}
-            {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness (+3)</li>{% endif %}
-            {% if record.cold_hands_feet %}<li>Cold Hands/Feet (+2)</li>{% endif %}
-            {% if record.restless_drowsy %}<li>Restless/Drowsy (+2)</li>{% endif %}
+            {% if record.fever %}<li>Fever <span class="pill-score">+1</span></li>{% endif %}
+            {% if record.severe_headache %}<li>Severe Headache <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.joint_back_pain %}<li>Joint / Back Pain <span class="pill-score">+1</span></li>{% endif %}
+            {% if record.nausea_vomiting %}<li>Nausea / Vomiting <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.skin_rash %}<li>Skin Rash <span class="pill-score">+1</span></li>{% endif %}
+            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.bleeding %}<li>Bleeding <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.extreme_weakness %}<li>Extreme Weakness <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.urine_output_low %}<li>Low Urine Output <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.fever_not_improving %}<li>Fever Not Improving <span class="pill-score">+1</span></li>{% endif %}
+            {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.cold_hands_feet %}<li>Cold Hands / Feet <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.restless_drowsy %}<li>Restless / Drowsy <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.abdominal_pain %}<li>Abdominal Pain <span class="pill-score">+3</span></li>{% endif %}
         </ul>
     </div>
 
-    <!-- Lab values entry form -->
     <div class="card form-card">
-        <h3>Enter Laboratory Results</h3>
+        <h3>Laboratory Results</h3>
+        <p style="font-size:13px; color:#6b7280; margin:0 0 18px;">
+            Enter the results from the patient's blood work below. All five fields are required to run the prediction.
+        </p>
 
         <form method="POST">
             {% csrf_token %}
 
             <div class="two-col">
                 <div class="form-group">
-                    <label>Platelet Count <small style="color:#6b7280;">(per µL)</small></label>
+                    <label>NS1 Antigen</label>
+                    <select name="ns1_status" required>
+                        <option value="">Select result</option>
+                        <option value="positive" {% if record.ns1_antigen == 'positive' %}selected{% endif %}>Positive</option>
+                        <option value="negative" {% if record.ns1_antigen == 'negative' %}selected{% endif %}>Negative</option>
+                    </select>
+                    <span class="hint">Positive = early or active dengue infection</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Platelet Count <small style="color:#9ca3af; font-weight:400;">(per µL)</small></label>
                     <input type="number" name="platelet_count"
                            value="{{ record.platelet_count|default:'' }}"
-                           placeholder="e.g. 150000-450000" required>
+                           placeholder="e.g. 150000" required>
                 </div>
 
                 <div class="form-group">
-                    <label>WBC Count <small style="color:#6b7280;">(per µL)</small></label>
+                    <label>WBC Count <small style="color:#9ca3af; font-weight:400;">(per µL)</small></label>
                     <input type="number" name="wbc_count"
                            value="{{ record.wbc_count|default:'' }}"
-                           placeholder="e.g. 4000-11000" required>
+                           placeholder="e.g. 6000" required>
                 </div>
 
                 <div class="form-group">
-  <label>IgG Result</label>
-  <select name="igg_status" required>
-    <option value="">-- Select --</option>
-    <option value="positive">Positive </option>
-    <option value="negative">Negative </option>
-  </select>
-  <small class="hint">Positive = past/secondary dengue exposure</small>
-</div>
-<div class="form-group">
-  <label>IgM Result</label>
-  <select name="igm_status" required>
-    <option value="">-- Select --</option>
-    <option value="positive">Positive </option>
-    <option value="negative">Negative </option>
-  </select>
-  <small class="hint">Positive = recent/active dengue infection</small>
-</div>
+                    <label>IgG Result</label>
+                    <select name="igg_status" required>
+                        <option value="">Select result</option>
+                        <option value="positive" {% if record.igg == 'positive' %}selected{% endif %}>Positive</option>
+                        <option value="negative" {% if record.igg == 'negative' %}selected{% endif %}>Negative</option>
+                    </select>
+                    <span class="hint">Positive = past or secondary dengue exposure</span>
+                </div>
+
+                <div class="form-group">
+                    <label>IgM Result</label>
+                    <select name="igm_status" required>
+                        <option value="">Select result</option>
+                        <option value="positive" {% if record.igm == 'positive' %}selected{% endif %}>Positive</option>
+                        <option value="negative" {% if record.igm == 'negative' %}selected{% endif %}>Negative</option>
+                    </select>
+                    <span class="hint">Positive = recent or active dengue infection</span>
+                </div>
             </div>
 
-            <div class="btn-row" style="margin-top: 18px;">
+            <div class="btn-row" style="margin-top:20px;">
                 <button type="submit" class="btn btn-success">Save and Run Prediction</button>
                 <a href="{% url 'doctor_dashboard' %}" class="btn btn-secondary">Cancel</a>
             </div>
-        </form>
 
-        <p style="margin-top:18px; font-size:13px; color:#6b7280;">
-            <strong>Model Used:</strong> Gaussian Naive Bayes &nbsp;·&nbsp;
-            <strong>Features:</strong> 13 symptoms + 4 lab values (platelet, WBC, IgG, IgM)
-        </p>
+            <p style="margin-top:14px; font-size:12px; color:#9ca3af;">
+                Model: Gaussian Naive Bayes &nbsp;&middot;&nbsp;
+                Features: NS1, IgG, IgM, platelet count, WBC count
+            </p>
+        </form>
     </div>
 
 </div>

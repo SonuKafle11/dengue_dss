@@ -1,120 +1,194 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Admin Dashboard{% endblock %}
-{% block container_class %}container-wide{% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
 {% block content %}
 
-<h1>Admin Dashboard</h1>
-
-<p><strong>Welcome:</strong> {{ admin_username }}</p>
-
-<hr>
-
-<h3>System Statistics</h3>
-<ul>
-    <li>Total Patients: {{ total_patients }}</li>
-    <li>Total Doctors: {{ total_doctors }}</li>
-    <li>Total Records: {{ total_records }}</li>
-    <li>Reviewed Records: {{ reviewed_records }}</li>
-</ul>
-
-<hr>
-
-<h3>ML Model Status</h3>
-{% if model_trained %}
-    <p>Model is trained</p>
-{% else %}
-    <p>Model is NOT trained</p>
-{% endif %}
-
-{% if dataset_info %}
-    <h4>Dataset Info</h4>
-    <ul>
-        <li>File: {{ dataset_info.dataset_file }}</li>
-        <li>Total Rows: {{ dataset_info.total_rows }}</li>
-        <li>After Cleaning: {{ dataset_info.rows_after_outlier_removal }}</li>
-        <li>Outliers Removed: {{ dataset_info.outliers_removed }}</li>
-        <li>Accuracy: {{ dataset_info.model_accuracy_pct }}%</li>
-        <li>Features: {{ dataset_info.feature_columns|join:", " }}</li>
-    </ul>
-{% endif %}
-
-<hr>
-
-<h3>Users</h3>
-<div class="table-container">
-<table>
-    <tr>
-        <th>Name</th>
-        <th>User ID</th>
-        <th>Role</th>
-        <th>Registered</th>
-        <th>Action</th>
-    </tr>
-
-    {% for u in users %}
-    <tr>
-        <td>{{ u.name }}</td>
-        <td>{{ u.user_id }}</td>
-        <td>{{ u.role }}</td>
-        <td>{{ u.created_at }}</td>
-        <td>
-            <form method="POST" action="{% url 'admin_delete_user' u.user_id %}">
-                {% csrf_token %}
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-</div>
-<hr>
-
-<h3>Patient Records</h3>
-<div class="table-container">
-<table>
-    <tr>
-        <th>Patient</th>
-        <th>Score</th>
-        <th>Risk</th>
-        <th>ML Result</th>
-        <th>Confidence</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Action</th>
-    </tr>
-
-    {% for rec in records %}
-    <tr>
-        <td>{{ rec.patient.name }}</td>
-        <td>{{ rec.clinical_score }}</td>
-        <td>{{ rec.clinical_risk_level }}</td>
-        <td>{{ rec.ml_prediction }}</td>
-        <td>{{ rec.ml_confidence }}</td>
-        <td>
-            {% if rec.is_reviewed %}
-                Done
-            {% else %}
-                Pending
-            {% endif %}
-        </td>
-        <td>{{ rec.created_at }}</td>
-        <td>
-            <form method="POST" action="{% url 'admin_delete_record' rec.record_id %}">
-                {% csrf_token %}
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="app-topbar">
+    <div class="brand">Dengue DSS — Admin</div>
+    <div class="user-info">
+        <span class="user-chip">
+            <span class="name">{{ admin_username }}</span>
+            <span class="uid">Administrator</span>
+        </span>
+        <a href="{% url 'admin_logout' %}">Logout</a>
+    </div>
 </div>
 
-<br>
+<div class="app-wrapper">
 
-<a href="{% url 'admin_logout' %}">Logout</a>
+    <div class="page-header">
+        <div>
+            <h1>System Dashboard</h1>
+            <div class="subtitle">User management, record oversight, and ML model status.</div>
+        </div>
+    </div>
+
+    <div class="stat-row">
+        <div class="stat-card">
+            <div class="stat-label">Total Patients</div>
+            <div class="stat-value">{{ total_patients }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Doctors</div>
+            <div class="stat-value">{{ total_doctors }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Records</div>
+            <div class="stat-value">{{ total_records }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Reviewed</div>
+            <div class="stat-value">{{ reviewed_records }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>ML Model Status</h3>
+        {% if model_trained %}
+        <div class="banner banner-success" style="margin:0 0 14px;">
+            <strong>Model is trained.</strong> Predictions are available for doctors.
+        </div>
+        {% else %}
+        <div class="banner banner-warning" style="margin:0 0 14px;">
+            <strong>Model not trained.</strong> Run the training script to enable predictions.
+        </div>
+        {% endif %}
+
+        {% if dataset_info %}
+        <h4 style="font-size:14px; font-weight:600; margin:16px 0 10px;">Dataset Details</h4>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Dataset File</div>
+                <div class="info-value" style="font-family:'Courier New',monospace; font-size:12px;">{{ dataset_info.dataset_file }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Total Rows</div>
+                <div class="info-value">{{ dataset_info.total_rows }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">After Cleaning</div>
+                <div class="info-value">{{ dataset_info.rows_after_outlier_removal }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Outliers Removed</div>
+                <div class="info-value">{{ dataset_info.outliers_removed }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Model Accuracy</div>
+                <div class="info-value">{{ dataset_info.model_accuracy_pct }}%</div>
+            </div>
+        </div>
+        <p style="font-size:12px; color:#6b7280; margin:12px 0 0;">
+            <strong>Features:</strong> {{ dataset_info.feature_columns|join:", " }}
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h3>User Accounts</h3>
+        <div class="table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>User ID</th>
+                        <th>Role</th>
+                        <th>Registered</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for u in users %}
+                <tr>
+                    <td><strong>{{ u.name }}</strong></td>
+                    <td><span class="user-id-cell">{{ u.user_id }}</span></td>
+                    <td><span class="badge {% if u.role == 'doctor' %}badge-reviewed{% else %}badge-pending{% endif %}">{{ u.role|capfirst }}</span></td>
+                    <td style="white-space:nowrap;">{{ u.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'admin_delete_user' u.user_id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm" style="background:#dc2626; border-color:#dc2626; padding:4px 10px; font-size:12px;" onclick="return confirm('Delete {{ u.name }}?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Patient Records</h3>
+        <div class="table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Score</th>
+                        <th>Risk</th>
+                        <th>ML Result</th>
+                        <th>Confidence</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for rec in records %}
+                <tr>
+                    <td><strong>{{ rec.patient.name }}</strong></td>
+                    <td><strong>{{ rec.clinical_score }}</strong></td>
+                    <td>
+                        {% if rec.clinical_risk_level == 'low' %}
+                            <span class="badge badge-low">Low</span>
+                        {% elif rec.clinical_risk_level == 'possible' %}
+                            <span class="badge badge-possible">Possible</span>
+                        {% else %}
+                            <span class="badge badge-high">High</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rec.ml_prediction %}
+                            {% if "Present" in rec.ml_prediction %}
+                                <span class="badge badge-positive">{{ rec.ml_prediction }}</span>
+                            {% else %}
+                                <span class="badge badge-negative">{{ rec.ml_prediction }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="tbl-empty">&mdash;</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rec.ml_confidence %}
+                            {{ rec.ml_confidence|floatformat:1 }}%
+                        {% else %}
+                            <span class="tbl-empty">&mdash;</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rec.is_reviewed %}
+                            <span class="badge badge-reviewed">Reviewed</span>
+                        {% else %}
+                            <span class="badge badge-pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td style="white-space:nowrap;">{{ rec.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'admin_delete_record' rec.record_id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm" style="background:#dc2626; border-color:#dc2626; padding:4px 10px; font-size:12px;" onclick="return confirm('Delete this record?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 
 {% endblock %}

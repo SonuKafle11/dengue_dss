@@ -1,22 +1,25 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Assessment Result{% endblock %}
+{% block title %}Result — {{ record.created_at|date:"d M Y" }}{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
 {% block content %}
 
 <div class="app-topbar">
-    <div class="brand">Dengue DSS — Result</div>
+    <div class="brand">Dengue DSS</div>
     <div class="user-info">
-        <span class="user-chip"><span class="name">{{ user.name }}</span><span class="uid">{{ user.user_id }}</span></span>
+        <span class="user-chip">
+            <span class="name">{{ user.name }}</span>
+            <span class="uid">{{ user.user_id }}</span>
+        </span>
         <a href="{% url 'logout' %}">Logout</a>
     </div>
 </div>
 
 <div class="app-wrapper app-wrapper-narrow">
 
-    <a href="{% url 'patient_dashboard' %}" class="back-link">← Back to Dashboard</a>
+    <a href="{% url 'patient_dashboard' %}" class="back-link">&larr; Back to Dashboard</a>
 
     <div class="page-header">
         <div>
@@ -25,19 +28,18 @@
         </div>
     </div>
 
-    <!-- Hero: Clinical Risk Level -->
-    <div class="result-hero">
+    <div class="result-hero result-hero--{% if record.clinical_risk_level == 'low' %}low{% elif record.clinical_risk_level == 'possible' %}possible{% else %}high{% endif %}">
         <div class="label">Clinical Risk Level</div>
         <div class="outcome">
             {% if record.clinical_risk_level == 'low' %}Low Risk
             {% elif record.clinical_risk_level == 'possible' %}Possible Dengue
             {% elif record.clinical_risk_level == 'probable' %}Probable Dengue
-            {% else %}High Risk{% endif %}
+            {% else %}High Risk
+            {% endif %}
         </div>
         <div class="confidence">Symptom score: <strong>{{ record.clinical_score }}</strong></div>
     </div>
 
-    <!-- ML Prediction (if reviewed) -->
     {% if record.is_reviewed and record.ml_prediction %}
     <div class="card">
         <h3>Machine Learning Prediction</h3>
@@ -53,26 +55,25 @@
                 </div>
             </div>
             <div class="info-item">
-                <div class="info-label">Confidence</div>
+                <div class="info-label">Model Confidence</div>
                 <div class="info-value">{{ record.ml_confidence|floatformat:1 }}%</div>
             </div>
             <div class="info-item">
-                <div class="info-label">Reviewed By</div>
+                <div class="info-label">Reviewed by</div>
                 <div class="info-value">Dr. {{ record.reviewed_by.name }}</div>
             </div>
         </div>
-        <div class="confidence-bar" style="background:#f3f4f6; margin-top:14px;">
-            <div style="width:{{ record.ml_confidence|floatformat:0 }}%; background:#2c5aa0;"></div>
+        <div class="confidence-bar" style="margin-top:14px;">
+            <div style="width:{{ record.ml_confidence|floatformat:0 }}%;"></div>
         </div>
     </div>
     {% else %}
     <div class="banner banner-info">
         <strong>Pending doctor review.</strong>
-        Your assessment has been submitted. A doctor will review it shortly and add lab-based predictions.
+        Your assessment has been submitted. A doctor will review it and add the lab-based prediction shortly.
     </div>
     {% endif %}
 
-    <!-- Patient Details -->
     <div class="card">
         <h3>Patient Details</h3>
         <div class="info-grid">
@@ -93,34 +94,38 @@
                 <div class="info-value">{{ record.get_bmi }}</div>
             </div>
             <div class="info-item">
+                <div class="info-label">Gender</div>
+                <div class="info-value">{{ record.gender|capfirst|default:"—" }}</div>
+            </div>
+            <div class="info-item">
                 <div class="info-label">Pregnant</div>
                 <div class="info-value">{% if record.is_pregnant %}Yes{% else %}No{% endif %}</div>
             </div>
         </div>
     </div>
 
-    <!-- Symptoms Reported -->
     <div class="card">
         <h3>Symptoms Reported</h3>
         <ul class="pill-list">
-            {% if record.fever %}<li>Fever (+2)</li>{% endif %}
-            {% if record.severe_headache %}<li>Severe Headache (+1)</li>{% endif %}
-            {% if record.joint_back_pain %}<li>Joint/Back Pain (+1)</li>{% endif %}
-            {% if record.nausea_vomiting %}<li>Nausea/Vomiting (+1)</li>{% endif %}
-            {% if record.skin_rash %}<li>Skin Rash (+1)</li>{% endif %}
-            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times (+2)</li>{% endif %}
-            {% if record.bleeding %}<li>Bleeding (+3)</li>{% endif %}
-            {% if record.extreme_weakness %}<li>Extreme Weakness (+2)</li>{% endif %}
-            {% if record.urine_output_low %}<li>Low Urine Output (+2)</li>{% endif %}
-            {% if record.fever_not_improving %}<li>Fever Not Improving (+1)</li>{% endif %}
-            {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness (+3)</li>{% endif %}
-            {% if record.cold_hands_feet %}<li>Cold Hands/Feet (+2)</li>{% endif %}
-            {% if record.restless_drowsy %}<li>Restless/Drowsy (+2)</li>{% endif %}
+            {% if record.fever %}<li>Fever <span class="pill-score">+1</span></li>{% endif %}
+            {% if record.severe_headache %}<li>Severe Headache <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.joint_back_pain %}<li>Joint / Back Pain <span class="pill-score">+1</span></li>{% endif %}
+            {% if record.nausea_vomiting %}<li>Nausea / Vomiting <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.skin_rash %}<li>Skin Rash <span class="pill-score">+1</span></li>{% endif %}
+            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.bleeding %}<li>Bleeding <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.extreme_weakness %}<li>Extreme Weakness <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.urine_output_low %}<li>Low Urine Output <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.fever_not_improving %}<li>Fever Not Improving <span class="pill-score">+1</span></li>{% endif %}
+            {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.cold_hands_feet %}<li>Cold Hands / Feet <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.restless_drowsy %}<li>Restless / Drowsy <span class="pill-score">+3</span></li>{% endif %}
+            {% if record.abdominal_pain %}<li>Abdominal Pain <span class="pill-score">+3</span></li>{% endif %}
         </ul>
     </div>
 
     <div class="btn-row">
-        <a href="{% url 'patient_form' %}" class="btn">+ New Assessment</a>
+        <a href="{% url 'patient_form' %}" class="btn">New Assessment</a>
         <a href="{% url 'patient_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
     </div>
 

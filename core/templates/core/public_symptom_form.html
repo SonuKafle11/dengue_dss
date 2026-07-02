@@ -8,79 +8,237 @@
     <link rel="stylesheet" href="{% static 'css/landing.css' %}">
     <link rel="stylesheet" href="{% static 'css/public_check.css' %}">
 </head>
-<body>
+<body class="symptom-check-page">
 
+<!-- ── Navbar ── -->
 <header class="navbar">
     <div class="nav-content">
         <h2 class="logo">Dengue DSS</h2>
-        <nav>
-            <a href="{% url 'landing' %}">Home</a>
-            <a href="{% url 'landing' %}#about">About Us</a>
-            <a href="{% url 'public_symptom_check' %}">Explore Us</a>
-            <a href="{% url 'login' %}" class="login-link">Login</a>
-        </nav>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <ul class="nav-links" id="navLinks" role="list">
+            <li><a href="{% url 'landing' %}">Home</a></li>
+            <li><a href="{% url 'about' %}">About Us</a></li>
+            <li><a href="{% url 'explore' %}">Explore</a></li>
+            <li><a href="{% url 'login' %}" class="login-link">Login</a></li>
+        </ul>
     </div>
 </header>
 
+<!-- ── Main ── -->
 <main class="check-page">
-    <a href="{% url 'landing' %}" class="back-link">← Back to home</a>
+    <div class="check-body">
 
-    <h1>Symptom Check</h1>
-    <p class="lead">
-        Tick all the symptoms you currently have. We'll calculate a clinical
-        score and tell you the risk level. No login required.
-    </p>
+        <a href="{% url 'landing' %}" class="back-link">&larr; Back to Home</a>
 
-    {% if messages %}
+        <div class="check-heading">
+            <h1>Symptom Check</h1>
+            <p>Tick the symptoms you currently have and we will calculate your dengue risk level.</p>
+        </div>
+
+        {% if messages %}
         <div class="error-box">
             {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
         </div>
-    {% endif %}
+        {% endif %}
 
-    <form method="POST" id="checkForm">
-        {% csrf_token %}
+        <form method="POST" id="checkForm">
+            {% csrf_token %}
 
-        <div class="symptom-list">
-            <label><input type="checkbox" name="fever" {% if 'fever' in selected %}checked{% endif %}> Fever</label>
-            <label><input type="checkbox" name="severe_headache" {% if 'severe_headache' in selected %}checked{% endif %}> Severe Headache</label>
-            <label><input type="checkbox" name="joint_back_pain" {% if 'joint_back_pain' in selected %}checked{% endif %}> Joint or Back Pain</label>
-            <label><input type="checkbox" name="nausea_vomiting" {% if 'nausea_vomiting' in selected %}checked{% endif %}> Nausea or Vomiting</label>
-            <label><input type="checkbox" name="skin_rash" {% if 'skin_rash' in selected %}checked{% endif %}> Skin Rash</label>
-            <label><input type="checkbox" name="vomiting_more_than_3" {% if 'vomiting_more_than_3' in selected %}checked{% endif %}> Vomiting more than 3 times</label>
-            <label><input type="checkbox" name="bleeding" {% if 'bleeding' in selected %}checked{% endif %}> Bleeding (nose, gums, vomit, stool)</label>
-            <label><input type="checkbox" name="extreme_weakness" {% if 'extreme_weakness' in selected %}checked{% endif %}> Extreme Weakness</label>
-            <label><input type="checkbox" name="urine_output_low" {% if 'urine_output_low' in selected %}checked{% endif %}> Low Urine Output</label>
-            <label><input type="checkbox" name="fever_not_improving" {% if 'fever_not_improving' in selected %}checked{% endif %}> Fever Not Improving (after 3 days)</label>
-            <label><input type="checkbox" name="drop_in_fever_with_weakness" {% if 'drop_in_fever_with_weakness' in selected %}checked{% endif %}> Drop in Fever with Weakness</label>
-            <label><input type="checkbox" name="cold_hands_feet" {% if 'cold_hands_feet' in selected %}checked{% endif %}> Cold Hands or Feet</label>
-            <label><input type="checkbox" name="restless_drowsy" {% if 'restless_drowsy' in selected %}checked{% endif %}> Restless or Drowsy</label>
-        </div>
+            <!-- Personal Information -->
+            <div class="check-card">
+                <h3 class="check-card-title">Personal Information</h3>
 
-        <p id="sym-error" class="error-text"></p>
+                <div class="personal-grid">
 
-        <div class="form-actions">
-            <a href="{% url 'landing' %}" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary">Get My Risk Read</button>
-        </div>
+                    <div>
+                        <label class="field-label" for="pc_age">Age <span class="required">*</span></label>
+                        <input type="number" id="pc_age" name="age"
+                               min="0" max="120"
+                               value="{{ age|default:'' }}"
+                               placeholder="e.g. 25">
+                    </div>
 
-        <p class="note">
-            <strong>Note:</strong> This is not a medical diagnosis. If you feel
-            seriously unwell, please go to a hospital right away.
-        </p>
-    </form>
+                    <div>
+                        <label class="field-label">Sex <span class="required">*</span></label>
+                        <div class="radio-row">
+                            <label class="radio-opt">
+                                <input type="radio" name="gender" value="male"   {% if gender == 'male'   %}checked{% endif %}> Male
+                            </label>
+                            <label class="radio-opt">
+                                <input type="radio" name="gender" value="female" {% if gender == 'female' %}checked{% endif %}> Female
+                            </label>
+                            <label class="radio-opt">
+                                <input type="radio" name="gender" value="other"  {% if gender == 'other'  %}checked{% endif %}> Other
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="field-label">Pregnancy</label>
+                        <label class="check-opt">
+                            <input type="checkbox" name="pregnant" {% if pregnant %}checked{% endif %}>
+                            Currently pregnant
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Symptoms -->
+            <div class="check-card">
+                <h3 class="check-card-title">Select Your Symptoms</h3>
+                <p style="font-size:13px; color:#6b7280; margin:0 0 16px;">Select every symptom you are currently experiencing.</p>
+
+                <div class="symptom-grid">
+                    <label class="symptom-item">
+                        <input type="checkbox" name="fever" {% if 'fever' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Fever</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="severe_headache" {% if 'severe_headache' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Severe Headache</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="joint_back_pain" {% if 'joint_back_pain' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Joint or Back Pain</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="nausea_vomiting" {% if 'nausea_vomiting' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Nausea or Vomiting</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="skin_rash" {% if 'skin_rash' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Skin Rash</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="vomiting_more_than_3" {% if 'vomiting_more_than_3' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Vomiting 3+ Times</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="bleeding" {% if 'bleeding' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Bleeding</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="extreme_weakness" {% if 'extreme_weakness' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Extreme Weakness</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="urine_output_low" {% if 'urine_output_low' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Low Urine Output</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="fever_not_improving" {% if 'fever_not_improving' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Fever 3+ Days</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="drop_in_fever_with_weakness" {% if 'drop_in_fever_with_weakness' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Fever Drop with Weakness</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="cold_hands_feet" {% if 'cold_hands_feet' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Cold Hands or Feet</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="restless_drowsy" {% if 'restless_drowsy' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Restless or Drowsy</div>
+                    </label>
+                    <label class="symptom-item">
+                        <input type="checkbox" name="abdominal_pain" {% if 'abdominal_pain' in selected %}checked{% endif %}>
+                        <div class="symptom-box">Abdominal Pain</div>
+                    </label>
+                </div>
+
+                <p id="sym-error" class="error-text"></p>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Get My Risk Assessment</button>
+                    <a href="{% url 'landing' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+
+                <div class="info-banner">
+                    <strong>Important:</strong> This assessment is not a medical diagnosis.
+                    If you feel seriously unwell, please seek immediate medical attention or visit a hospital.
+                </div>
+            </div>
+
+        </form>
+
+    </div>
 </main>
 
+<!-- ── Footer ── -->
+<footer class="footer">
+    <div class="footer-inner">
+        <p>&copy; 2026 Dengue Decision Support System</p>
+        <p class="disclaimer">
+            For academic and informational purposes only. Not a substitute for professional medical advice.
+        </p>
+    </div>
+</footer>
+
 <script>
-document.getElementById('checkForm').addEventListener('submit', function(e) {
+// ── Pregnant checkbox — disable immediately when Male or Other is selected ──
+(function () {
+    var radios     = document.querySelectorAll('input[name="gender"]');
+    var pregnantCb = document.querySelector('input[name="pregnant"]');
+    var label      = pregnantCb ? pregnantCb.closest('label') : null;
+
+    function sync() {
+        var selected = document.querySelector('input[name="gender"]:checked');
+        var gender   = selected ? selected.value.toLowerCase() : '';
+        var disable  = (gender === 'male' || gender === 'other');
+
+        if (!pregnantCb) return;
+
+        pregnantCb.disabled = disable;
+        if (disable) pregnantCb.checked = false;
+
+        if (label) {
+            label.style.opacity = disable ? '0.4' : '1';
+            label.style.cursor  = disable ? 'not-allowed' : 'pointer';
+        }
+    }
+
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    sync(); // run on load for pre-selected values
+}());
+
+// ── Form validation — require at least one symptom ──
+document.getElementById('checkForm').addEventListener('submit', function (e) {
     var checked = this.querySelectorAll('input[type="checkbox"]:checked');
     var err = document.getElementById('sym-error');
     if (checked.length === 0) {
         e.preventDefault();
-        err.textContent = 'Please select at least one symptom.';
+        err.textContent = 'Please select at least one symptom before submitting.';
     } else {
         err.textContent = '';
     }
 });
+
+// ── Hamburger nav ──
+(function () {
+    var toggle = document.getElementById('navToggle');
+    var links  = document.getElementById('navLinks');
+    if (!toggle) return;
+    toggle.addEventListener('click', function () {
+        var isOpen = links.classList.toggle('open');
+        toggle.classList.toggle('open', isOpen);
+        toggle.setAttribute('aria-expanded', isOpen);
+    });
+    links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+            links.classList.remove('open');
+            toggle.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        });
+    });
+}());
 </script>
 
 </body>

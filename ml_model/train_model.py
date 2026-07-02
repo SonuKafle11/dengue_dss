@@ -20,40 +20,25 @@ scaler_path   = os.path.join(BASE, 'scaler.pkl')
 info_path     = os.path.join(BASE, 'dataset_info.json')
 features_path = os.path.join(BASE, 'feature_names.json')
 
-target_column = 'dengue'
+target_column = 'Outcome'   
 
 # drop derived columns — they would cause data leakage
 columns_to_drop = [
-    'symptom_score',
-    'lab_probability',
-    'symptom_probability',
-    'final_probability',
+    'Gender', 'Area', 'AreaType', 'HouseType', 'District',
+    'Fever_Duration', 'Body_Temperature',
+    'Joint_Pain', 'Headache', 'Retro_Orbital_Pain', 'Myalgia', 'Rash',
 ]
 
-# 13 patient form symptoms + 2 lab values = 15 features
-# LEFT SIDE  — symptoms patient selects on form
+
+
 # RIGHT SIDE — lab values doctor enters
 feature_list = [
-    # patient form symptoms — exact same names as patient form
-    'fever',
-    'severe_headache',
-    'joint_back_pain',
-    'nausea_vomiting',
-    'skin_rash',
-    'vomiting_more_than_3',
-    'bleeding',
-    'extreme_weakness',
-    'urine_output_low',
-    'fever_not_improving',
-    'drop_in_fever_with_weakness',
-    'cold_hands_feet',
-    'restless_drowsy',
-    'platelet_count',
-    'wbc_count',
-    'IgM_value',          # NEW
-    'IgG_value', 
+    'NS1',
+    'IgG',
+    'IgM',
+    'Platelet_Count',
+    'WBC_Count',
 ]
-
 def read_csv_file(filepath):
     all_rows = []
     header = []
@@ -134,14 +119,12 @@ def train():
 
     print("\n[3] Dropping derived columns to prevent data leakage...")
     print(f"    Dropped : {columns_to_drop}")
-    print(f"    Using   : {len(feature_list)} features (13 symptoms + platelet + WBC)")
+    print(f"    Using   : {len(feature_list)} features (NS1, IgG, IgM, platelet, WBC)")
 
     print("\n[4] Removing outliers using IQR method...")
-    platelet_idx = feature_list.index('platelet_count')
-    wbc_idx      = feature_list.index('wbc_count')
-    igm_idx      = feature_list.index('IgM_value')     # NEW
-    igg_idx      = feature_list.index('IgG_value')     # NEW
-    keep_mask, outlier_counts = remove_outliers(X, [platelet_idx, wbc_idx,  igm_idx, igg_idx])
+    platelet_idx = feature_list.index('Platelet_Count')
+    wbc_idx      = feature_list.index('WBC_Count')
+    keep_mask, outlier_counts = remove_outliers(X, [platelet_idx, wbc_idx])
     X = X[keep_mask]
     y = y[keep_mask]
     rows_removed = int(np.sum(~keep_mask))

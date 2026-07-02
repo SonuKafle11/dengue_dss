@@ -7,9 +7,12 @@
 {% block content %}
 
 <div class="app-topbar">
-    <div class="brand">Dengue DSS — Doctor Portal</div>
+    <div class="brand">Dengue DSS</div>
     <div class="user-info">
-        <span class="user-chip"><span class="name">Dr. {{ user.name }}</span><span class="uid">{{ user.user_id }}</span></span>
+        <span class="user-chip">
+            <span class="name">Dr. {{ user.name }}</span>
+            <span class="uid">{{ user.user_id }}</span>
+        </span>
         <a href="{% url 'logout' %}">Logout</a>
     </div>
 </div>
@@ -18,56 +21,90 @@
 
     <div class="page-header">
         <div>
-            <h1>Patient Review Dashboard</h1>
-            <div class="subtitle">Review patient submissions, enter lab values, and confirm dosage recommendations.</div>
+            <h1>Patient Review Queue</h1>
+            <div class="subtitle">Review submissions, enter lab values, and run ML predictions.</div>
         </div>
     </div>
 
+    <!-- Stat cards are clickable — each filters by that status -->
     <div class="stat-row">
-        <div class="stat-card">
+        <a href="{% url 'doctor_dashboard' %}{% if search %}?search={{ search }}{% endif %}"
+           class="stat-card stat-card-link {% if not status_filter %}stat-card-active{% endif %}">
             <div class="stat-label">Total Records</div>
             <div class="stat-value">{{ total }}</div>
-        </div>
-        <div class="stat-card warn">
+        </a>
+        <a href="{% url 'doctor_dashboard' %}?status=pending{% if search %}&search={{ search }}{% endif %}"
+           class="stat-card stat-card-link {% if status_filter == 'pending' %}stat-card-active{% endif %}">
             <div class="stat-label">Pending Review</div>
             <div class="stat-value">{{ pending }}</div>
-        </div>
-        <div class="stat-card ok">
+        </a>
+        <a href="{% url 'doctor_dashboard' %}?status=reviewed{% if search %}&search={{ search }}{% endif %}"
+           class="stat-card stat-card-link {% if status_filter == 'reviewed' %}stat-card-active{% endif %}">
             <div class="stat-label">Reviewed</div>
             <div class="stat-value">{{ reviewed }}</div>
-        </div>
+        </a>
     </div>
 
-    <form method="GET" class="filter-bar">
+    <!-- Search + filter bar -->
+    <form method="GET" class="filter-bar" id="filterForm">
         <div class="field">
-            <label>Search Patient</label>
-            <input type="text" name="search" value="{{ search }}" placeholder="Name or ID">
+            <label for="searchInput">Search patient</label>
+            <input
+                type="text"
+                id="searchInput"
+                name="search"
+                value="{{ search }}"
+                placeholder="Name or patient ID"
+                autocomplete="off"
+            >
         </div>
         <div class="field">
-            <label>Status</label>
-            <select name="status">
+            <label for="statusSelect">Status</label>
+            <select id="statusSelect" name="status">
                 <option value="">All</option>
-                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="pending"  {% if status_filter == 'pending'  %}selected{% endif %}>Pending</option>
                 <option value="reviewed" {% if status_filter == 'reviewed' %}selected{% endif %}>Reviewed</option>
             </select>
         </div>
         <div class="actions">
-            <button type="submit" class="btn btn-sm">Filter</button>
-            <a href="{% url 'doctor_dashboard' %}" class="btn btn-sm btn-secondary">Reset</a>
+            <button type="submit" class="btn btn-sm">Apply</button>
+            <a href="{% url 'doctor_dashboard' %}" class="btn btn-sm btn-secondary">Clear</a>
         </div>
     </form>
+
+    <!-- Active filter indicator -->
+    {% if search or status_filter %}
+    <div class="filter-indicator">
+        <span>Showing results for:</span>
+        {% if search %}<span class="filter-tag">Name / ID: <strong>{{ search }}</strong></span>{% endif %}
+        {% if status_filter %}<span class="filter-tag">Status: <strong>{{ status_filter|capfirst }}</strong></span>{% endif %}
+        <a href="{% url 'doctor_dashboard' %}" class="filter-clear">Clear all</a>
+    </div>
+    {% endif %}
 
     {% if not records %}
     <div class="card">
         <div class="empty-state">
             <h3>No records found</h3>
-            <p>There are no patient records matching your filter.</p>
+            <p>
+                {% if search or status_filter %}
+                    No submissions match your current filter. Try a different name or clear the search.
+                {% else %}
+                    No patient submissions yet.
+                {% endif %}
+            </p>
+            {% if search or status_filter %}
+            <a href="{% url 'doctor_dashboard' %}" class="btn btn-secondary btn-sm">Clear filter</a>
+            {% endif %}
         </div>
     </div>
     {% else %}
 
     <div class="card">
-        <h3>Patient Records</h3>
+        <div class="card-head">
+            <h3>Patient Records</h3>
+            <span class="record-count">{{ records|length }} record{{ records|length|pluralize }}</span>
+        </div>
         <div class="table-wrap">
             <table class="app-table">
                 <thead>
@@ -77,7 +114,7 @@
                         <th>Age / Weight</th>
                         <th>Score</th>
                         <th>Risk</th>
-                        <th>ML Prediction</th>
+                        <th>ML Result</th>
                         <th>Status</th>
                         <th>Date</th>
                         <th>Action</th>
@@ -101,14 +138,14 @@
                     </td>
                     <td>
                         {% if rec.ml_prediction %}
-                            {% if "Present" in rec.ml_prediction %}
+                            {% if "Present" in rec.ml_prediction or "Diagnosed" in rec.ml_prediction or "Highly" in rec.ml_prediction %}
                                 <span class="badge badge-positive">{{ rec.ml_prediction }}</span>
                             {% else %}
                                 <span class="badge badge-negative">{{ rec.ml_prediction }}</span>
                             {% endif %}
-                            <small style="color:#6b7280;">({{ rec.ml_confidence|floatformat:1 }}%)</small>
+                            <span class="tbl-note">{{ rec.ml_confidence|floatformat:1 }}%</span>
                         {% else %}
-                            <span style="color:#9ca3af;">—</span>
+                            <span class="tbl-empty">&mdash;</span>
                         {% endif %}
                     </td>
                     <td>
@@ -118,10 +155,10 @@
                             <span class="badge badge-pending">Pending</span>
                         {% endif %}
                     </td>
-                    <td style="color:#6b7280; font-size:13px;">{{ rec.created_at|date:"M d, Y" }}</td>
+                    <td style="white-space:nowrap; color:#6b7280; font-size:13px;">{{ rec.created_at|date:"d M Y" }}</td>
                     <td>
                         <a href="{% url 'doctor_patient_detail' rec.record_id %}" class="action-link">
-                            {% if rec.is_reviewed %}View →{% else %}Review →{% endif %}
+                            {% if rec.is_reviewed %}View{% else %}Review{% endif %}
                         </a>
                     </td>
                 </tr>
@@ -132,6 +169,14 @@
     </div>
 
     {% endif %}
+
 </div>
+
+<script>
+/* Submit form automatically when status dropdown changes */
+document.getElementById('statusSelect').addEventListener('change', function () {
+    document.getElementById('filterForm').submit();
+});
+</script>
 
 {% endblock %}

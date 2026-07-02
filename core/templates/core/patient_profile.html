@@ -7,7 +7,7 @@
 {% block content %}
 
 <div class="app-topbar">
-    <div class="brand">Dengue DSS — Patient</div>
+    <div class="brand">Dengue DSS</div>
     <div class="user-info">
         <span class="user-chip">
             <span class="name">{{ user.name }}</span>
@@ -17,77 +17,96 @@
     </div>
 </div>
 
-<div class="app-wrapper app-wrapper-narrow">
+<div class="app-wrapper">
 
-    <a href="{% url 'patient_dashboard' %}" class="back-link">← Back to Dashboard</a>
+    <a href="{% url 'patient_dashboard' %}" class="back-link">&larr; Back to Dashboard</a>
 
     <div class="page-header">
         <div>
             <h1>My Profile</h1>
-            <div class="subtitle">Update your personal information. These details will be pre-filled on your next assessment.</div>
+            <div class="subtitle">These details are pre-filled on every new assessment. Keep them up to date.</div>
         </div>
     </div>
 
     {% if messages %}
         {% for msg in messages %}
-            <div class="banner banner-info"><strong>{{ msg }}</strong></div>
+        <div class="banner banner-success"><strong>{{ msg }}</strong></div>
         {% endfor %}
     {% endif %}
 
+    <div class="card">
+        <h3>Account</h3>
+        <div class="profile-readonly-row">
+            <div class="profile-readonly-field">
+                <span class="profile-field-label">Full Name</span>
+                <span class="profile-field-value">{{ user.name }}</span>
+                <span class="profile-field-hint">Cannot be changed after registration.</span>
+            </div>
+            <div class="profile-readonly-field">
+                <span class="profile-field-label">User ID</span>
+                <span class="profile-field-value profile-field-mono">{{ user.user_id }}</span>
+                <span class="profile-field-hint">Your unique login identifier.</span>
+            </div>
+        </div>
+    </div>
+
     <div class="card form-card">
-        <h3>Personal Information</h3>
+        <h3>Personal Details</h3>
 
         <form method="POST">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" value="{{ user.name }}" disabled>
-                <small style="color:#6b7280;">Your name cannot be changed.</small>
-            </div>
+            <div class="profile-form-grid">
 
-            <div class="form-group">
-                <label>Gender</label>
-                <div style="display: flex; gap: 16px; margin-top: 4px;">
-                    <label style="display:inline-flex; align-items:center; gap:6px; font-weight:500;">
-                        <input type="radio" name="gender" value="male" {% if user.gender == 'male' %}checked{% endif %}>
-                        Male
-                    </label>
-                    <label style="display:inline-flex; align-items:center; gap:6px; font-weight:500;">
-                        <input type="radio" name="gender" value="female" {% if user.gender == 'female' %}checked{% endif %}>
-                        Female
-                    </label>
-                    <label style="display:inline-flex; align-items:center; gap:6px; font-weight:500;">
-                        <input type="radio" name="gender" value="other" {% if user.gender == 'other' %}checked{% endif %}>
-                        Other
+                <div class="form-group profile-span-full">
+                    <label>Gender</label>
+                    <div class="profile-radio-row">
+                        <label class="profile-radio-opt">
+                            <input type="radio" name="gender" value="male"   {% if user.gender == 'male'   %}checked{% endif %}> Male
+                        </label>
+                        <label class="profile-radio-opt">
+                            <input type="radio" name="gender" value="female" {% if user.gender == 'female' %}checked{% endif %}> Female
+                        </label>
+                        <label class="profile-radio-opt">
+                            <input type="radio" name="gender" value="other"  {% if user.gender == 'other'  %}checked{% endif %}> Other
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="age"
+                           value="{{ user.age|default:'' }}"
+                           min="0" max="120" placeholder="e.g. 28">
+                </div>
+
+                <div class="form-group">
+                    <label>Weight <span class="profile-unit">kg</span></label>
+                    <input type="number" name="weight" step="0.1"
+                           value="{{ user.weight|default:'' }}"
+                           min="1" max="300" placeholder="e.g. 58.5">
+                </div>
+
+                <div class="form-group">
+                    <label>Height <span class="profile-unit">cm</span></label>
+                    <input type="number" name="height" step="0.1"
+                           value="{{ user.height|default:'' }}"
+                           min="30" max="250" placeholder="e.g. 162">
+                </div>
+
+                <div class="form-group profile-span-full">
+                    <label class="profile-checkbox-label">
+                        <input type="checkbox" name="is_pregnant"
+                               {% if user.is_pregnant %}checked{% endif %}
+                               style="accent-color:#2c5aa0; width:15px; height:15px;">
+                        Currently pregnant
                     </label>
                 </div>
+
             </div>
 
-            <div class="form-group">
-                <label>Age</label>
-                <input type="number" name="age" value="{{ user.age|default:'' }}" min="0" max="120" placeholder="e.g. 28">
-            </div>
-
-            <div class="form-group">
-                <label>Weight (kg)</label>
-                <input type="number" name="weight" step="0.1" value="{{ user.weight|default:'' }}" min="1" max="300" placeholder="e.g. 58.5">
-            </div>
-
-            <div class="form-group">
-                <label>Height (cm)</label>
-                <input type="number" name="height" step="0.1" value="{{ user.height|default:'' }}" min="30" max="250" placeholder="e.g. 160">
-            </div>
-
-            <div class="form-group">
-                <label style="display:inline-flex; align-items:center; gap:8px; font-weight:500;">
-                    <input type="checkbox" name="is_pregnant" {% if user.is_pregnant %}checked{% endif %}>
-                    Pregnant
-                </label>
-            </div>
-
-            <div class="btn-row" style="margin-top: 18px;">
-                <button type="submit" class="btn">Save Profile</button>
+            <div class="btn-row" style="margin-top:24px; padding-top:18px; border-top:1px solid var(--border);">
+                <button type="submit" class="btn">Save Changes</button>
                 <a href="{% url 'patient_dashboard' %}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
