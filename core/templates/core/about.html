@@ -45,7 +45,6 @@
         >
         <div class="about-hero-overlay" aria-hidden="true"></div>
         <div class="about-hero-content">
-            <span class="page-label">Academic Project &mdash; 2026</span>
             <h1>About This System</h1>
             <p>
                 Built as a final-year academic project, this system combines a standard clinical
@@ -61,10 +60,10 @@
     <main class="about-body">
 
         <!-- ── Background ── -->
-        <section>
+        <section style="text-align:center;">
             <span class="section-kicker">Background</span>
             <h2 class="section-heading">Why this was built</h2>
-            <p class="section-subtext">
+            <p class="section-subtext" style="max-width:640px; margin-left:auto; margin-right:auto;">
                 Dengue cases are often missed or misclassified in early stages because
                 warning signs overlap with other febrile illnesses. Nurses and junior
                 doctors sometimes have limited time to apply the full WHO scoring checklist.
@@ -186,29 +185,6 @@
         </section>
 
         <hr class="about-divider">
-
-        <!-- ── Tech ── -->
-        <section>
-            <span class="section-kicker">Technical notes</span>
-            <h2 class="section-heading">Stack &amp; limitations</h2>
-
-            <div class="tech-block">
-                <p>
-                    The backend is <strong>Django 4.x</strong> with a
-                    <strong>SQLite</strong> database. The prediction model
-                    is a <strong>Naive Bayes classifier</strong> trained with
-                    <strong>scikit-learn</strong> and serialised to a
-                    <code>.pkl</code> file that loads at server startup — there
-                    are no external API calls at inference time. The dosage
-                    engine uses weight-based guidelines aligned with WHO dengue
-                    management recommendations. This project is
-                    <strong>academic in scope</strong>. It has not undergone
-                    clinical validation and is not suitable for deployment in a
-                    live healthcare setting without further review by qualified
-                    medical professionals.
-                </p>
-            </div>
-        </section>
 
     </main>
 
