@@ -440,15 +440,17 @@ table.app-table .action-link:hover { text-decoration: underline; }
     font-weight: 700;
     white-space: nowrap;
     letter-spacing: .2px;
+    background: transparent;
+    border: none;
 }
 
-.badge-low      { background: #dcfce7; color: #166534; }
-.badge-possible { background: #fef9c3; color: #854d0e; }
-.badge-high     { background: #fee2e2; color: #991b1b; }
-.badge-pending  { background: #f1f5f9; color: #475569; }
-.badge-reviewed { background: #dbeafe; color: #1e40af; }
-.badge-positive { background: #fee2e2; color: #991b1b; }
-.badge-negative { background: #dcfce7; color: #166534; }
+.badge-low      { color: #4a9e6b; }
+.badge-possible { color: #a07b2a; }
+.badge-high     { color: #c0392b; }
+.badge-pending  { color: #7a8694; }
+.badge-reviewed { color: #4a72b0; }
+.badge-positive { color: #c0392b; }
+.badge-negative { color: #4a9e6b; }
 
 /* ============================================================
    BANNERS
@@ -459,13 +461,14 @@ table.app-table .action-link:hover { text-decoration: underline; }
     margin-bottom: 14px;
     font-size: 13.5px;
     line-height: 1.55;
-    border: 1px solid;
+    border: 1px solid var(--border);
+    background: transparent;
 }
 
-.banner-info    { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
-.banner-warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
-.banner-success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
-.banner-danger  { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.banner-info    { color: #4a72b0; border-color: #c5d8f0; }
+.banner-warning { color: #a07b2a; border-color: #e8d49a; }
+.banner-success { color: #4a9e6b; border-color: #b0ddc0; }
+.banner-danger  { color: #c0392b; border-color: #e8b0ae; }
 
 /* ============================================================
    EMPTY STATE
