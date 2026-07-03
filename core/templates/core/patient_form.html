@@ -133,6 +133,31 @@
     if (h) h.addEventListener('input', updateBMI);
     updateBMI();
 }());
+// ── Pregnant checkbox — only enabled when Female is selected ──
+(function () {
+    var radios     = document.querySelectorAll('input[name="gender"]');
+    var pregnantCb = document.querySelector('input[name="is_pregnant"]');
+    var label      = pregnantCb ? pregnantCb.closest('label') : null;
+
+    function sync() {
+        var selected = document.querySelector('input[name="gender"]:checked');
+        var gender   = selected ? selected.value.toLowerCase() : '';
+        var disable  = (gender !== 'female' && gender !== 'other');
+
+        if (!pregnantCb) return;
+
+        pregnantCb.disabled = disable;
+        if (disable) pregnantCb.checked = false;
+
+        if (label) {
+            label.style.opacity = disable ? '0.4' : '1';
+            label.style.cursor  = disable ? 'not-allowed' : 'pointer';
+        }
+    }
+
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    sync(); // run on load, in case Male/Other is pre-checked
+}());
 </script>
 
 {% endblock %}

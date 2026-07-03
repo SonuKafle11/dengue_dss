@@ -67,6 +67,11 @@
       "Platelet_Count",
       "WBC_Count"
     ],
+    "binary_features": [
+      "NS1",
+      "IgG",
+      "IgM"
+    ],
     "class_priors": {
       "0": 0.4525,
       "1": 0.5475

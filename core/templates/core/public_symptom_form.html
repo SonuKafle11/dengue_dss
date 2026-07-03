@@ -13,7 +13,9 @@
 <!-- ── Navbar ── -->
 <header class="navbar">
     <div class="nav-content">
-        <h2 class="logo">Dengue DSS</h2>
+        <a href="{% url 'landing' %}" class="logo-link">
+            <h2 class="logo">Dengue DSS</h2>
+        </a>
 
         <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
             <span></span>
@@ -59,7 +61,7 @@
                     <div>
                         <label class="field-label" for="pc_age">Age <span class="required">*</span></label>
                         <input type="number" id="pc_age" name="age"
-                               min="0" max="120"
+                               min="0" max="120" required
                                value="{{ age|default:'' }}"
                                placeholder="e.g. 25">
                     </div>
@@ -68,13 +70,13 @@
                         <label class="field-label">Sex <span class="required">*</span></label>
                         <div class="radio-row">
                             <label class="radio-opt">
-                                <input type="radio" name="gender" value="male"   {% if gender == 'male'   %}checked{% endif %}> Male
+                                <input type="radio" name="gender" value="male" required  {% if gender == 'male'   %}checked{% endif %}> Male
                             </label>
                             <label class="radio-opt">
-                                <input type="radio" name="gender" value="female" {% if gender == 'female' %}checked{% endif %}> Female
+                                <input type="radio" name="gender" value="female" required {% if gender == 'female' %}checked{% endif %}> Female
                             </label>
                             <label class="radio-opt">
-                                <input type="radio" name="gender" value="other"  {% if gender == 'other'  %}checked{% endif %}> Other
+                                <input type="radio" name="gender" value="other"  required {% if gender == 'other'  %}checked{% endif %}> Other
                             </label>
                         </div>
                     </div>
@@ -192,7 +194,7 @@
     function sync() {
         var selected = document.querySelector('input[name="gender"]:checked');
         var gender   = selected ? selected.value.toLowerCase() : '';
-        var disable  = (gender === 'male' || gender === 'other');
+        var disable  = (gender === 'male');
 
         if (!pregnantCb) return;
 

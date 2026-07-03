@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from ml_model.naive_bayes import GaussianNaiveBayes
+from ml_model.naive_bayes import HybridNaiveBayes
 
 BASE         = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE)
@@ -146,14 +146,15 @@ def train():
     print(f"    Training set : {len(x_train)} rows")
     print(f"    Testing set  : {len(x_test)} rows")
 
-    print("\n[6] Scaling features using StandardScaler...")
-    scaler = StandardScaler()
-    x_train_scaled = scaler.fit_transform(x_train)
-    x_test_scaled  = scaler.transform(x_test)
-    print(f"    Scaling done (fit on train only)")
+    print("\n[6] Skipping StandardScaler — Bernoulli features (NS1/IgG/IgM) need")
+    print("    raw 0/1 values, and this model's Gaussian component computes its")
+    print("    own per-class mean/variance internally, so scaling isn't needed.")
+    x_train_scaled = x_train
+    x_test_scaled  = x_test
 
-    print("\n[7] Training Gaussian Naive Bayes...")
-    model = GaussianNaiveBayes()
+    print("\n[7] Training Hybrid Naive Bayes (Bernoulli + Gaussian)...")
+    binary_features = ['NS1', 'IgG', 'IgM']
+    model = HybridNaiveBayes(binary_features=binary_features)
     model.fit(x_train_scaled, y_train, feature_names=feature_list)
     print(f"    Classes : {model.classes}")
     print(f"    Priors  : { {k: round(v, 3) for k, v in model.class_priors.items()} }")
@@ -173,8 +174,7 @@ def train():
     print("\n[9] Saving model and scaler...")
     with open(model_path, 'wb') as f:
         pickle.dump(model, f)
-    with open(scaler_path, 'wb') as f:
-        pickle.dump(scaler, f)
+    # No scaler to save since we're not scaling features
     with open(features_path, 'w') as f:
         json.dump(feature_list, f, indent=2)
     print(f"    Saved: naive_bayes_model.pkl")

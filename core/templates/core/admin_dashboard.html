@@ -144,19 +144,20 @@
                     <td>
                         {% if rec.clinical_risk_level == 'low' %}
                             <span class="badge badge-low">Low</span>
-                        {% elif rec.clinical_risk_level == 'possible' %}
-                            <span class="badge badge-possible">Possible</span>
+                        {% comment %} {% elif rec.clinical_risk_level == 'possible' %}
+                            <span class="badge badge-possible">Possible</span> {% endcomment %}
                         {% else %}
                             <span class="badge badge-high">High</span>
                         {% endif %}
                     </td>
                     <td>
-                        {% if rec.ml_prediction %}
-                            {% if "Present" in rec.ml_prediction %}
-                                <span class="badge badge-positive">{{ rec.ml_prediction }}</span>
-                            {% else %}
-                                <span class="badge badge-negative">{{ rec.ml_prediction }}</span>
-                            {% endif %}
+                        {% if rec.ml_prediction == "Positive Dengue" %}
+    <span class="badge badge-positive">{{ rec.ml_prediction }}</span>
+{% elif rec.ml_prediction == "Negative Dengue" %}
+    <span class="badge badge-negative">{{ rec.ml_prediction }}</span>
+{% else %}
+    <span class="badge badge-pending">{{ rec.ml_prediction }}</span>
+{% endif %}
                         {% else %}
                             <span class="tbl-empty">&mdash;</span>
                         {% endif %}

@@ -15,7 +15,9 @@
     <header class="navbar">
         <div class="nav-content">
 
-            <h2 class="logo">Dengue DSS</h2>
+            <a href="{% url 'landing' %}" class="logo-link">
+                <h2 class="logo">Dengue DSS</h2>
+            </a>
 
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
                 <span></span>
@@ -47,7 +49,7 @@
         <div class="about-hero-content">
             <h1>About This System</h1>
             <p>
-                Built as a final-year academic project, this system combines a standard clinical
+                Built as a final-year academic project, this system combines a standard
                 scoring rubric with a trained machine learning model to help identify dengue risk
                 early — before a patient deteriorates.
             </p>
@@ -66,7 +68,7 @@
             <p class="section-subtext" style="max-width:640px; margin-left:auto; margin-right:auto;">
                 Dengue cases are often missed or misclassified in early stages because
                 warning signs overlap with other febrile illnesses. Nurses and junior
-                doctors sometimes have limited time to apply the full WHO scoring checklist.
+                doctors sometimes have limited time to apply the full scoring checklist.
                 This system was built to make that triage step faster and more consistent.
             </p>
         </section>
@@ -87,16 +89,16 @@
                 <div class="feature-item">
                     <h4>Public symptom check</h4>
                     <p>
-                        Visitors can submit 13 clinical symptoms without registering.
+                        Visitors can submit 14 clinical symptoms without registering.
                         No account, no personal data stored — just a quick risk check.
                     </p>
                 </div>
 
                 <div class="feature-item">
-                    <h4>Clinical scoring</h4>
+                    <h4>Scoring</h4>
                     <p>
                         Each symptom carries a weighted score. The total maps to one
-                        of three bands: Low Risk, Possible Dengue, or High Risk.
+                        of three bands: Low Risk,High Risk.
                     </p>
                 </div>
 

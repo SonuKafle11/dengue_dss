@@ -24,9 +24,9 @@ def _load():
         if not os.path.exists(MODEL_PKL):
             raise FileNotFoundError(
                 "Model not trained yet. Run: python ml_model/train_model.py")
-        with open(MODEL_PKL,  'rb') as f: _model  = pickle.load(f)
-        with open(SCALER_PKL, 'rb') as f: _scaler = pickle.load(f)
-    return _model, _scaler
+        with open(MODEL_PKL, 'rb') as f:
+            _model = pickle.load(f)
+    return _model
 
 
 def _build_vector(d):
@@ -40,15 +40,13 @@ def _build_vector(d):
     return [mapping[f] for f in FEATURES]
 
 def predict_dengue(input_dict):
-
     try:
-        model, scaler = _load()
+        model = _load()
         vec = _build_vector(input_dict)
-        X   = np.array([vec])
-        Xs  = scaler.transform(X)
-        label, confidence = model.predict_single_with_confidence(Xs[0])
+        X = np.array([vec])
+        label, confidence = model.predict_single_with_confidence(X[0])
         label_str = str(label).strip()
-        readable  = 'Highly Likely Dengue' if label_str == '1' else 'Dengue Unlikely'
+        readable  = 'Dengue' if label_str == '1' else 'NO Dengue'
         return {
             'prediction': readable,
             'confidence': round(confidence, 2),
@@ -72,7 +70,7 @@ def predict_dengue(input_dict):
 
 
 def is_model_trained():
-    return os.path.exists(MODEL_PKL) and os.path.exists(SCALER_PKL)
+    return os.path.exists(MODEL_PKL)
 
 
 def get_dataset_info():

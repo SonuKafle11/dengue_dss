@@ -3,21 +3,34 @@ import pickle
 import os
 import json
 import numpy as np
-class GaussianNaiveBayes:
-   
-    def __init__(self):
+
+
+class HybridNaiveBayes:
+    """
+    Naive Bayes that models each feature with the distribution that actually
+    fits it:
+      - Binary lab markers (NS1, IgG, IgM: values 0 or 1)  -> Bernoulli
+      - Continuous lab values (Platelet_Count, WBC_Count)  -> Gaussian
+
+    A pure GaussianNaiveBayes forces binary 0/1 features through a
+    mean/variance model that doesn't represent them well, which can dilute
+    genuinely strong signals (e.g. NS1 positivity correlating with Outcome
+    in ~83% of cases in training data). Bernoulli directly models
+    P(feature=1 | class), which is the correct distribution for binary data.
+    """
+
+    def __init__(self, binary_features=None):
+        self.binary_features = binary_features or []
+
         self.classes = []
-        self.class_priors = {}       # P(class)
-        self.class_means = {}        # mean per feature per class
-        self.class_variances = {}    # variance per feature per class
+        self.class_priors = {}
         self.feature_names = []
 
+        self.class_means = {}
+        self.class_variances = {}
+        self.class_bernoulli_p = {}
+
     def fit(self, X, y, feature_names=None):
-        """
-        Train the Naive Bayes model.
-        X: list of lists or 2D array (n_samples x n_features)
-        y: list of labels
-        """
         X = np.array(X, dtype=float)
         y = np.array(y)
 
@@ -26,44 +39,48 @@ class GaussianNaiveBayes:
         n_samples = len(y)
 
         for cls in self.classes:
-            # Get all rows belonging to this class
             X_cls = X[y == cls]
-
-            # P(class) = count(class) / total
             self.class_priors[cls] = len(X_cls) / n_samples
 
-            # Mean of each feature for this class
-            self.class_means[cls] = np.mean(X_cls, axis=0)
+            self.class_means[cls] = {}
+            self.class_variances[cls] = {}
+            self.class_bernoulli_p[cls] = {}
 
-            # Variance of each feature for this class (add small epsilon to avoid zero variance)
-            self.class_variances[cls] = np.var(X_cls, axis=0) + 1e-9
+            for i, fname in enumerate(self.feature_names):
+                col = X_cls[:, i]
+                if fname in self.binary_features:
+                    p = (np.sum(col == 1) + 1) / (len(col) + 2)
+                    self.class_bernoulli_p[cls][fname] = p
+                else:
+                    self.class_means[cls][fname] = np.mean(col)
+                    self.class_variances[cls][fname] = np.var(col) + 1e-9
 
         return self
 
-    def _gaussian_probability(self, x, mean, variance):
-        """
-        Calculating Gaussian probability density.
-        P(x | mean, variance) = (1 / sqrt(2*pi*var)) * exp(-(x-mean)^2 / (2*var))
-        Usesing log to avoid numerical underflow.
-        """
+    def _gaussian_log_prob(self, x, mean, variance):
         log_prob = -0.5 * math.log(2 * math.pi * variance)
         log_prob -= ((x - mean) ** 2) / (2 * variance)
         return log_prob
 
+    def _bernoulli_log_prob(self, x, p):
+        p = min(max(p, 1e-9), 1 - 1e-9)
+        return x * math.log(p) + (1 - x) * math.log(1 - p)
+
     def _predict_single(self, x):
-        #Predicting class and log-probabilities for a single sample.
         x = np.array(x, dtype=float)
         log_posteriors = {}
 
         for cls in self.classes:
-            # Start with log prior: log P(class)
             log_posterior = math.log(self.class_priors[cls])
 
-            # Add log likelihoods: sum of log P(xi | class)
-            for i in range(len(x)):
-                mean = self.class_means[cls][i]
-                variance = self.class_variances[cls][i]
-                log_posterior += self._gaussian_probability(x[i], mean, variance)
+            for i, fname in enumerate(self.feature_names):
+                if fname in self.binary_features:
+                    p = self.class_bernoulli_p[cls][fname]
+                    log_posterior += self._bernoulli_log_prob(x[i], p)
+                else:
+                    mean = self.class_means[cls][fname]
+                    variance = self.class_variances[cls][fname]
+                    log_posterior += self._gaussian_log_prob(x[i], mean, variance)
 
             log_posteriors[cls] = log_posterior
 
@@ -84,14 +101,10 @@ class GaussianNaiveBayes:
 
         for x in X:
             log_posteriors = self._predict_single(x)
-
-            # Convert log-posteriors to probabilities using softmax
             log_values = np.array([log_posteriors[cls] for cls in self.classes])
-            # Subtract max for numerical stability
             log_values -= np.max(log_values)
             exp_values = np.exp(log_values)
             probs = exp_values / np.sum(exp_values)
-
             probabilities.append(probs)
 
         return np.array(probabilities)
@@ -108,5 +121,6 @@ class GaussianNaiveBayes:
             'classes': [str(c) for c in self.classes],
             'n_features': len(self.feature_names),
             'feature_names': self.feature_names,
+            'binary_features': self.binary_features,
             'class_priors': {str(k): float(v) for k, v in self.class_priors.items()},
         }

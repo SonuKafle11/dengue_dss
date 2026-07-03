@@ -87,12 +87,30 @@ def public_symptom_check(request):
         gender  = request.POST.get('gender', '')
         pregnant = 'pregnant' in request.POST
 
-        # Validate age
+        if not age_str:
+            messages.error(request, 'Age is required for risk assessment.')
+            return render(request, 'core/public_symptom_form.html', {
+                'symptoms': SYMPTOM_FIELDS, 'selected': selected,
+            })
         try:
-            age = float(age_str) if age_str else None
+            age = float(age_str)
         except ValueError:
-            age = None
+            messages.error(request, 'Age must be a valid number.')
+            return render(request, 'core/public_symptom_form.html', {
+                'symptoms': SYMPTOM_FIELDS, 'selected': selected,
+            })  
+        if age<=0:
+            messages.error(request, 'Age must be a positive number.')
+            return render(request, 'core/public_symptom_form.html', {
+                'symptoms': SYMPTOM_FIELDS, 'selected': selected,
+            })
+        if gender not in ('male', 'female', 'other'):
+            messages.error(request, 'Please select your sex/gender.')
+            return render(request, 'core/public_symptom_form.html', {
+                'symptoms': SYMPTOM_FIELDS, 'selected': selected,
+            })
 
+        # Validate age
         score = sum(SYMPTOM_WEIGHTS.get(s, 0) for s in selected)
         if age and age >= 70:
             score += 2
@@ -116,6 +134,7 @@ def public_symptom_check(request):
 
     return render(request, 'core/public_symptom_form.html', {
         'symptoms': SYMPTOM_FIELDS, 'selected': [],
+        'age_value': '', 'gender_value': '', 'pregnant_value': False,
     })
 
 def register(request):
@@ -231,8 +250,8 @@ def patient_form(request):
                 raise ValueError("Height must be positive (in cm).")
             is_pregnant = request.POST.get('is_pregnant') == 'on'
             if is_pregnant:
-                if gender != "female":
-                    messages.error(request, "Only females can be pregnant.")
+                if gender not in ("female", "other"):
+                    messages.error(request, "Only females or non-binary/other patients can be marked as pregnant.")
                     return redirect('patient_form')
                 if age < 10:
                     messages.error(request, "Pregnancy not valid for age below 10.")
@@ -391,21 +410,19 @@ def doctor_patient_detail(request, record_id):
             }
             ml_res = predict_dengue(ml_input)
 
-            # Rule-based interpretation (priority order)
-            platelet_low = platelet < 150000      
-            wbc_low      = wbc < 4000              
-
+            # Prediction  directly from the trained model's output
             if ns1 == 1 or igm == 1:
-                rec.ml_prediction = 'Diagnosed Dengue'
+                rec.ml_prediction = 'Positive Dengue'
                 rec.ml_confidence = 100.0
-            elif platelet_low or wbc_low:
-                rec.ml_prediction = 'Dengue Highly Likely'
+            elif ml_res['raw_label'] == '1':
+                rec.ml_prediction = 'Positive Dengue'
                 rec.ml_confidence = ml_res['confidence']
-            elif igg == 1:
-                rec.ml_prediction = 'Past or Recent Dengue'
+            elif ml_res['raw_label'] == '0':
+                rec.ml_prediction = 'Negative Dengue'
                 rec.ml_confidence = ml_res['confidence']
             else:
-                rec.ml_prediction = 'Dengue Less Likely'
+                # Model not trained yet, or prediction failed
+                rec.ml_prediction = ml_res['prediction']   # 'Pending (Model Not Trained)' or 'Error'
                 rec.ml_confidence = ml_res['confidence']
 
             dosage_rec = recommend_dosage(

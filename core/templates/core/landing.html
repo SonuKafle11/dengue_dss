@@ -15,7 +15,9 @@
     <header class="navbar">
         <div class="nav-content">
 
-            <h2 class="logo">Dengue DSS</h2>
+            <a href="{% url 'landing' %}" class="logo-link">
+                <h1 class="logo">Dengue DSS</h1>
+            </a>
 
             <!-- hamburger button -->
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
@@ -59,7 +61,7 @@
 
             <p class="intro">
                 Dengue fever spreads through mosquito bites and can escalate quickly.
-                This system checks your symptoms against a clinical scoring model,
+                This system checks your symptoms against a scoring model,
                 flags warning signs early, and tells you whether you need to see a doctor right away.
             </p>
 
