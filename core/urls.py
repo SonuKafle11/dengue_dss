@@ -15,9 +15,11 @@ urlpatterns = [
     
     path('patient/profile/', views.patient_profile, name='patient_profile'),
     # Auth
-    path('register/', views.register,    name='register'),
-    path('login/',    views.login_view,  name='login'),
-    path('logout/',   views.logout_view, name='logout'),
+    path('register/',         views.register,              name='register'),
+    path('register/verify/',  views.register_otp_verify,   name='register_otp_verify'),
+    path('login/',            views.login_view,             name='login'),
+    path('login/verify/',     views.login_otp_verify,      name='login_otp_verify'),
+    path('logout/',           views.logout_view,            name='logout'),
 
     # Admin auth
     path('admin-login/',  views.admin_login,  name='admin_login'),

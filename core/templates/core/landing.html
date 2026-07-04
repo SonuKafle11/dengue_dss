@@ -41,39 +41,60 @@
     ====================================================== -->
     <section class="home-section">
 
-        <img
-            src="{% static 'images/hero-bg.png' %}"
-            alt=""
-            class="hero-background"
-            aria-hidden="true"
-        >
-        <div class="hero-overlay" aria-hidden="true"></div>
+        <div class="hero-left">
 
-        <div class="hero-content">
-
-            <span class="hero-eyebrow">Clinical Risk Assessment Tool</span>
+            <div class="hero-eyebrow">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Clinical Risk Assessment Tool
+            </div>
 
             <h1>Know Your Dengue Risk<br>Before It Gets Serious</h1>
 
-            <p class="tagline">
-                Fast, symptom-based screening — no login required.
-            </p>
+            <p class="tagline">Fast, symptom-based screening — no login required.</p>
+
+            <hr class="hero-divider">
 
             <p class="intro">
-                Dengue fever spreads through mosquito bites and can escalate quickly.
-                This system checks your symptoms against a scoring model,
-                flags warning signs early, and tells you whether you need to see a doctor right away.
+                Dengue fever spreads through mosquito bites and can
+                escalate quickly. This system checks your symptoms
+                against a scoring model, flags warning signs early, and
+                tells you whether you need to see a doctor right away.
             </p>
 
             <div class="button-group">
                 <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                     Check My Symptoms
                 </a>
                 <a href="{% url 'about' %}" class="btn btn-secondary">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     How It Works
                 </a>
             </div>
 
+            <div class="hero-badges">
+                <div class="hero-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Private<br>Assessment</span>
+                </div>
+                <div class="hero-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>Instant<br>Results</span>
+                </div>
+                <div class="hero-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                    <span>Early Detection<br>Saves Lives</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="hero-right">
+            <img
+                src="{% static 'images/hero-bg.png' %}"
+                alt="Doctor"
+                class="hero-doctor-img"
+            >
         </div>
 
     </section>

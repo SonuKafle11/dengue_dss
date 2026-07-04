@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}New Assessment{% endblock %}
+{% block body_attrs %}data-auth-required="1"{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/form.css' %}">
 {% endblock %}
@@ -11,7 +12,6 @@
     <div class="user-info">
         <span class="user-chip">
             <span class="name">{{ user.name }}</span>
-            <span class="uid">{{ user.user_id }}</span>
         </span>
         <a href="{% url 'patient_dashboard' %}" class="back-link">Back to Dashboard</a>
     </div>

@@ -204,6 +204,31 @@ p[style] { text-align: left; }
     text-align: left;
 }
 
+/* ── Per-field validation error ── */
+.field-error {
+    margin: 4px 0 8px;
+    color: #b91c1c;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+}
+
+/* ── Success message box (flash messages) ── */
+.success-msg-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 12px 14px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.success-msg-box p {
+    margin: 0;
+    color: #15803d;
+    font-size: 13px;
+    text-align: left;
+}
+
 /* ── Responsive ── */
 @media (max-width: 560px) {
     .container {

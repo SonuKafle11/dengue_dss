@@ -19,10 +19,16 @@ class User(models.Model):
 
     user_id  = models.CharField(max_length=10, unique=True, default=generate_user_id, primary_key=True)
     name     = models.CharField(max_length=100)
+    email    = models.EmailField(max_length=254, unique=True, null=True, blank=True)
+    email_verified = models.BooleanField(default=False)
     password = models.CharField(max_length=255)
     role     = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
-    # NEW — patient profile fields (used when role = 'patient')
+    # OTP verification fields
+    otp_code       = models.CharField(max_length=6, null=True, blank=True)
+    otp_expires_at = models.DateTimeField(null=True, blank=True)
+
+    # Patient profile fields (used when role = 'patient')
     age         = models.FloatField(null=True, blank=True)
     weight      = models.FloatField(null=True, blank=True)
     height      = models.FloatField(null=True, blank=True)
@@ -30,7 +36,7 @@ class User(models.Model):
     is_pregnant = models.BooleanField(default=False)
 
     created_at  = models.DateTimeField(auto_now_add=True)
-    updated_at  = models.DateTimeField(auto_now=True)   # NEW
+    updated_at  = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.name} ({self.role}) - {self.user_id}"

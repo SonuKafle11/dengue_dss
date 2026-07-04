@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Doctor Dashboard{% endblock %}
+{% block body_attrs %}data-auth-required="1"{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
@@ -11,7 +12,6 @@
     <div class="user-info">
         <span class="user-chip">
             <span class="name">Dr. {{ user.name }}</span>
-            <span class="uid">{{ user.user_id }}</span>
         </span>
         <a href="{% url 'logout' %}">Logout</a>
     </div>
@@ -110,7 +110,6 @@
                 <thead>
                     <tr>
                         <th>Patient</th>
-                        <th>ID</th>
                         <th>Age / Weight</th>
                         <th>Score</th>
                         <th>Risk</th>
@@ -124,7 +123,7 @@
                 {% for rec in records %}
                 <tr>
                     <td><strong>{{ rec.patient.name }}</strong></td>
-                    <td><span class="user-id-cell">{{ rec.patient.user_id }}</span></td>
+                    <td><span class="user-id-cell">{{ rec.patient.name }}</span></td>
                     <td>{{ rec.age|floatformat:0 }} yr / {{ rec.weight }} kg</td>
                     <td><strong>{{ rec.clinical_score }}</strong></td>
                     <td>

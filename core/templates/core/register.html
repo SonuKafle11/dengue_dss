@@ -1,22 +1,10 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
-{% block title %}Register{% endblock %}
-
+{% block title %}Register — Dengue DSS{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 {% endblock %}
-
 {% block content %}
-
-{% if registered_id %}
-<div class="success-box">
-    <h2>Registration Successful</h2>
-    <p>Your unique ID is: <strong>{{ registered_id }}</strong></p>
-    <p>Please save this ID. You'll use it to log in.</p>
-    <p><a href="{% url 'login' %}" class="btn">Go to Login</a></p>
-</div>
-{% else %}
 
 <h1>{% if as_role == 'doctor' %}Doctor{% else %}Patient{% endif %} Registration</h1>
 
@@ -30,26 +18,75 @@
 </p>
 
 {% if messages %}
-    <div class="error-box">
-        {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
-    </div>
+    {% for msg in messages %}
+        <div class="{% if 'successfully' in msg|lower %}success-box{% else %}error-box{% endif %}">
+            <p>{{ msg }}</p>
+        </div>
+    {% endfor %}
 {% endif %}
 
-<form method="POST">
+<form method="POST" novalidate>
     {% csrf_token %}
-    <input type="hidden" name="role" value="{{ as_role }}">
+    {{ form.role }}
 
-    <label>Full Name:</label>
-    <input type="text" name="name" required autofocus>
+    <label for="id_name">Full Name</label>
+    <input
+        type="text"
+        name="name"
+        id="id_name"
+        value="{{ form.name.value|default:'' }}"
+        placeholder="Your full name"
+        required
+        autofocus
+    >
+    {% if form.name.errors %}
+        <p class="field-error">{{ form.name.errors|join:", " }}</p>
+    {% endif %}
 
-    <label>Password:</label>
-    <input type="password" name="password" required>
+    <label for="id_email">Email address</label>
+    <input
+        type="email"
+        name="email"
+        id="id_email"
+        value="{{ form.email.value|default:'' }}"
+        placeholder="you@example.com"
+        required
+    >
+    {% if form.email.errors %}
+        <p class="field-error">{{ form.email.errors|join:", " }}</p>
+    {% endif %}
 
-    <button type="submit">Register</button>
+    <label for="id_password">Password <span style="font-size:12px; color:#6b7280;">(min 8 characters)</span></label>
+    <input
+        type="password"
+        name="password"
+        id="id_password"
+        placeholder="Create a password"
+        required
+    >
+    {% if form.password.errors %}
+        <p class="field-error">{{ form.password.errors|join:", " }}</p>
+    {% endif %}
+
+    <label for="id_confirm_password">Confirm Password</label>
+    <input
+        type="password"
+        name="confirm_password"
+        id="id_confirm_password"
+        placeholder="Re-enter your password"
+        required
+    >
+    {% if form.confirm_password.errors %}
+        <p class="field-error">{{ form.confirm_password.errors|join:", " }}</p>
+    {% endif %}
+
+    <button type="submit">Continue — Verify Email</button>
+    <p style="font-size:12px; color:#6b7280; text-align:center; margin-top:10px;">
+        A 6-digit verification code will be sent to your email before your account is created.
+    </p>
 </form>
 
 <br>
 <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
 
-{% endif %}
 {% endblock %}

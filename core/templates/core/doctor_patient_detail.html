@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Review — {{ record.patient.name }}{% endblock %}
+{% block body_attrs %}data-auth-required="1"{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
@@ -11,7 +12,6 @@
     <div class="user-info">
         <span class="user-chip">
             <span class="name">Dr. {{ doctor.name }}</span>
-            <span class="uid">{{ doctor.user_id }}</span>
         </span>
         <a href="{% url 'logout' %}">Logout</a>
     </div>
@@ -26,7 +26,6 @@
             <h1>{{ record.patient.name }}</h1>
             <div class="subtitle">
                 {{ record.created_at|date:"l, F d, Y · H:i" }}
-                &nbsp;&middot;&nbsp; ID: {{ record.patient.user_id }}
             </div>
         </div>
     </div>
@@ -46,10 +45,6 @@
                 <div class="info-item">
                     <div class="info-label">Name</div>
                     <div class="info-value">{{ record.patient.name }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Patient ID</div>
-                    <div class="info-value" style="font-family:'Courier New',monospace; font-size:13px;">{{ record.patient.user_id }}</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Age</div>

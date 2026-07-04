@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}My Profile{% endblock %}
+{% block body_attrs %}data-auth-required="1"{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
@@ -11,7 +12,6 @@
     <div class="user-info">
         <span class="user-chip">
             <span class="name">{{ user.name }}</span>
-            <span class="uid">{{ user.user_id }}</span>
         </span>
         <a href="{% url 'logout' %}">Logout</a>
     </div>
@@ -43,9 +43,9 @@
                 <span class="profile-field-hint">Cannot be changed after registration.</span>
             </div>
             <div class="profile-readonly-field">
-                <span class="profile-field-label">User ID</span>
-                <span class="profile-field-value profile-field-mono">{{ user.user_id }}</span>
-                <span class="profile-field-hint">Your unique login identifier.</span>
+                <span class="profile-field-label">Email</span>
+                <span class="profile-field-value">{{ user.email|default:"—" }}</span>
+                <span class="profile-field-hint">Used for login and OTP verification.</span>
             </div>
         </div>
     </div>

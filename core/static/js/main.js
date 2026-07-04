@@ -117,3 +117,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // Run once on load in case a value is already selected (e.g. form re-render)
     syncPregnant();
 });
+
+
+/* ============================================================
+   Back-button session guard
+   Forces a server round-trip on every page show (including
+   browser back/forward cache). If the session cookie is gone
+   the server will redirect to login — the cached page is
+   never actually displayed to a logged-out user.
+   ============================================================ */
+window.addEventListener('pageshow', function (event) {
+    // persisted = true means the page came from the back/forward cache
+    // We also check bfcache restoration events
+    var isProtected = document.body && document.body.dataset.authRequired === '1';
+    if (!isProtected) return;
+
+    if (event.persisted) {
+        // Page was served from bfcache — force a reload so the server
+        // can check the session and redirect if logged out
+        window.location.reload();
+    }
+});

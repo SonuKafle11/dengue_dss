@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Admin Dashboard{% endblock %}
+{% block body_attrs %}data-auth-required="1"{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
 {% endblock %}
@@ -94,7 +95,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>User ID</th>
+                        <th>Email</th>
                         <th>Role</th>
                         <th>Registered</th>
                         <th>Action</th>
@@ -104,7 +105,7 @@
                 {% for u in users %}
                 <tr>
                     <td><strong>{{ u.name }}</strong></td>
-                    <td><span class="user-id-cell">{{ u.user_id }}</span></td>
+                    <td>{{ u.email|default:"—" }}</td>
                     <td><span class="badge {% if u.role == 'doctor' %}badge-reviewed{% else %}badge-pending{% endif %}">{{ u.role|capfirst }}</span></td>
                     <td style="white-space:nowrap;">{{ u.created_at|date:"d M Y" }}</td>
                     <td>
@@ -152,12 +153,11 @@
                     </td>
                     <td>
                         {% if rec.ml_prediction == "Positive Dengue" %}
-    <span class="badge badge-positive">{{ rec.ml_prediction }}</span>
-{% elif rec.ml_prediction == "Negative Dengue" %}
-    <span class="badge badge-negative">{{ rec.ml_prediction }}</span>
-{% else %}
-    <span class="badge badge-pending">{{ rec.ml_prediction }}</span>
-{% endif %}
+                            <span class="badge badge-positive">{{ rec.ml_prediction }}</span>
+                        {% elif rec.ml_prediction == "Negative Dengue" %}
+                            <span class="badge badge-negative">{{ rec.ml_prediction }}</span>
+                        {% elif rec.ml_prediction %}
+                            <span class="badge badge-pending">{{ rec.ml_prediction }}</span>
                         {% else %}
                             <span class="tbl-empty">&mdash;</span>
                         {% endif %}
