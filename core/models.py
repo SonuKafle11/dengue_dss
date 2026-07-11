@@ -24,9 +24,7 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     role     = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
-    # OTP verification fields
-    otp_code       = models.CharField(max_length=6, null=True, blank=True)
-    otp_expires_at = models.DateTimeField(null=True, blank=True)
+    
 
     # Patient profile fields (used when role = 'patient')
     age         = models.FloatField(null=True, blank=True)

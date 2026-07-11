@@ -1,9 +1,6 @@
 """
 Dosage engine for the Dengue DSS.
 
-Dosage is calculated based on BMI (Body Mass Index) instead of raw body weight.
-    BMI = weight(kg) / height(cm)^2 * 10000
-
 A "dosing weight" is derived from BMI so that under/overweight patients are not
 under- or over-dosed when only raw weight is used. The dosing weight is the
 patient's actual weight adjusted toward a normal-BMI weight when their BMI

@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Only run on the PUBLIC form — patient form has #age and #height ids,
     // public form does not use those same ids
-    var isPublicForm = !document.getElementById('height');
+    
     if (!isPublicForm) return;
 
     function syncPregnant() {
