@@ -1,4 +1,3 @@
-import re
 from django import forms
 from .models import User
 
@@ -74,31 +73,6 @@ class LoginForm(forms.Form):
         return self.cleaned_data.get('email', '').strip().lower()
 
 
-class OTPForm(forms.Form):
-    code = forms.CharField(
-        max_length=6,
-        min_length=6,
-        widget=forms.TextInput(attrs={
-            'placeholder': '6-digit code',
-            'autofocus': True,
-            'inputmode': 'numeric',
-            'autocomplete': 'one-time-code',
-            'maxlength': '6',
-        }),
-        error_messages={
-            'required': 'Please enter the OTP code.',
-            'min_length': 'OTP must be exactly 6 digits.',
-            'max_length': 'OTP must be exactly 6 digits.',
-        },
-    )
-
-    def clean_code(self):
-        code = self.cleaned_data.get('code', '').strip()
-        if not code.isdigit():
-            raise forms.ValidationError('OTP must contain digits only.')
-        return code
-
-
 class PatientProfileForm(forms.Form):
     GENDER_CHOICES = [
         ('', 'Select gender'),
@@ -114,10 +88,6 @@ class PatientProfileForm(forms.Form):
     weight = forms.FloatField(
         required=False,
         widget=forms.NumberInput(attrs={'placeholder': 'Weight (kg)', 'min': '1', 'max': '300', 'step': '0.1'}),
-    )
-    height = forms.FloatField(
-        required=False,
-        widget=forms.NumberInput(attrs={'placeholder': 'Height (cm)', 'min': '30', 'max': '250', 'step': '0.1'}),
     )
     gender = forms.ChoiceField(
         choices=GENDER_CHOICES,
@@ -143,15 +113,6 @@ class PatientProfileForm(forms.Form):
             if weight > 300:
                 raise forms.ValidationError('Weight must be 300 kg or below.')
         return weight
-
-    def clean_height(self):
-        height = self.cleaned_data.get('height')
-        if height is not None:
-            if height <= 0:
-                raise forms.ValidationError('Height must be a positive number.')
-            if height > 250:
-                raise forms.ValidationError('Height must be 250 cm or below.')
-        return height
 
     def clean_gender(self):
         gender = self.cleaned_data.get('gender', '')

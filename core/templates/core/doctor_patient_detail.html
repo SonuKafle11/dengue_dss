@@ -55,14 +55,6 @@
                     <div class="info-value">{{ record.weight }} kg</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Height</div>
-                    <div class="info-value">{{ record.height }} cm</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">BMI</div>
-                    <div class="info-value">{{ record.get_bmi }}</div>
-                </div>
-                <div class="info-item">
                     <div class="info-label">Pregnant</div>
                     <div class="info-value">{% if record.is_pregnant %}Yes{% else %}No{% endif %}</div>
                 </div>
@@ -127,8 +119,8 @@
                     <label>NS1 Antigen</label>
                     <select name="ns1_status" required>
                         <option value="">Select result</option>
-                        <option value="positive" {% if record.ns1_antigen == 'positive' %}selected{% endif %}>Positive</option>
-                        <option value="negative" {% if record.ns1_antigen == 'negative' %}selected{% endif %}>Negative</option>
+                        <option value="positive" {% if record.ns1 == 1.0 %}selected{% endif %}>Positive</option>
+                        <option value="negative" {% if record.ns1 == 0.0 %}selected{% endif %}>Negative</option>
                     </select>
                     <span class="hint">Positive = early or active dengue infection</span>
                 </div>
@@ -151,8 +143,8 @@
                     <label>IgG Result</label>
                     <select name="igg_status" required>
                         <option value="">Select result</option>
-                        <option value="positive" {% if record.igg == 'positive' %}selected{% endif %}>Positive</option>
-                        <option value="negative" {% if record.igg == 'negative' %}selected{% endif %}>Negative</option>
+                        <option value="positive" {% if record.igg == 1.0 %}selected{% endif %}>Positive</option>
+                        <option value="negative" {% if record.igg == 0.0 %}selected{% endif %}>Negative</option>
                     </select>
                     <span class="hint">Positive = past or secondary dengue exposure</span>
                 </div>
@@ -161,8 +153,8 @@
                     <label>IgM Result</label>
                     <select name="igm_status" required>
                         <option value="">Select result</option>
-                        <option value="positive" {% if record.igm == 'positive' %}selected{% endif %}>Positive</option>
-                        <option value="negative" {% if record.igm == 'negative' %}selected{% endif %}>Negative</option>
+                        <option value="positive" {% if record.igm == 1.0 %}selected{% endif %}>Positive</option>
+                        <option value="negative" {% if record.igm == 0.0 %}selected{% endif %}>Negative</option>
                     </select>
                     <span class="hint">Positive = recent or active dengue infection</span>
                 </div>

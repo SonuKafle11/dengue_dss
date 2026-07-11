@@ -109,10 +109,12 @@
                     <td><span class="badge {% if u.role == 'doctor' %}badge-reviewed{% else %}badge-pending{% endif %}">{{ u.role|capfirst }}</span></td>
                     <td style="white-space:nowrap;">{{ u.created_at|date:"d M Y" }}</td>
                     <td>
-                        <form method="POST" action="{% url 'admin_delete_user' u.user_id %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm" style="background:#dc2626; border-color:#dc2626; padding:4px 10px; font-size:12px;" onclick="return confirm('Delete {{ u.name }}?')">Delete</button>
-                        </form>
+                        <button
+                            class="btn btn-sm btn-delete-user"
+                            data-url="{% url 'admin_delete_user' u.user_id %}"
+                            data-name="{{ u.name }}"
+                            style="background:#dc2626; border-color:#dc2626; padding:4px 10px; font-size:12px;"
+                        >Delete</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -178,10 +180,11 @@
                     </td>
                     <td style="white-space:nowrap;">{{ rec.created_at|date:"d M Y" }}</td>
                     <td>
-                        <form method="POST" action="{% url 'admin_delete_record' rec.record_id %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm" style="background:#dc2626; border-color:#dc2626; padding:4px 10px; font-size:12px;" onclick="return confirm('Delete this record?')">Delete</button>
-                        </form>
+                        <button
+                            class="btn btn-sm btn-delete-record"
+                            data-url="{% url 'admin_delete_record' rec.record_id %}"
+                            style="background:#dc2626; border-color:#dc2626; padding:4px 10px; font-size:12px;"
+                        >Delete</button>
                     </td>
                 </tr>
                 {% endfor %}

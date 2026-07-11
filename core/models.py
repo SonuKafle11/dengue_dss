@@ -31,7 +31,6 @@ class User(models.Model):
     # Patient profile fields (used when role = 'patient')
     age         = models.FloatField(null=True, blank=True)
     weight      = models.FloatField(null=True, blank=True)
-    height      = models.FloatField(null=True, blank=True)
     gender      = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
     is_pregnant = models.BooleanField(default=False)
 
@@ -60,7 +59,6 @@ class PatientRecord(models.Model):
 
     age = models.FloatField()
     weight = models.FloatField()
-    height = models.FloatField(default=0) 
     gender = models.CharField(
     max_length=10,
     choices=[('male','Male'), ('female','Female'), ('other','Other')]
@@ -87,6 +85,7 @@ class PatientRecord(models.Model):
 
     platelet_count = models.FloatField(null=True, blank=True)
     wbc_count = models.FloatField(null=True, blank=True)
+    ns1 = models.FloatField(null=True, blank=True)
     igg = models.FloatField(null=True, blank=True)
     igm = models.FloatField(null=True, blank=True)
 
@@ -106,19 +105,19 @@ class PatientRecord(models.Model):
     def calculate_clinical_score(self):
         score = 0
         score += 1 if self.fever else 0
-        score += 3 if self.severe_headache else 0
-        score += 1 if self.joint_back_pain else 0
-        score += 3 if self.nausea_vomiting else 0
-        score += 1 if self.skin_rash else 0
-        score += 3 if self.vomiting_more_than_3 else 0
+        score += 2 if self.severe_headache else 0
+        score += 2 if self.joint_back_pain else 0
+        score += 1 if self.nausea_vomiting else 0
+        score += 0.5 if self.skin_rash else 0
+        score += 2 if self.vomiting_more_than_3 else 0
         score += 3 if self.bleeding else 0
         score += 3 if self.extreme_weakness else 0
         score += 3 if self.urine_output_low else 0
-        score += 1 if self.fever_not_improving else 0
+        score += 2 if self.fever_not_improving else 0
         score += 3 if self.drop_in_fever_with_weakness else 0
-        score += 3 if self.cold_hands_feet else 0
+        score += 1 if self.cold_hands_feet else 0
         score += 3 if self.restless_drowsy else 0
-        score += 3 if self.abdominal_pain else 0
+        score += 1 if self.abdominal_pain else 0
         # Age and pregnancy bonuses
         if self.age and self.age > 70:
             score += 1
@@ -127,19 +126,11 @@ class PatientRecord(models.Model):
         return score
 
     def get_risk_level(self, score):
-        if score < 3:
+        if score < 4:
             return 'low'
         else:
             return 'high'
         
-    def get_bmi(self):
-        """Body Mass Index = weight(kg) / height(cm)^2 * 10000"""
-        try:
-            if self.height and self.height > 0:
-                return round((self.weight / (self.height * self.height)) * 10000, 2)
-        except (TypeError, ZeroDivisionError):
-            pass
-        return 0
 
     def save(self, *args, **kwargs):
         self.clinical_score = self.calculate_clinical_score()

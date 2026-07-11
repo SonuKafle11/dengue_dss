@@ -13,13 +13,9 @@
 <header class="navbar">
     <div class="nav-content">
         <h2 class="logo">Dengue DSS</h2>
-
         <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
         </button>
-
         <ul class="nav-links" id="navLinks" role="list">
             <li><a href="{% url 'landing' %}">Home</a></li>
             <li><a href="{% url 'about' %}">About Us</a></li>
@@ -31,66 +27,68 @@
 
 <main class="result-main">
     <div class="back-section">
-        <a href="{% url 'public_symptom_check' %}" class="back-link">← Back to symptom check</a>
+        <a href="{% url 'public_symptom_check' %}" class="back-link">&#8592; Back to symptom check</a>
     </div>
 
     <div class="result-container">
         <h1 class="result-page-title">Your Assessment Result</h1>
 
+        <!-- Section 1 — result card -->
         <div class="result-card result-card-{{ risk_key }}">
             <div class="result-header">
-                <p class="result-label">Risk Level</p>
+                <p class="result-label">Screening Result</p>
                 <h2 class="result-risk">{{ risk_label }}</h2>
                 <div class="result-stats">
-                    <span class="stat-item">Clinical Score: <strong>{{ score }}</strong></span>
-                    <span class="stat-item">Symptoms: <strong>{{ selected|length }}</strong></span>
+                    <span class="stat-item">Score: <strong>{{ score }}</strong></span>
+                    <span class="stat-item">Symptoms reported: <strong>{{ selected|length }}</strong></span>
                 </div>
             </div>
 
             <div class="result-content">
                 {% if risk_key == 'low' %}
                     <p class="result-message">
-                        Your symptoms suggest a <strong>low risk</strong> of severe dengue right now. Rest, drink fluids, and watch your symptoms over the next 24 to 48 hours.
+                        Based on the symptoms you reported, your score falls in the <strong>low risk</strong> range. This does not rule out dengue, but your symptoms are not currently indicating severe illness.
                     </p>
                     <div class="advice-section">
-                        <h3 class="advice-title">What You Should Do</h3>
+                        <h3 class="advice-title">What to do now</h3>
                         <ul class="advice-list">
-                            <li>Take paracetamol for fever — not aspirin or ibuprofen.</li>
-                            <li>Drink water, ORS, or coconut water regularly.</li>
-                            <li>Monitor your symptoms closely over the next 48 hours.</li>
-                            <li>Re-check here if new symptoms appear, especially bleeding or vomiting.</li>
+                            <li>Use paracetamol for fever. Avoid aspirin and ibuprofen.</li>
+                            <li>Stay hydrated — water, ORS, or fresh juice throughout the day.</li>
+                            <li>Rest and avoid exertion until fever subsides.</li>
+                            <li>Re-check if new symptoms appear, especially bleeding, vomiting, or sudden weakness.</li>
                         </ul>
                     </div>
                 {% else %}
                     <p class="result-message">
-                        Your symptoms suggest a <strong>high risk of severe dengue</strong>. A doctor needs to review your case. Please don't delay.
+                        Based on the symptoms you reported, your score falls in the <strong class="text-red">high risk</strong> range. Several of the symptoms you selected are associated with severe dengue and should be reviewed by a doctor.
                     </p>
                     <div class="warning-box">
-                        <strong>Urgent:</strong> Please sign in and register your case so a doctor can review it within the next 24 hours.
+                        <strong>Next step:</strong> Sign in or register below so a doctor on this system can review your case. Bring this result with you if you visit a clinic.
                     </div>
                 {% endif %}
             </div>
         </div>
 
+        <!-- Section 2 — CTA -->
         {% if risk_key == 'high' %}
         <div class="cta-section">
-            <h3 class="cta-title">Continue Your Assessment</h3>
+            <h3 class="cta-title">Get a doctor review</h3>
             <p class="cta-description">
-                Sign in (or create a free patient account) and the symptoms you just selected will be carried into your full assessment automatically — you won't have to tick them again.
+                Sign in or create a patient account. The symptoms you just entered will carry over automatically.
             </p>
             <div class="cta-buttons">
-                <a href="{% url 'login' %}" class="btn btn-primary">Sign in to continue</a>
-                <a href="{% url 'register' %}?as=patient" class="btn btn-secondary">Create patient account</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign in</a>
+                <a href="{% url 'register' %}?as=patient" class="btn btn-secondary">Create account</a>
             </div>
         </div>
         {% else %}
         <div class="cta-section cta-low-risk">
-            <h3 class="cta-title">Track Your Symptoms</h3>
+            <h3 class="cta-title">Keep track of your symptoms</h3>
             <p class="cta-description">
-                Create a patient account to save your symptom history and track your recovery over time.
+                If you want to monitor how things develop, you can create a free patient account to save your symptom history.
             </p>
             <div class="cta-buttons">
-                <a href="{% url 'register' %}?as=patient" class="btn btn-primary">Create patient account</a>
+                <a href="{% url 'register' %}?as=patient" class="btn btn-primary">Create account</a>
                 <a href="{% url 'landing' %}" class="btn btn-secondary">Back to home</a>
             </div>
         </div>
@@ -98,31 +96,13 @@
 
         <div class="disclaimer-section">
             <p>
-                <strong>Important Disclaimer:</strong> This assessment is not a medical diagnosis. It is provided for informational purposes only and should not be considered as medical advice. If your condition gets worse or you experience severe symptoms (such as severe bleeding, persistent vomiting, or difficulty breathing), please seek immediate medical attention or visit a hospital.
+                <strong>Note:</strong> This tool is for informational screening only and is not a substitute for clinical diagnosis. If you are experiencing active bleeding, persistent vomiting, or difficulty breathing, go to a hospital directly.
             </p>
         </div>
     </div>
 </main>
 
-<script>
-(function () {
-    var toggle = document.getElementById('navToggle');
-    var links  = document.getElementById('navLinks');
-    if (!toggle) return;
-    toggle.addEventListener('click', function () {
-        var isOpen = links.classList.toggle('open');
-        toggle.classList.toggle('open', isOpen);
-        toggle.setAttribute('aria-expanded', isOpen);
-    });
-    links.querySelectorAll('a').forEach(function (a) {
-        a.addEventListener('click', function () {
-            links.classList.remove('open');
-            toggle.classList.remove('open');
-            toggle.setAttribute('aria-expanded', 'false');
-        });
-    });
-}());
-</script>
+<script src="{% static 'js/main.js' %}"></script>
 
 </body>
 </html>

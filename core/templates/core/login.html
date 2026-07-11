@@ -10,8 +10,25 @@
 <p>Enter your email and password to continue</p>
 
 {% if messages %}
-    <div class="error-box">
-        {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    {% for msg in messages %}
+        {% if 'successfully' in msg|lower or 'created' in msg|lower %}
+            <p class="success-flash"><strong>{{ msg }}</strong></p>
+        {% else %}
+            <div class="error-box"><p>{{ msg }}</p></div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% comment %} Modal popup for account-created message (one-time) {% endcomment %}
+{% if account_created_msg %}
+    <div class="modal-backdrop" id="acctModal">
+        <div class="modal">
+            <h2>Account created successfully!</h2>
+            <p>{{ account_created_msg }}</p>
+            <div style="text-align:right;margin-top:12px;">
+                <button id="acctOk" class="btn">OK</button>
+            </div>
+        </div>
     </div>
 {% endif %}
 

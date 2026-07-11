@@ -202,24 +202,7 @@
         </div>
     </footer>
 
-    <script>
-        const toggle = document.getElementById('navToggle');
-        const links  = document.getElementById('navLinks');
-
-        toggle.addEventListener('click', function () {
-            const isOpen = links.classList.toggle('open');
-            toggle.classList.toggle('open', isOpen);
-            toggle.setAttribute('aria-expanded', isOpen);
-        });
-
-        links.querySelectorAll('a').forEach(function (a) {
-            a.addEventListener('click', function () {
-                links.classList.remove('open');
-                toggle.classList.remove('open');
-                toggle.setAttribute('aria-expanded', 'false');
-            });
-        });
-    </script>
+    <script src="{% static 'js/main.js' %}"></script>
 
 </body>
 </html>

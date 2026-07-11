@@ -1,447 +1,245 @@
-/* Result Page Full Styling */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ============================================================
+   Public Symptom Result Page
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 .result-page {
-    background: #f9f9f9;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #374151;
+    background: #f6f8fa;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #1f2937;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    font-size: 15px;
+    line-height: 1.6;
 }
 
-/* Navbar Styling */
-.navbar-result {
-    background: #2c5aa0;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 0;
-}
+.result-main { flex: 1; padding: 0; }
 
-.navbar-result .nav-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.navbar-result .logo {
-    color: #ffffff;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.navbar-result nav {
-    display: flex;
-    gap: 2rem;
-    align-items: center;
-}
-
-.navbar-result nav a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-}
-
-.navbar-result nav a:hover {
-    color: #eaf1fb;
-}
-
-.navbar-result .login-link {
-    background: #ffffff;
-    color: #2c5aa0;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.navbar-result .login-link:hover {
-    background: #eaf1fb;
-    color: #2c5aa0;
-}
-
-/* Main Content */
-.result-main {
-    flex: 1;
-    padding: 0;
-}
-
+/* ── Back bar ── */
 .back-section {
-    padding: 1rem 2rem;
-    background: #eaf1fb;
-    border-bottom: 1px solid #d1d5db;
+    padding: 14px 32px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
 }
 
 .back-link {
     display: inline-block;
     color: #2c5aa0;
     text-decoration: none;
+    font-size: 13.5px;
     font-weight: 500;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
+    transition: color .15s;
 }
+.back-link:hover { color: #1e4080; text-decoration: underline; }
 
-.back-link:hover {
-    color: #1f4377;
-}
-
+/* ── Container ── */
 .result-container {
-    max-width: 900px;
+    max-width: 820px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 36px 32px 64px;
     width: 100%;
 }
 
-/* Result Page Title */
 .result-page-title {
-    font-size: 2rem;
+    font-size: 22px;
     font-weight: 700;
-    color: #2c5aa0;
-    margin-bottom: 2rem;
-    text-align: center;
+    color: #111827;
+    margin-bottom: 28px;
+    letter-spacing: -.2px;
 }
 
-/* Result Card */
+/* ── Section 1 — result card ── */
 .result-card {
-    background: #ffffff;
+    background: #fff;
     border-radius: 8px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 28px 30px;
+    margin-bottom: 24px;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
 
-.result-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
+.result-card-high,
+.result-card-low { background: #fff; }
 
-.result-card-high {
-    background: #ffffff;
-}
-
-.result-card-low {
-    background: #ffffff;
-}
-
-/* Result Header */
 .result-header {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .result-label {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6b7280;
-    margin-bottom: 0.5rem;
+    letter-spacing: .6px;
+    color: #9ca3af;
+    margin-bottom: 6px;
 }
 
 .result-risk {
-    font-size: 2.5rem;
+    font-size: 24px;
     font-weight: 700;
-    margin-bottom: 1rem;
-    color: #2c5aa0;
+    margin-bottom: 12px;
+    color: #111827;
 }
 
-.result-card-high .result-risk {
-    color: #dc2626;
-}
+/* High risk label in red */
+.result-card-high .result-risk { color: #dc2626; }
+.result-card-low  .result-risk { color: #16a34a; /* green */ }
 
-.result-card-low .result-risk {
-    color: #16a34a;
-}
+/* Only make the explicit "low risk" text green (strong inside message) */
+.result-card-low .result-message strong { color: #16a34a; }
 
-/* Result Stats */
 .result-stats {
     display: flex;
-    gap: 2rem;
+    gap: 28px;
     flex-wrap: wrap;
 }
 
-.stat-item {
-    font-size: 0.95rem;
-    color: #374151;
-}
+.stat-item { font-size: 13.5px; color: #6b7280; }
+.stat-item strong { color: #374151; font-weight: 600; font-size: 14px; }
 
-.stat-item strong {
-    color: #2c5aa0;
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-/* Result Content */
-.result-content {
-    margin-bottom: 1rem;
-}
+.result-content { margin-bottom: 4px; }
 
 .result-message {
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 15px;
+    line-height: 1.75;
     color: #374151;
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px;
 }
 
-.result-message strong {
-    color: #2c5aa0;
-    font-weight: 600;
-}
+.result-message strong       { color: #111827; font-weight: 600; }
+.result-message strong.text-red { color: #dc2626; font-weight: 600; }
 
-.result-card-high .result-message strong {
-    color: #dc2626;
-}
-
-.result-card-low .result-message strong {
-    color: #16a34a;
-}
-
-/* Advice Section */
+/* Advice — low risk */
 .advice-section {
-    background: #f9f9f9;
-    padding: 1.5rem;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 18px;
 }
 
 .advice-title {
-    font-size: 1.1rem;
+    font-size: 11.5px;
     font-weight: 700;
-    color: #2c5aa0;
-    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #9ca3af;
+    margin-bottom: 12px;
 }
 
-.advice-list {
-    list-style: none;
-    padding: 0;
-}
+.advice-list { list-style: none; padding: 0; margin: 0; }
 
 .advice-list li {
-    padding: 0.75rem 0;
-    padding-left: 1.5rem;
+    padding: 7px 0 7px 18px;
     position: relative;
-    color: #374151;
-    line-height: 1.5;
-    font-size: 0.95rem;
+    color: #4b5563;
+    line-height: 1.55;
+    font-size: 14px;
+    border-bottom: 1px solid #f9f9f9;
 }
+.advice-list li:last-child { border-bottom: none; }
+.advice-list li::before { content: "–"; position: absolute; left: 0; color: #d1d5db; }
 
-.advice-list li:before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: #16a34a;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-/* Warning Box */
+/* Warning — high risk */
 .warning-box {
-    background: #fef3c7;
-    border: 1px solid #fcd34d;
-    border-radius: 6px;
-    padding: 1rem;
-    color: #78350f;
-    font-weight: 500;
-    margin-top: 1rem;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-top: 4px;
 }
+.warning-box strong { color: #374151; font-weight: 600; }
 
-/* CTA Section */
+/* ── Section 2 — CTA ── */
 .cta-section {
-    background: #ffffff;
+    background: #fff;
     border-radius: 8px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 2px solid #eaf1fb;
-    text-align: center;
+    padding: 28px 30px;
+    margin-bottom: 24px;
+    border: 1px solid #e5e7eb;
 }
 
 .cta-section.cta-low-risk {
-    border-color: #dcfce7;
-    background: #f0fdf4;
+    background: #fff;
+    border-color: #e5e7eb;
 }
 
 .cta-title {
-    font-size: 1.5rem;
+    font-size: 17px;
     font-weight: 700;
-    color: #2c5aa0;
-    margin-bottom: 1rem;
+    color: #111827;
+    margin-bottom: 8px;
 }
 
 .cta-description {
-    font-size: 1rem;
-    color: #374151;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.65;
+    margin-bottom: 20px;
 }
 
 .cta-buttons {
     display: flex;
-    gap: 1rem;
-    justify-content: center;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
-/* Buttons */
+/* ── Buttons ── */
 .btn {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px;
+    font-size: 14px;
     font-weight: 600;
     border-radius: 6px;
     text-decoration: none;
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-    min-width: 200px;
+    transition: background .16s, border-color .16s, transform .12s;
+    font-family: inherit;
+    min-width: 140px;
 }
 
-.btn-primary {
-    background: #2c5aa0;
-    color: #ffffff;
-}
+.btn:hover  { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
 
-.btn-primary:hover {
-    background: #1f4377;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
-}
+.btn-primary { background: #2c5aa0; color: #fff; border-color: #2c5aa0; }
+.btn-primary:hover { background: #1e4080; border-color: #1e4080; }
 
-.btn-secondary {
-    background: #f9f9f9;
-    color: #2c5aa0;
-    border: 2px solid #2c5aa0;
-}
+.btn-secondary { background: #fff; color: #2c5aa0; border-color: #2c5aa0; }
+.btn-secondary:hover { background: #f5f8ff; }
 
-.btn-secondary:hover {
-    background: #eaf1fb;
-    border-color: #1f4377;
-    color: #1f4377;
-    transform: translateY(-2px);
-}
-
-/* Disclaimer Section */
+/* ── Disclaimer ── */
 .disclaimer-section {
-    background: #eaf1fb;
-    border: 1px solid #cbd9ed;
-    border-radius: 6px;
-    padding: 1.5rem;
-    color: #374151;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 20px;
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1.65;
 }
+.disclaimer-section strong { color: #6b7280; font-weight: 600; }
 
-.disclaimer-section strong {
-    color: #2c5aa0;
-    font-weight: 700;
-}
-
-/* Responsive Design */
+/* ── Responsive ── */
 @media (max-width: 768px) {
-    .navbar-result {
-        padding: 1rem;
-    }
-
-    .navbar-result .nav-content {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .navbar-result nav {
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .result-container {
-        padding: 1.5rem 1rem;
-    }
-
-    .result-page-title {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .result-card {
-        padding: 1.5rem;
-    }
-
-    .result-risk {
-        font-size: 2rem;
-    }
-
-    .result-stats {
-        gap: 1rem;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .cta-buttons {
-        flex-direction: column;
-    }
-
-    .btn {
-        width: 100%;
-        min-width: unset;
-    }
-
-    .cta-section {
-        padding: 1.5rem;
-    }
-
-    .advice-list li {
-        padding-left: 1.25rem;
-        font-size: 0.9rem;
-    }
+    .result-container { padding: 24px 20px 48px; }
+    .result-page-title { font-size: 19px; }
+    .result-card { padding: 20px; }
+    .result-risk { font-size: 20px; }
+    .result-stats { gap: 16px; flex-direction: column; }
+    .cta-buttons { flex-direction: column; }
+    .btn { width: 100%; min-width: unset; }
+    .cta-section { padding: 20px; }
+    .back-section { padding: 12px 20px; }
 }
 
 @media (max-width: 480px) {
-    .back-section {
-        padding: 0.75rem 1rem;
-    }
-
-    .result-page-title {
-        font-size: 1.25rem;
-    }
-
-    .result-card {
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .result-risk {
-        font-size: 1.75rem;
-    }
-
-    .result-message {
-        font-size: 0.9rem;
-    }
-
-    .cta-title {
-        font-size: 1.25rem;
-    }
-
-    .cta-description {
-        font-size: 0.9rem;
-    }
-
-    .disclaimer-section {
-        padding: 1rem;
-        font-size: 0.85rem;
-    }
+    .back-section { padding: 10px 16px; }
+    .result-container { padding: 20px 16px 40px; }
+    .result-page-title { font-size: 17px; }
+    .result-card { padding: 16px; }
+    .result-risk { font-size: 18px; }
+    .result-message { font-size: 14px; }
+    .cta-title { font-size: 15px; }
+    .disclaimer-section { font-size: 12px; }
 }

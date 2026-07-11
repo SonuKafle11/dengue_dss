@@ -110,6 +110,7 @@
                 <thead>
                     <tr>
                         <th>Patient</th>
+                        <th>Email</th>
                         <th>Age / Weight</th>
                         <th>Score</th>
                         <th>Risk</th>
@@ -123,7 +124,7 @@
                 {% for rec in records %}
                 <tr>
                     <td><strong>{{ rec.patient.name }}</strong></td>
-                    <td><span class="user-id-cell">{{ rec.patient.name }}</span></td>
+                    <td style="font-size:13px; color:#6b7280;">{{ rec.patient.email|default:"—" }}</td>
                     <td>{{ rec.age|floatformat:0 }} yr / {{ rec.weight }} kg</td>
                     <td><strong>{{ rec.clinical_score }}</strong></td>
                     <td>
@@ -170,12 +171,5 @@
     {% endif %}
 
 </div>
-
-<script>
-/* Submit form automatically when status dropdown changes */
-document.getElementById('statusSelect').addEventListener('change', function () {
-    document.getElementById('filterForm').submit();
-});
-</script>
 
 {% endblock %}

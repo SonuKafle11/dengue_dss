@@ -184,64 +184,7 @@
     </div>
 </footer>
 
-<script>
-// ── Pregnant checkbox — disable immediately when Male or Other is selected ──
-(function () {
-    var radios     = document.querySelectorAll('input[name="gender"]');
-    var pregnantCb = document.querySelector('input[name="pregnant"]');
-    var label      = pregnantCb ? pregnantCb.closest('label') : null;
-
-    function sync() {
-        var selected = document.querySelector('input[name="gender"]:checked');
-        var gender   = selected ? selected.value.toLowerCase() : '';
-        var disable  = (gender === 'male');
-
-        if (!pregnantCb) return;
-
-        pregnantCb.disabled = disable;
-        if (disable) pregnantCb.checked = false;
-
-        if (label) {
-            label.style.opacity = disable ? '0.4' : '1';
-            label.style.cursor  = disable ? 'not-allowed' : 'pointer';
-        }
-    }
-
-    radios.forEach(function (r) { r.addEventListener('change', sync); });
-    sync(); // run on load for pre-selected values
-}());
-
-// ── Form validation — require at least one symptom ──
-document.getElementById('checkForm').addEventListener('submit', function (e) {
-    var checked = this.querySelectorAll('input[type="checkbox"]:checked');
-    var err = document.getElementById('sym-error');
-    if (checked.length === 0) {
-        e.preventDefault();
-        err.textContent = 'Please select at least one symptom before submitting.';
-    } else {
-        err.textContent = '';
-    }
-});
-
-// ── Hamburger nav ──
-(function () {
-    var toggle = document.getElementById('navToggle');
-    var links  = document.getElementById('navLinks');
-    if (!toggle) return;
-    toggle.addEventListener('click', function () {
-        var isOpen = links.classList.toggle('open');
-        toggle.classList.toggle('open', isOpen);
-        toggle.setAttribute('aria-expanded', isOpen);
-    });
-    links.querySelectorAll('a').forEach(function (a) {
-        a.addEventListener('click', function () {
-            links.classList.remove('open');
-            toggle.classList.remove('open');
-            toggle.setAttribute('aria-expanded', 'false');
-        });
-    });
-}());
-</script>
+<script src="{% static 'js/main.js' %}"></script>
 
 </body>
 </html>

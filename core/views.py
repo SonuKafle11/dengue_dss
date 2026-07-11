@@ -1,18 +1,12 @@
 from django.views.decorators.cache import never_cache
 import hashlib
-import random
-import string
-from datetime import timedelta
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
-from django.utils import timezone
-from django.core.mail import send_mail
-from django.conf import settings as django_settings
 
 from .models import User, AdminUser, PatientRecord
-from .forms import RegisterForm, LoginForm, OTPForm, PatientProfileForm
+from .forms import RegisterForm, LoginForm, PatientProfileForm
 from ml_model.predictor import predict_dengue, is_model_trained, get_dataset_info
 from ml_model.dosage_engine import recommend_dosage, format_dosage_text
 
@@ -23,13 +17,12 @@ SYMPTOM_FIELDS = [
     'drop_in_fever_with_weakness', 'cold_hands_feet', 'restless_drowsy', 'abdominal_pain',
 ]
 
-# Must match weights in PatientRecord.calculate_clinical_score()
 SYMPTOM_WEIGHTS = {
-    'fever': 1, 'severe_headache': 3, 'joint_back_pain': 1,
-    'nausea_vomiting': 3, 'skin_rash': 1, 'vomiting_more_than_3': 3,
+    'fever': 1, 'severe_headache': 2, 'joint_back_pain': 2,
+    'nausea_vomiting': 2, 'skin_rash': 1, 'vomiting_more_than_3': 2,
     'bleeding': 3, 'extreme_weakness': 3, 'urine_output_low': 3,
-    'fever_not_improving': 1, 'drop_in_fever_with_weakness': 3,
-    'cold_hands_feet': 3, 'restless_drowsy': 3, 'abdominal_pain': 3,
+    'fever_not_improving': 2, 'drop_in_fever_with_weakness': 3,
+    'cold_hands_feet': 1, 'restless_drowsy': 3, 'abdominal_pain': 1,
 }
 
 # ---------------------------------------------------------------------------
@@ -48,41 +41,6 @@ def current_user(request):
         except User.DoesNotExist:
             pass
     return None
-
-
-def _generate_otp():
-    """Return a random 6-digit numeric OTP string."""
-    return ''.join(random.choices(string.digits, k=6))
-
-
-def _mask_email(email):
-    """Mask email for display: so***@gmail.com"""
-    try:
-        local, domain = email.split('@')
-        visible = local[:2] if len(local) >= 2 else local[0]
-        return f"{visible}{'*' * (len(local) - len(visible))}@{domain}"
-    except Exception:
-        return email
-
-
-def send_otp_email(email, otp_code, name=''):
-    """Send OTP verification email. Uses console backend in dev."""
-    subject = 'Your Dengue DSS Login Verification Code'
-    body = (
-        f"Hello{' ' + name if name else ''},\n\n"
-        f"Your verification code for Dengue DSS is:\n\n"
-        f"    {otp_code}\n\n"
-        f"This code is valid for 10 minutes. Do not share it with anyone.\n\n"
-        f"If you did not request this, please ignore this email.\n\n"
-        f"— Dengue DSS Team"
-    )
-    send_mail(
-        subject=subject,
-        message=body,
-        from_email=getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'noreply@denguedss.com'),
-        recipient_list=[email],
-        fail_silently=False,
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -180,12 +138,12 @@ def public_symptom_check(request):
 
         score = sum(SYMPTOM_WEIGHTS.get(s, 0) for s in selected)
         if age >= 70:
-            score += 2
+            score += 1
         if pregnant:
-            score += 2
+            score += 1
 
-        risk_key   = 'high' if score >= 3 else 'low'
-        risk_label = 'High Risk' if score >= 3 else 'Low Risk'
+        risk_key   = 'high' if score > 4 else 'low'
+        risk_label = 'High Risk' if score > 4 else 'Low Risk'
 
         request.session['pending_symptoms'] = selected
         request.session['pending_score']    = score
@@ -206,11 +164,10 @@ def public_symptom_check(request):
 
 
 # ---------------------------------------------------------------------------
-# Registration
+# Registration — direct save, no OTP
 # ---------------------------------------------------------------------------
 
 def register(request):
-    # Default to patient unless ?as=doctor
     requested_as = request.GET.get('as', 'patient')
     if requested_as not in ('patient', 'doctor'):
         requested_as = 'patient'
@@ -226,36 +183,23 @@ def register(request):
             email    = form.cleaned_data['email']
             password = form.cleaned_data['password']
 
-            # Try sending the OTP BEFORE saving anything or redirecting.
-            # If the email address is unreachable the send will raise — we
-            # catch it and show the error inline on the email field.
-            otp = _generate_otp()
-            try:
-                send_otp_email(email, otp, name)
-            except Exception:
-                form.add_error(
-                    'email',
-                    'We could not deliver a verification code to this address. '
-                    'Please check the email and try again.'
-                )
-                return render(request, 'core/register.html', {
-                    'form': form,
-                    'as_role': role,
-                })
+            # Only clear stale auth keys — do NOT flush the whole session
+            # because pending_symptoms/age/gender from the public check must survive
+            request.session.pop('user_id', None)
+            request.session.pop('role', None)
+            request.session.pop('user_name', None)
 
-            # Email sent — stash pending data in session, do NOT save user yet
-            request.session['reg_pending'] = {
-                'name':     name,
-                'email':    email,
-                'password': hash_password(password),
-                'role':     role,
-                'otp':      otp,
-                'expires':  (timezone.now() + timedelta(minutes=10)).isoformat(),
-            }
+            User(
+                name=name,
+                email=email,
+                password=hash_password(password),
+                role=role,
+            ).save()
 
-            return redirect('register_otp_verify')
+            # set a one-time session flag so the login page can show a popup
+            request.session['account_created_msg'] = 'Account created successfully! Please log in.'
+            return redirect('login')
 
-        # Form invalid — re-render with errors
         return render(request, 'core/register.html', {
             'form': form,
             'as_role': role,
@@ -269,97 +213,10 @@ def register(request):
 
 
 # ---------------------------------------------------------------------------
-# Registration — Step 2: OTP verification
-# ---------------------------------------------------------------------------
-
-def register_otp_verify(request):
-    pending = request.session.get('reg_pending')
-
-    if not pending:
-        # No pending registration — send back to register
-        return redirect('register')
-
-    masked = _mask_email(pending['email'])
-
-    if request.method == 'POST':
-        # Handle resend
-        if 'resend' in request.POST:
-            otp = _generate_otp()
-            pending['otp']     = otp
-            pending['expires'] = (timezone.now() + timedelta(minutes=10)).isoformat()
-            request.session['reg_pending'] = pending
-            request.session.modified = True
-            try:
-                send_otp_email(pending['email'], otp, pending['name'])
-            except Exception:
-                pass
-            messages.success(request, f'A new code has been sent to {masked}.')
-            return redirect('register_otp_verify')
-
-        form = OTPForm(request.POST)
-        if form.is_valid():
-            entered = form.cleaned_data['code']
-
-            # Check expiry
-            from datetime import datetime
-            expires_at = datetime.fromisoformat(pending['expires'])
-            # Make timezone-aware for comparison
-            from django.utils.timezone import make_aware, is_naive
-            if is_naive(expires_at):
-                expires_at = make_aware(expires_at)
-
-            if timezone.now() > expires_at:
-                messages.error(request, 'Your code has expired. Request a new one.')
-                return render(request, 'core/register_otp.html', {
-                    'form': OTPForm(), 'masked_email': masked,
-                })
-
-            # Check match
-            if entered != pending['otp']:
-                # Wrong OTP — show failure state with Try Again
-                return render(request, 'core/register_otp.html', {
-                    'form': form,
-                    'masked_email': masked,
-                    'otp_failed': True,
-                    'failed_email': pending['email'],
-                })
-
-            # OTP correct — save user now
-            user = User(
-                name=pending['name'],
-                email=pending['email'],
-                password=pending['password'],
-                role=pending['role'],
-                email_verified=True,   # already verified here
-            )
-            user.save()
-
-            # Clear pending registration from session
-            request.session.pop('reg_pending', None)
-            request.session.flush()
-
-            messages.success(
-                request,
-                'Account created successfully! Please log in with your email and password.'
-            )
-            return redirect('login')
-
-        return render(request, 'core/register_otp.html', {
-            'form': form, 'masked_email': masked,
-        })
-
-    form = OTPForm()
-    return render(request, 'core/register_otp.html', {
-        'form': form, 'masked_email': masked,
-    })
-
-
-# ---------------------------------------------------------------------------
-# Login — Step 1: credentials
+# Login
 # ---------------------------------------------------------------------------
 
 def login_view(request):
-    # Already logged in — go straight to dashboard
     if request.session.get('user_id'):
         return redirect('index')
 
@@ -379,115 +236,22 @@ def login_view(request):
                 messages.error(request, 'Incorrect password. Please try again.')
                 return render(request, 'core/login.html', {'form': form})
 
-            # Credentials valid — check if email already verified
-            if user.email_verified:
-                # Skip OTP — go straight to session
-                request.session['user_id']   = user.user_id
-                request.session['role']      = user.role
-                request.session['user_name'] = user.name
-                if user.role == 'patient' and request.session.get('pending_symptoms'):
-                    return redirect('patient_form')
-                return redirect('patient_dashboard' if user.role == 'patient' else 'doctor_dashboard')
-
-            # Unverified legacy account — generate OTP
-            otp = _generate_otp()
-            user.otp_code       = otp
-            user.otp_expires_at = timezone.now() + timedelta(minutes=10)
-            user.save(update_fields=['otp_code', 'otp_expires_at'])
-
-            # Stash user PK in session (not a full login yet)
-            request.session['otp_pending_user_id'] = user.user_id
-
-            try:
-                send_otp_email(user.email, otp, user.name)
-            except Exception:
-                # If email fails, still show the page — console backend will print it
-                pass
-
-            return redirect('login_otp_verify')
-
-        # Form invalid
-        return render(request, 'core/login.html', {'form': form})
-
-    form = LoginForm()
-    return render(request, 'core/login.html', {'form': form})
-
-
-# ---------------------------------------------------------------------------
-# Login — Step 2: OTP verification
-# ---------------------------------------------------------------------------
-
-def login_otp_verify(request):
-    pending_uid = request.session.get('otp_pending_user_id')
-    if not pending_uid:
-        # No pending login — send back to login
-        return redirect('login')
-
-    try:
-        user = User.objects.get(user_id=pending_uid)
-    except User.DoesNotExist:
-        request.session.pop('otp_pending_user_id', None)
-        return redirect('login')
-
-    masked = _mask_email(user.email) if user.email else ''
-
-    if request.method == 'POST':
-        # Handle resend request
-        if 'resend' in request.POST:
-            otp = _generate_otp()
-            user.otp_code       = otp
-            user.otp_expires_at = timezone.now() + timedelta(minutes=10)
-            user.save(update_fields=['otp_code', 'otp_expires_at'])
-            try:
-                send_otp_email(user.email, otp, user.name)
-            except Exception:
-                pass
-            messages.success(request, f'A new code has been sent to {masked}.')
-            return redirect('login_otp_verify')
-
-        form = OTPForm(request.POST)
-        if form.is_valid():
-            entered = form.cleaned_data['code']
-
-            # Check expiry
-            if not user.otp_expires_at or timezone.now() > user.otp_expires_at:
-                messages.error(request, 'Your code has expired. Please request a new one.')
-                return render(request, 'core/login_otp.html', {
-                    'form': OTPForm(), 'masked_email': masked,
-                })
-
-            # Check match
-            if entered != user.otp_code:
-                messages.error(request, 'Incorrect code. Please try again.')
-                return render(request, 'core/login_otp.html', {
-                    'form': form, 'masked_email': masked,
-                })
-
-            # OTP correct — clear it, mark email verified, finalise session
-            user.otp_code       = None
-            user.otp_expires_at = None
-            user.email_verified = True
-            user.save(update_fields=['otp_code', 'otp_expires_at', 'email_verified'])
-
-            request.session.pop('otp_pending_user_id', None)
+            # Credentials valid — create session
             request.session['user_id']   = user.user_id
             request.session['role']      = user.role
             request.session['user_name'] = user.name
 
-            # Patient came via high-risk public check → send straight to form
             if user.role == 'patient' and request.session.get('pending_symptoms'):
                 return redirect('patient_form')
 
             return redirect('patient_dashboard' if user.role == 'patient' else 'doctor_dashboard')
 
-        return render(request, 'core/login_otp.html', {
-            'form': form, 'masked_email': masked,
-        })
+        return render(request, 'core/login.html', {'form': form})
 
-    form = OTPForm()
-    return render(request, 'core/login_otp.html', {
-        'form': form, 'masked_email': masked,
-    })
+    form = LoginForm()
+    # pop one-time account-created message if present and pass to template
+    acct_msg = request.session.pop('account_created_msg', None)
+    return render(request, 'core/login.html', {'form': form, 'account_created_msg': acct_msg})
 
 
 # ---------------------------------------------------------------------------
@@ -500,7 +264,7 @@ def logout_view(request):
 
 
 # ---------------------------------------------------------------------------
-# Admin auth — UNCHANGED
+# Admin auth — unchanged
 # ---------------------------------------------------------------------------
 
 def admin_login(request):
@@ -552,11 +316,8 @@ def patient_form(request):
             gender = request.POST.get("gender")
             age    = float(request.POST.get('age', 0))
             weight = float(request.POST.get('weight', 0))
-            height = float(request.POST.get('height', 0))
             if age <= 0 or weight <= 0:
                 raise ValueError("Age and weight must be positive.")
-            if height <= 0:
-                raise ValueError("Height must be positive (in cm).")
             is_pregnant = request.POST.get('is_pregnant') == 'on'
             if is_pregnant:
                 if gender not in ("female", "other"):
@@ -571,7 +332,7 @@ def patient_form(request):
                 return redirect('patient_form')
 
             rec = PatientRecord(
-                patient=user, age=age, weight=weight, height=height,
+                patient=user, age=age, weight=weight,
                 gender=gender, is_pregnant=is_pregnant,
                 fever                       = 'fever' in request.POST,
                 severe_headache             = 'severe_headache' in request.POST,
@@ -591,11 +352,9 @@ def patient_form(request):
             rec.save()
             user.age         = age
             user.weight      = weight
-            user.height      = height
             user.gender      = gender
             user.is_pregnant = is_pregnant
             user.save()
-            # Clear stashed symptoms — they've been consumed
             for k in ('pending_symptoms', 'pending_score', 'pending_risk',
                       'pending_age', 'pending_gender', 'pending_pregnant'):
                 request.session.pop(k, None)
@@ -619,7 +378,6 @@ def patient_form(request):
         'profile': {
             'age':         request.session.get('pending_age') or user.age or '',
             'weight':      user.weight or '',
-            'height':      user.height or '',
             'gender':      request.session.get('pending_gender') or user.gender or '',
             'is_pregnant': request.session.get('pending_pregnant', user.is_pregnant),
         },
@@ -644,19 +402,16 @@ def patient_profile(request):
         if form.is_valid():
             user.age         = form.cleaned_data.get('age')
             user.weight      = form.cleaned_data.get('weight')
-            user.height      = form.cleaned_data.get('height')
             user.gender      = form.cleaned_data.get('gender') or ''
             user.is_pregnant = form.cleaned_data.get('is_pregnant', False)
             user.save()
             messages.success(request, 'Profile updated successfully.')
             return redirect('patient_dashboard')
-        # Form invalid — re-render with errors
         return render(request, 'core/patient_profile.html', {'user': user, 'form': form})
 
     form = PatientProfileForm(initial={
         'age':         user.age,
         'weight':      user.weight,
-        'height':      user.height,
         'gender':      user.gender,
         'is_pregnant': user.is_pregnant,
     })
@@ -690,9 +445,9 @@ def doctor_dashboard(request):
     return render(request, 'core/doctor_dashboard.html', {
         'user': user, 'records': records,
         'search': search, 'status_filter': status,
-        'total'   : PatientRecord.objects.count(),
-        'pending' : PatientRecord.objects.filter(is_reviewed=False).count(),
-        'reviewed': PatientRecord.objects.filter(is_reviewed=True).count(),
+        'total'   : records.count(),
+        'pending' : records.filter(is_reviewed=False).count(),
+        'reviewed': records.filter(is_reviewed=True).count(),
     })
 
 
@@ -712,6 +467,7 @@ def doctor_patient_detail(request, record_id):
 
             rec.platelet_count = platelet
             rec.wbc_count      = wbc
+            rec.ns1            = ns1
             rec.igg            = igg
             rec.igm            = igm
             rec.reviewed_by    = doctor
@@ -743,7 +499,6 @@ def doctor_patient_detail(request, record_id):
                 weight_kg=rec.weight,
                 age=rec.age,
                 risk_level=rec.clinical_risk_level,
-                height_cm=rec.height,
                 platelet_count=platelet,
                 is_pregnant=rec.is_pregnant,
                 ml_prediction=ml_res['prediction'],
@@ -773,7 +528,6 @@ def doctor_prediction_result(request, record_id):
             weight_kg=rec.weight,
             age=rec.age,
             risk_level=rec.clinical_risk_level,
-            height_cm=rec.height,
             platelet_count=rec.platelet_count,
             is_pregnant=rec.is_pregnant,
             ml_prediction=rec.ml_prediction,
@@ -784,7 +538,7 @@ def doctor_prediction_result(request, record_id):
 
 
 # ---------------------------------------------------------------------------
-# Admin views — UNCHANGED
+# Admin views — unchanged
 # ---------------------------------------------------------------------------
 
 @never_cache
@@ -810,12 +564,11 @@ def admin_delete_user(request, user_id):
     if request.method == 'POST':
         try:
             u = User.objects.get(user_id=user_id)
-            name = u.name
             u.delete()
-            messages.success(request, f'User "{name}" deleted.')
+            return JsonResponse({'ok': True})
         except User.DoesNotExist:
-            messages.error(request, 'User not found.')
-    return redirect('admin_dashboard')
+            return JsonResponse({'ok': False, 'error': 'User not found.'}, status=404)
+    return JsonResponse({'ok': False}, status=405)
 
 
 @never_cache
@@ -825,10 +578,10 @@ def admin_delete_record(request, record_id):
         try:
             r = PatientRecord.objects.get(record_id=record_id)
             r.delete()
-            messages.success(request, 'Record deleted.')
+            return JsonResponse({'ok': True})
         except PatientRecord.DoesNotExist:
-            messages.error(request, 'Record not found.')
-    return redirect('admin_dashboard')
+            return JsonResponse({'ok': False, 'error': 'Record not found.'}, status=404)
+    return JsonResponse({'ok': False}, status=405)
 
 
 @never_cache

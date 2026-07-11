@@ -142,11 +142,6 @@ p[style] { text-align: left; }
     text-align: center;
 }
 
-.success-box h2 {
-    color: #15803d;
-    margin-bottom: 12px;
-    font-size: 20px;
-}
 
 .success-box p {
     color: #374151;
@@ -154,37 +149,37 @@ p[style] { text-align: left; }
     text-align: center;
 }
 
-.success-box strong {
-    color: #1a1a2e;
+/* ── Modal for account-created popup ── */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    display: none;
+    /* align to top so the popup appears near the top of the page */
+    align-items: flex-start;
+    justify-content: center;
+    background: rgba(0,0,0,0.35);
+    z-index: 2200;
+    padding: 28px 12px 12px;
 }
-
-/* the generated user ID display */
-.success-box .user-id {
-    display: inline-block;
-    font-size: 22px;
-    font-weight: 700;
-    color: #2c5aa0;
+.modal-backdrop.open { display: flex; }
+.modal {
     background: #fff;
-    padding: 10px 18px;
-    border: 1px dashed #2c5aa0;
-    border-radius: 6px;
-    margin: 10px 0;
-    letter-spacing: 2px;
-    font-family: 'Courier New', monospace;
+    border-radius: 8px;
+    max-width: 420px; /* smaller width */
+    width: 100%;
+    padding: 14px 14px; /* reduced padding */
+    box-shadow: 0 8px 22px rgba(0,0,0,.14);
+    text-align: left;
+    transform: translateY(-6px);
+    transition: transform .22s cubic-bezier(.2,.9,.2,1), opacity .18s;
+    opacity: 0.98;
 }
-
-.success-box .btn {
-    display: inline-block;
-    margin-top: 16px;
-    padding: 10px 24px;
-    background: #2c5aa0;
-    color: #fff;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    transition: background .18s;
-}
+/* slide down slightly when backdrop opens */
+.modal-backdrop.open .modal { transform: translateY(0); }
+.modal h2 { margin: 0 0 6px; font-size: 18px; color: #111827; }
+.modal p { margin: 0; color: #374151; font-size: 14px; }
+.modal .btn { display: inline-block; padding: 6px 12px; background: #2c5aa0; color: #fff; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; }
+.modal .btn:hover { background: #1e4080; }
 
 .success-box .btn:hover { background: #1e4080; }
 
@@ -211,6 +206,18 @@ p[style] { text-align: left; }
     font-size: 12px;
     font-weight: 500;
     text-align: left;
+}
+
+/* ── Inline success flash (e.g. "Account created successfully") ── */
+.success-flash {
+    font-size: 13.5px;
+    color: #15803d;
+    font-weight: 600;
+    text-align: left;
+    margin-bottom: 16px;
+    padding: 0;
+    background: none;
+    border: none;
 }
 
 /* ── Success message box (flash messages) ── */

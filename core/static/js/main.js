@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const genderInputs  = document.querySelectorAll('input[name="gender"]');
     const ageInput      = document.getElementById('age');
-    const heightInput   = document.getElementById('height');
     const pregnantInput = document.getElementById('pregnant');
     const errorBox      = document.getElementById('error-msg');
     const symptomError  = document.getElementById('symptom-error');
@@ -44,8 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const gender = sel?.value?.trim().toLowerCase();
         const ageVal = ageInput?.value?.trim();
         const age    = ageVal !== '' ? parseInt(ageVal) : null;
-        const hVal   = heightInput?.value?.trim();
-        const height = hVal !== '' && hVal != null ? parseFloat(hVal) : null;
         const isPregnant = pregnantInput?.checked;
         const symptoms = document.querySelectorAll('input[type="checkbox"]:not(#pregnant):checked');
 
@@ -54,10 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!gender) { if (errorBox) errorBox.textContent = "Please select a gender."; return false; }
         if (age === null || isNaN(age)) { if (errorBox) errorBox.textContent = "Please enter your age."; return false; }
-        if (heightInput && (height === null || isNaN(height) || height <= 0)) {
-            if (errorBox) errorBox.textContent = "Please enter a valid height in cm.";
-            return false;
-        }
         if (isPregnant && gender === 'male') { if (errorBox) errorBox.textContent = "Males cannot be pregnant."; return false; }
         if (isPregnant && age < 10) { if (errorBox) errorBox.textContent = "Pregnancy not valid for age below 10."; return false; }
         if (symptoms.length === 0) { if (symptomError) symptomError.textContent = "Please select at least one symptom."; return false; }
@@ -119,22 +112,236 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* ============================================================
-   Back-button session guard
-   Forces a server round-trip on every page show (including
-   browser back/forward cache). If the session cookie is gone
-   the server will redirect to login — the cached page is
-   never actually displayed to a logged-out user.
-   ============================================================ */
 window.addEventListener('pageshow', function (event) {
-    // persisted = true means the page came from the back/forward cache
-    // We also check bfcache restoration events
     var isProtected = document.body && document.body.dataset.authRequired === '1';
     if (!isProtected) return;
 
     if (event.persisted) {
-        // Page was served from bfcache — force a reload so the server
-        // can check the session and redirect if logged out
         window.location.reload();
     }
+});
+
+
+/* ============================================================
+   Patient Profile — uncheck "Currently pregnant" when
+   Male radio button is selected
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+    // Only run on the profile page — identified by the is_pregnant checkbox
+    var pregnantCb   = document.querySelector('input[name="is_pregnant"]');
+    var genderRadios = document.querySelectorAll('input[name="gender"]');
+
+    if (!pregnantCb || !genderRadios.length) return;
+
+    function syncProfilePregnant() {
+        var selected = document.querySelector('input[name="gender"]:checked');
+        var gender   = selected ? selected.value.toLowerCase() : '';
+        var shouldDisable = (gender === 'male');
+
+        if (shouldDisable) {
+            pregnantCb.checked  = false;
+            pregnantCb.disabled = true;
+        } else {
+            pregnantCb.disabled = false;
+        }
+
+        // Visual feedback on the label
+        var label = pregnantCb.closest('label');
+        if (label) {
+            label.style.opacity = shouldDisable ? '0.4' : '1';
+            label.style.cursor  = shouldDisable ? 'not-allowed' : 'pointer';
+        }
+    }
+
+    genderRadios.forEach(function (radio) {
+        radio.addEventListener('change', syncProfilePregnant);
+    });
+
+    // Run once on load so if Male is already saved it disables immediately
+    syncProfilePregnant();
+});
+
+/* ============================================================
+   Admin Dashboard — AJAX delete (no page reload, no messages
+   leaking to the login page)
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+
+    function getCsrfToken() {
+        var cookie = document.cookie.split(';').find(function (c) {
+            return c.trim().startsWith('csrftoken=');
+        });
+        return cookie ? cookie.trim().split('=')[1] : '';
+    }
+
+    function ajaxDelete(url, row) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.ok) {
+                row.style.transition = 'opacity 0.25s';
+                row.style.opacity    = '0';
+                setTimeout(function () { row.remove(); }, 260);
+            } else {
+                alert(data.error || 'Delete failed.');
+            }
+        })
+        .catch(function () {
+            alert('Network error. Please try again.');
+        });
+    }
+
+    // User delete buttons
+    document.querySelectorAll('.btn-delete-user').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var name = btn.dataset.name || 'this user';
+            if (!confirm('Delete ' + name + '?')) return;
+            var row = btn.closest('tr');
+            ajaxDelete(btn.dataset.url, row);
+        });
+    });
+
+    // Record delete buttons
+    document.querySelectorAll('.btn-delete-record').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (!confirm('Delete this record?')) return;
+            var row = btn.closest('tr');
+            ajaxDelete(btn.dataset.url, row);
+        });
+    });
+
+});
+
+
+/* ============================================================
+   Hamburger nav toggle
+   Runs on: landing, about, explore, public_symptom_form,
+            public_symptom_result (standalone pages)
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+    var toggle = document.getElementById('navToggle');
+    var links  = document.getElementById('navLinks');
+    if (!toggle || !links) return;
+
+    toggle.addEventListener('click', function () {
+        var isOpen = links.classList.toggle('open');
+        toggle.classList.toggle('open', isOpen);
+        toggle.setAttribute('aria-expanded', isOpen);
+    });
+
+    links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+            links.classList.remove('open');
+            toggle.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        });
+    });
+});
+
+/* ============================================================
+   Public symptom form — pregnant checkbox sync
+   Only runs when input[name="pregnant"] exists (not is_pregnant)
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+    var radios     = document.querySelectorAll('input[name="gender"]');
+    var pregnantCb = document.querySelector('input[name="pregnant"]');
+    if (!radios.length || !pregnantCb) return;
+
+    var label = pregnantCb.closest('label');
+
+    function sync() {
+        var sel    = document.querySelector('input[name="gender"]:checked');
+        var gender = sel ? sel.value.toLowerCase() : '';
+        var disable = (gender === 'male');
+        pregnantCb.disabled = disable;
+        if (disable) pregnantCb.checked = false;
+        if (label) {
+            label.style.opacity = disable ? '0.4' : '1';
+            label.style.cursor  = disable ? 'not-allowed' : 'pointer';
+        }
+    }
+
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    sync();
+});
+
+/* ============================================================
+   Public symptom form — require at least one symptom
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+    var checkForm = document.getElementById('checkForm');
+    if (!checkForm) return;
+
+    checkForm.addEventListener('submit', function (e) {
+        var checked = checkForm.querySelectorAll('input[type="checkbox"]:checked');
+        var err     = document.getElementById('sym-error');
+        if (checked.length === 0) {
+            e.preventDefault();
+            if (err) err.textContent = 'Please select at least one symptom before submitting.';
+        } else {
+            if (err) err.textContent = '';
+        }
+    });
+});
+
+/* ============================================================
+   Patient assessment form — pregnant checkbox sync
+   Scoped to pages that have .symptom-grid (patient_form only)
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+    var symptomGrid = document.querySelector('.symptom-grid');
+    var pregnantCb  = document.querySelector('input[name="is_pregnant"]');
+    var radios      = document.querySelectorAll('input[name="gender"]');
+    if (!symptomGrid || !pregnantCb || !radios.length) return;
+
+    var label = pregnantCb.closest('label');
+
+    function sync() {
+        var sel    = document.querySelector('input[name="gender"]:checked');
+        var gender = sel ? sel.value.toLowerCase() : '';
+        var disable = (gender !== 'female' && gender !== 'other');
+        pregnantCb.disabled = disable;
+        if (disable) pregnantCb.checked = false;
+        if (label) {
+            label.style.opacity = disable ? '0.4' : '1';
+            label.style.cursor  = disable ? 'not-allowed' : 'pointer';
+        }
+    }
+
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    sync();
+});
+
+/* ============================================================
+   Doctor dashboard — status dropdown auto-submit
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+    var statusSelect = document.getElementById('statusSelect');
+    var filterForm   = document.getElementById('filterForm');
+    if (!statusSelect || !filterForm) return;
+    statusSelect.addEventListener('change', function () {
+        filterForm.submit();
+    });
+});
+
+/* ============================================================
+   Login page — account-created modal
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('acctModal');
+    var btn   = document.getElementById('acctOk');
+    if (!modal) return;
+    modal.classList.add('open');
+    if (btn) {
+        btn.addEventListener('click', function () { modal.classList.remove('open'); });
+    }
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.classList.remove('open');
+    });
 });

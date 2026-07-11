@@ -45,7 +45,7 @@
             <div class="profile-readonly-field">
                 <span class="profile-field-label">Email</span>
                 <span class="profile-field-value">{{ user.email|default:"—" }}</span>
-                <span class="profile-field-hint">Used for login and OTP verification.</span>
+                <span class="profile-field-hint">Used for login.</span>
             </div>
         </div>
     </div>
@@ -85,13 +85,6 @@
                     <input type="number" name="weight" step="0.1"
                            value="{{ user.weight|default:'' }}"
                            min="1" max="300" placeholder="e.g. 58.5">
-                </div>
-
-                <div class="form-group">
-                    <label>Height <span class="profile-unit">cm</span></label>
-                    <input type="number" name="height" step="0.1"
-                           value="{{ user.height|default:'' }}"
-                           min="30" max="250" placeholder="e.g. 162">
                 </div>
 
                 <div class="form-group profile-span-full">

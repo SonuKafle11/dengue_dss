@@ -56,7 +56,7 @@
                     <div class="info-label">Risk Level</div>
                     <div class="info-value">
                         {% if record.clinical_risk_level == 'low' %}
-                            <span class="badge badge-low">Low</span>
+                            <span class="badge badge-low" style="font-size:22px; font-weight:700; padding:0; background:none; border:none;">Low</span>
                         {% elif record.clinical_risk_level == 'possible' %}
                             <span class="badge badge-possible">Possible</span>
                         {% else %}
@@ -78,14 +78,7 @@
                     <div class="info-label">Weight</div>
                     <div class="info-value">{{ record.weight }} kg</div>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Height</div>
-                    <div class="info-value">{{ record.height }} cm</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">BMI</div>
-                    <div class="info-value">{{ record.get_bmi }}</div>
-                </div>
+
                 <div class="info-item">
                     <div class="info-label">Pregnant</div>
                     <div class="info-value">{% if record.is_pregnant %}Yes{% else %}No{% endif %}</div>
@@ -112,15 +105,21 @@
             </div>
             <div class="info-item">
                 <div class="info-label">NS1 Antigen</div>
-                <div class="info-value">{{ record.ns1_antigen|capfirst|default:"—" }}</div>
+                <div class="info-value">
+                    {% if record.ns1 == 1.0 %}1{% elif record.ns1 == 0.0 %}0{% else %}—{% endif %}
+                </div>
             </div>
             <div class="info-item">
                 <div class="info-label">IgG</div>
-                <div class="info-value">{{ record.igg|capfirst|default:"—" }}</div>
+                <div class="info-value">
+                    {% if record.igg == 1.0 %}1{% elif record.igg == 0.0 %}0{% else %}—{% endif %}
+                </div>
             </div>
             <div class="info-item">
                 <div class="info-label">IgM</div>
-                <div class="info-value">{{ record.igm|capfirst|default:"—" }}</div>
+                <div class="info-value">
+                    {% if record.igm == 1.0 %}1{% elif record.igm == 0.0 %}0{% else %}—{% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -131,15 +130,11 @@
 
         {% if record.is_pregnant and dosage.pregnancy_warning %}
         <div class="banner banner-warning" style="margin-bottom:16px;">
-            <strong>Pregnancy note:</strong> {{ dosage.pregnancy_warning }}
+            <strong style="color:#dc2626;">Pregnancy note:</strong> <span style="color:#dc2626;"> <br>{{ dosage.pregnancy_warning }}</span>
         </div>
         {% endif %}
 
         <div class="info-grid" style="margin-bottom:20px;">
-            <div class="info-item">
-                <div class="info-label">BMI</div>
-                <div class="info-value">{{ dosage.bmi }} ({{ dosage.bmi_category }})</div>
-            </div>
             <div class="info-item">
                 <div class="info-label">Actual Weight</div>
                 <div class="info-value">{{ dosage.actual_weight }} kg</div>
@@ -147,10 +142,6 @@
             <div class="info-item">
                 <div class="info-label">Dosing Weight</div>
                 <div class="info-value">{{ dosage.dosing_weight }} kg</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">Height</div>
-                <div class="info-value">{{ dosage.height_cm }} cm</div>
             </div>
         </div>
 
