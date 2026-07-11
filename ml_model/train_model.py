@@ -5,7 +5,6 @@ import pickle
 import time
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -146,21 +145,20 @@ def train():
     print(f"    Training set : {len(x_train)} rows")
     print(f"    Testing set  : {len(x_test)} rows")
 
-    print("\n[6] Skipping StandardScaler — Bernoulli features (NS1/IgG/IgM) need")
+    print("\n[6] — Bernoulli features (NS1/IgG/IgM) ")
     print("    raw 0/1 values, and this model's Gaussian component computes its")
     print("    own per-class mean/variance internally, so scaling isn't needed.")
-    x_train_scaled = x_train
-    x_test_scaled  = x_test
+   
 
     print("\n[7] Training Hybrid Naive Bayes (Bernoulli + Gaussian)...")
     binary_features = ['NS1', 'IgG', 'IgM']
     model = HybridNaiveBayes(binary_features=binary_features)
-    model.fit(x_train_scaled, y_train, feature_names=feature_list)
+    model.fit(x_train, y_train, feature_names=feature_list)
     print(f"    Classes : {model.classes}")
     print(f"    Priors  : { {k: round(v, 3) for k, v in model.class_priors.items()} }")
 
     print("\n[8] Evaluating model on test set...")
-    y_predicted = model.predict(x_test_scaled)
+    y_predicted = model.predict(x_test)
     accuracy    = accuracy_score(y_test, y_predicted)
     report      = classification_report(
         y_test, y_predicted,
@@ -171,14 +169,13 @@ def train():
     print(report)
     print(f"    Note: dengue recall lower due to class imbalance - known limitation")
 
-    print("\n[9] Saving model and scaler...")
+    print("\n[9] Saving model ")
     with open(model_path, 'wb') as f:
         pickle.dump(model, f)
-    # No scaler to save since we're not scaling features
+    
     with open(features_path, 'w') as f:
         json.dump(feature_list, f, indent=2)
     print(f"    Saved: naive_bayes_model.pkl")
-    print(f"    Saved: scaler.pkl")
     print(f"    Saved: feature_names.json")
 
     total_time = time.time() - total_start
