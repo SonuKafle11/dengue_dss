@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!form) return;
 
     const genderInputs  = document.querySelectorAll('input[name="gender"]');
-    const ageInput      = document.getElementById('age');
+    const ageInput      = document.getElementById('pc_age');
     const pregnantInput = document.getElementById('pregnant');
     const errorBox      = document.getElementById('error-msg');
     const symptomError  = document.getElementById('symptom-error');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const ageVal = ageInput?.value?.trim();
         const age = ageVal !== '' ? parseInt(ageVal) : null;
 
-        const shouldDisable = gender === 'male' || (age !== null && age < 10);
+        const shouldDisable = gender !== 'female' || (age === null || age < 13 || age > 55);
 
         if (pregnantInput) {
             pregnantInput.disabled = shouldDisable;
@@ -52,7 +52,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!gender) { if (errorBox) errorBox.textContent = "Please select a gender."; return false; }
         if (age === null || isNaN(age)) { if (errorBox) errorBox.textContent = "Please enter your age."; return false; }
         if (isPregnant && gender === 'male') { if (errorBox) errorBox.textContent = "Males cannot be pregnant."; return false; }
-        if (isPregnant && age < 10) { if (errorBox) errorBox.textContent = "Pregnancy not valid for age below 10."; return false; }
+        if (isPregnant && (age < 13 || age > 55)) {
+    if (errorBox) {
+        errorBox.textContent =
+            "Pregnancy is only allowed for females aged 13 to 55 years.";
+    }
+    return false;
+}
         if (symptoms.length === 0) { if (symptomError) symptomError.textContent = "Please select at least one symptom."; return false; }
         return true;
     }
@@ -87,12 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function syncPregnant() {
         var selected = document.querySelector('input[name="gender"]:checked');
         var gender   = selected ? selected.value.toLowerCase() : '';
-        var disable  = (gender === 'male' || gender === 'other');
-
-        pregnantCb.disabled = disable;
-        if (disable) {
-            pregnantCb.checked = false;
-        }
+        
 
         // Visual feedback on the label wrapper
         var label = pregnantCb.closest('label');
@@ -127,29 +128,44 @@ window.addEventListener('pageshow', function (event) {
    Male radio button is selected
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
-    // Only run on the profile page — identified by the is_pregnant checkbox
-    var pregnantCb   = document.querySelector('input[name="is_pregnant"]');
-    var genderRadios = document.querySelectorAll('input[name="gender"]');
 
-    if (!pregnantCb || !genderRadios.length) return;
+    var pregnantCb = document.querySelector('input[name="is_pregnant"]');
+    var genderRadios = document.querySelectorAll('input[name="gender"]');
+    var ageInput = document.querySelector('input[name="age"]');
+
+    if (!pregnantCb || !genderRadios.length || !ageInput) return;
 
     function syncProfilePregnant() {
+
         var selected = document.querySelector('input[name="gender"]:checked');
-        var gender   = selected ? selected.value.toLowerCase() : '';
-        var shouldDisable = (gender === 'male');
+        var gender = selected ? selected.value.toLowerCase() : '';
+
+        var age = ageInput.value !== ''
+            ? parseInt(ageInput.value)
+            : null;
+
+        var shouldDisable =
+            (
+                (gender !== 'female' && gender !== 'other')
+                ||
+                age === null
+                ||
+                age < 13
+                ||
+                age > 55
+            );
+
+        pregnantCb.disabled = shouldDisable;
 
         if (shouldDisable) {
-            pregnantCb.checked  = false;
-            pregnantCb.disabled = true;
-        } else {
-            pregnantCb.disabled = false;
+            pregnantCb.checked = false;
         }
 
-        // Visual feedback on the label
         var label = pregnantCb.closest('label');
+
         if (label) {
             label.style.opacity = shouldDisable ? '0.4' : '1';
-            label.style.cursor  = shouldDisable ? 'not-allowed' : 'pointer';
+            label.style.cursor = shouldDisable ? 'not-allowed' : 'pointer';
         }
     }
 
@@ -157,7 +173,8 @@ document.addEventListener('DOMContentLoaded', function () {
         radio.addEventListener('change', syncProfilePregnant);
     });
 
-    // Run once on load so if Male is already saved it disables immediately
+    ageInput.addEventListener('input', syncProfilePregnant);
+
     syncProfilePregnant();
 });
 
@@ -256,11 +273,28 @@ document.addEventListener('DOMContentLoaded', function () {
     var label = pregnantCb.closest('label');
 
     function sync() {
-        var sel    = document.querySelector('input[name="gender"]:checked');
-        var gender = sel ? sel.value.toLowerCase() : '';
-        var disable = (gender === 'male');
-        pregnantCb.disabled = disable;
-        if (disable) pregnantCb.checked = false;
+    var sel = document.querySelector('input[name="gender"]:checked');
+    var gender = sel ? sel.value.toLowerCase() : '';
+
+    var ageInput = document.getElementById('pc_age');
+    var age = ageInput && ageInput.value !== ''
+        ? parseInt(ageInput.value)
+        : null;
+
+    // Disable unless Female AND age is between 13 and 55
+    var disable = (
+        gender !== 'female' && gender !=='other' ||
+        age === null ||
+        age < 13 ||
+        age > 55
+    );
+
+    pregnantCb.disabled = disable;
+
+    if (disable) {
+        pregnantCb.checked = false;
+    }
+        
         if (label) {
             label.style.opacity = disable ? '0.4' : '1';
             label.style.cursor  = disable ? 'not-allowed' : 'pointer';
@@ -268,6 +302,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     radios.forEach(function (r) { r.addEventListener('change', sync); });
+    var ageInput = document.getElementById('pc_age');
+if (ageInput) {
+    ageInput.addEventListener('input', sync);
+}
     sync();
 });
 
@@ -302,19 +340,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var label = pregnantCb.closest('label');
 
-    function sync() {
-        var sel    = document.querySelector('input[name="gender"]:checked');
-        var gender = sel ? sel.value.toLowerCase() : '';
-        var disable = (gender !== 'female' && gender !== 'other');
-        pregnantCb.disabled = disable;
-        if (disable) pregnantCb.checked = false;
-        if (label) {
-            label.style.opacity = disable ? '0.4' : '1';
-            label.style.cursor  = disable ? 'not-allowed' : 'pointer';
-        }
+  function sync() {
+    var sel = document.querySelector('input[name="gender"]:checked');
+    var gender = sel ? sel.value.toLowerCase() : '';
+
+    var ageInput = document.getElementById('pc_age');
+    var age = ageInput && ageInput.value !== ''
+        ? parseInt(ageInput.value)
+        : null;
+
+    var disable =
+        (gender !== 'female' && gender !== 'other') ||
+        age === null ||
+        age < 13 ||
+        age > 55;
+
+    pregnantCb.disabled = disable;
+
+    if (disable) {
+        pregnantCb.checked = false;
     }
 
+    if (label) {
+        label.style.opacity = disable ? '0.4' : '1';
+        label.style.cursor = disable ? 'not-allowed' : 'pointer';
+    }
+}
     radios.forEach(function (r) { r.addEventListener('change', sync); });
+    var ageInput = document.getElementById('pc_age');
+if (ageInput) {
+    ageInput.addEventListener('input', sync);
+}
     sync();
 });
 

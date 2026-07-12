@@ -323,8 +323,8 @@ def patient_form(request):
                 if gender not in ("female", "other"):
                     messages.error(request, "Only females or non-binary/other patients can be marked as pregnant.")
                     return redirect('patient_form')
-                if age < 10:
-                    messages.error(request, "Pregnancy not valid for age below 10.")
+                if age < 13 or age > 55:
+                    messages.error(request, "Pregnancy is only allowed for patiets aged 12 to 55 years.")
                     return redirect('patient_form')
 
             if not any(symptom in request.POST for symptom in SYMPTOM_FIELDS):
@@ -399,24 +399,44 @@ def patient_profile(request):
 
     if request.method == 'POST':
         form = PatientProfileForm(request.POST)
+
         if form.is_valid():
-            user.age         = form.cleaned_data.get('age')
-            user.weight      = form.cleaned_data.get('weight')
-            user.gender      = form.cleaned_data.get('gender') or ''
-            user.is_pregnant = form.cleaned_data.get('is_pregnant', False)
+
+            age = form.cleaned_data.get('age')
+            weight = form.cleaned_data.get('weight')
+            gender = form.cleaned_data.get('gender') or ''
+            is_pregnant = form.cleaned_data.get('is_pregnant', False)
+
+            # Validate pregnancy
+            if gender not in ("female", "other") or age < 13 or age > 55:
+                is_pregnant = False
+
+            user.age = age
+            user.weight = weight
+            user.gender = gender
+            user.is_pregnant = is_pregnant
+
             user.save()
-            messages.success(request, 'Profile updated successfully.')
+
+            messages.success(request, "Profile updated successfully.")
             return redirect('patient_dashboard')
-        return render(request, 'core/patient_profile.html', {'user': user, 'form': form})
+
+        return render(request, 'core/patient_profile.html', {
+            'user': user,
+            'form': form,
+        })
 
     form = PatientProfileForm(initial={
-        'age':         user.age,
-        'weight':      user.weight,
-        'gender':      user.gender,
+        'age': user.age,
+        'weight': user.weight,
+        'gender': user.gender,
         'is_pregnant': user.is_pregnant,
     })
-    return render(request, 'core/patient_profile.html', {'user': user, 'form': form})
 
+    return render(request, 'core/patient_profile.html', {
+        'user': user,
+        'form': form,
+    })
 
 # ---------------------------------------------------------------------------
 # Doctor views
@@ -482,18 +502,9 @@ def doctor_patient_detail(request, record_id):
             }
             ml_res = predict_dengue(ml_input)
 
-            if ns1 == 1 or igm == 1:
-                rec.ml_prediction = 'Positive Dengue'
-                rec.ml_confidence = 100.0
-            elif ml_res['raw_label'] == '1':
-                rec.ml_prediction = 'Positive Dengue'
-                rec.ml_confidence = ml_res['confidence']
-            elif ml_res['raw_label'] == '0':
-                rec.ml_prediction = 'Negative Dengue'
-                rec.ml_confidence = ml_res['confidence']
-            else:
-                rec.ml_prediction = ml_res['prediction']
-                rec.ml_confidence = ml_res['confidence']
+# Use the trained Hybrid Naive Bayes model prediction
+            rec.ml_prediction = ml_res['prediction']
+            rec.ml_confidence = ml_res['confidence']
 
             dosage_rec = recommend_dosage(
                 weight_kg=rec.weight,
@@ -501,7 +512,7 @@ def doctor_patient_detail(request, record_id):
                 risk_level=rec.clinical_risk_level,
                 platelet_count=platelet,
                 is_pregnant=rec.is_pregnant,
-                ml_prediction=ml_res['prediction'],
+                ml_prediction=rec.ml_prediction,
             )
             rec.dosage_recommendation = format_dosage_text(dosage_rec)
             rec.save()

@@ -75,7 +75,7 @@
 
                 <div class="form-group">
                     <label>Age</label>
-                    <input type="number" name="age"
+                    <input type="number" name="age" id="age"
                            value="{{ user.age|default:'' }}"
                            min="0" max="120" placeholder="e.g. 28">
                 </div>
@@ -89,7 +89,7 @@
 
                 <div class="form-group profile-span-full">
                     <label class="profile-checkbox-label">
-                        <input type="checkbox" name="is_pregnant"
+                        <input type="checkbox" id="is_pregnant" name="is_pregnant"
                                {% if user.is_pregnant %}checked{% endif %}
                                style="accent-color:#2c5aa0; width:15px; height:15px;">
                         Currently pregnant

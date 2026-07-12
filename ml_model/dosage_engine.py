@@ -1,47 +1,43 @@
-"""
-Dosage engine for the Dengue DSS.
+def get_paracetamol_dosage(weight_kg, age):
+    """
+    Paracetamol dosage based on standard weight-based dosing.
 
-A "dosing weight" is derived from BMI so that under/overweight patients are not
-under- or over-dosed when only raw weight is used. The dosing weight is the
-patient's actual weight adjusted toward a normal-BMI weight when their BMI
-falls outside the healthy range (18.5 - 24.9).
-"""
-def get_paracetamol_dosage(dosing_weight, age):
+    Formula:
+        15 mg/kg per dose
+        Every 6 hours
+        Maximum:
+            - Children (<12 years): 60 mg/kg/day
+            - Adults (>=12 years): 4000 mg/day
     """
-    PCM dose based on practical weight table (using BMI-adjusted dosing weight).
-    """
-    if dosing_weight < 10:
-        dose_str = "Syrup only (consult doctor for exact ml)"
-        max_daily = None
-        frequency = "every 6-8 hours"
-    elif dosing_weight <= 15:
-        dose_str = "120-250 mg"
-        max_daily = 1000
-        frequency = "every 6-8 hours"
-    elif dosing_weight <= 24:
+
+    # Calculate dose (15 mg/kg)
+    dose_mg = round(weight_kg * 15)
+
+    # Maximum single dose
+    if dose_mg > 1000:
+        dose_mg = 1000
+
+    # Choose practical tablet strength
+    if dose_mg <= 125:
+        dose_str = "120 mg (Syrup)"
+    elif dose_mg <= 250:
         dose_str = "250 mg"
-        max_daily = 1000
-        frequency = "every 6-8 hours"
-    elif dosing_weight <= 32:
+    elif dose_mg <= 375:
         dose_str = "375 mg"
-        max_daily = 1500
-        frequency = "every 6-8 hours"
-    elif dosing_weight <= 50:
+    elif dose_mg <= 500:
         dose_str = "500 mg"
-        max_daily = 2000
-        frequency = "every 6-8 hours"
-    elif dosing_weight <= 65:
-        dose_str = "500-650 mg"
-        max_daily = 2600
-        frequency = "every 6-8 hours"
-    elif dosing_weight <= 100:
-        dose_str = "650 mg-1 g"
-        max_daily = 4000
-        frequency = "every 6-8 hours"
+    elif dose_mg <= 650:
+        dose_str = "650 mg"
     else:
-        dose_str = "1 g (max per dose)"
+        dose_str = "1000 mg (1 g)"
+
+    frequency = "Every 6 hours"
+
+    # Maximum daily dose
+    if age < 12:
+        max_daily = min(round(weight_kg * 60), 4000)
+    else:
         max_daily = 4000
-        frequency = "every 6-8 hours"
 
     return dose_str, frequency, max_daily
 
@@ -76,16 +72,7 @@ def get_fluid_intake(dosing_weight, age, risk_level):
                 'Taper to maintenance once stable. Monitor urine output every 1-2 hours.'
             )
         }
-    elif risk_level == 'possible':
-        return {
-            'type': 'Oral Rehydration Solution (ORS)',
-            'rate': f"{hourly_ml} ml/hr  (or {round(daily_ml/6)} ml every 4 hours)",
-            'daily_target': f"{daily_ml} ml/day (~{round(daily_ml/1000, 1)} L)",
-            'note': (
-                'Holliday-Segar maintenance via ORS. '
-                'Switch to IV if vomiting prevents oral intake. Return if symptoms worsen.'
-            )
-        }
+    
     else:  # low
         return {
             'type': 'Oral fluids (water, coconut water, ORS)',
@@ -127,7 +114,7 @@ def get_platelet_based_advice(platelet_count):
                 'advice': 'Elevated platelet count. Monitor for thrombotic events.',
                 'color': 'yellow'}
 
-
+    
 def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
                      is_pregnant=False, ml_prediction=None):
  
@@ -183,16 +170,9 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
             'Return to clinic if symptoms worsen.',
             'Avoid strenuous physical activity.',
         ]
-        recommendations['hospitalization'] = False
-    elif risk_level == 'possible':
-        recommendations['general_advice'] = [
-            'Closely monitor for warning signs.',
-            'Complete bed rest recommended.',
-            'Visit nearest clinic every 24-48 hours.',
-            'Measure urine output — should be >= 0.5 ml/kg/hour.',
-            'Avoid mosquito bites to prevent spread.',
-        ]
-        recommendations['hospitalization'] = False
+        
+    
+        
     elif risk_level == 'high':
         recommendations['general_advice'] = [
             'IMMEDIATE hospitalization required.',
@@ -202,10 +182,14 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
             'Platelet transfusion if <10,000/uL.',
             'Strict monitoring of vital signs every 1-2 hours.',
         ]
-        recommendations['hospitalization'] = True
+        # Hospitalization depends on ML prediction
+    if ml_prediction and "Positive" in str(ml_prediction):
+        recommendations["hospitalization"] = True
+    else:
+        recommendations["hospitalization"] = False
 
     # Rule 6: ML prediction upgrade
-    if ml_prediction == 'Dengue Present' and risk_level in ['low', 'possible']:
+    if ml_prediction == "Positive Dengue" and risk_level == "low":
         recommendations['general_advice'].append(
             'ML model predicts Dengue Positive — clinical upgrade recommended. '
             'Consider admission even if score appears low.'

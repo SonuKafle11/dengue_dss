@@ -15,7 +15,7 @@ PROJECT_ROOT = os.path.dirname(BASE)
 
 dataset_path  = os.path.join(PROJECT_ROOT, 'dataset', 'dengue_dataset.csv')
 model_path    = os.path.join(BASE, 'naive_bayes_model.pkl')
-scaler_path   = os.path.join(BASE, 'scaler.pkl')
+
 info_path     = os.path.join(BASE, 'dataset_info.json')
 features_path = os.path.join(BASE, 'feature_names.json')
 
@@ -27,8 +27,6 @@ columns_to_drop = [
     'Fever_Duration', 'Body_Temperature',
     'Joint_Pain', 'Headache', 'Retro_Orbital_Pain', 'Myalgia', 'Rash',
 ]
-
-
 
 # RIGHT SIDE — lab values doctor enters
 feature_list = [

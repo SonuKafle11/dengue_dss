@@ -46,7 +46,7 @@ def predict_dengue(input_dict):
         X = np.array([vec])
         label, confidence = model.predict_single_with_confidence(X[0])
         label_str = str(label).strip()
-        readable  = 'Dengue' if label_str == '1' else 'NO Dengue'
+        readable = 'Positive Dengue' if label_str == '1' else 'Negative Dengue'
         return {
             'prediction': readable,
             'confidence': round(confidence, 2),
