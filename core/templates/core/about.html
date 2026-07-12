@@ -49,9 +49,7 @@
         <div class="about-hero-content">
             <h1>About This System</h1>
             <p>
-                Built as a final-year academic project, this system combines a standard
-                scoring rubric with a trained machine learning model to help identify dengue risk
-                early — before a patient deteriorates.
+                This system was developed as a final-year project to help identify dengue risk at an early stage. It combines symptom-based scoring with a trained machine learning model to support faster and more accurate clinical decision-making.
             </p>
         </div>
     </section>
@@ -66,10 +64,7 @@
             <span class="section-kicker">Background</span>
             <h2 class="section-heading">Why this was built</h2>
             <p class="section-subtext" style="max-width:640px; margin-left:auto; margin-right:auto;">
-                Dengue cases are often missed or misclassified in early stages because
-                warning signs overlap with other febrile illnesses. Nurses and junior
-                doctors sometimes have limited time to apply the full scoring checklist.
-                This system was built to make that triage step faster and more consistent.
+                Diagnosing dengue in its early stage can be challenging because many symptoms overlap with other diseases. This project was developed to support healthcare professionals by providing a fast, consistent, and reliable dengue risk assessmentand dosage recommendations.
             </p>
         </section>
 
@@ -97,43 +92,38 @@
                 <div class="feature-item">
                     <h4>Scoring</h4>
                     <p>
-                        Each symptom carries a weighted score. The total maps to one
-                        of three bands: Low Risk,High Risk.
+                        Each symptom is assigned a weighted score. 
+                        The total score is used to classify the patient into one of two risk levels: Low Risk or High Risk.
                     </p>
                 </div>
 
                 <div class="feature-item">
                     <h4>Machine learning cross-check</h4>
                     <p>
-                        A Naive Bayes classifier trained on a labelled patient dataset
-                        runs in parallel and flags cases where the ML output
-                        diverges from the rule-based score.
+                        A trained Hybrid Naive Bayes model analyzes laboratory values (NS1, IgG, IgM, Platelet Count, and WBC Count) to predict whether the patient has dengue and provides a confidence score.
                     </p>
                 </div>
 
                 <div class="feature-item">
                     <h4>Doctor review queue</h4>
                     <p>
-                        High-risk records are automatically queued for a doctor.
-                        The doctor can enter NS1 antigen and platelet values before
-                        confirming or overriding the classification.
+                        After reviewing the patient's symptoms, the doctor enters NS1, IgG, IgM, Platelet Count, and WBC Count. 
+                        The system predicts dengue status and provides clinical recommendations based on the results.
                     </p>
                 </div>
 
                 <div class="feature-item">
                     <h4>Weight-based dosage</h4>
                     <p>
-                        Once a case is confirmed, the dosage engine calculates
-                        paracetamol and IV fluid recommendations using the
-                        patient's weight and BMI.
+                        Paracetamol dosage is calculated using the patient's age and weight, 
+                        while IV fluid requirements are estimated using the Holliday–Segar method.
                     </p>
                 </div>
 
                 <div class="feature-item">
                     <h4>Patient history</h4>
                     <p>
-                        Registered patients can log in to view all previous checks,
-                        lab values, and any notes left by their reviewing doctor.
+                        Patients can review their previous assessments, laboratory results, and dengue prediction history anytime after logging in.
                     </p>
                 </div>
 
@@ -157,9 +147,7 @@
                     <span class="role-title">Patient</span>
                     <h4>Check &amp; track your records</h4>
                     <p>
-                        Submit a symptom check, view your risk result, and
-                        access the full history of your past submissions
-                        and any doctor-added notes.
+                        Complete symptom assessments, view dengue risk results, access previous assessment history, and review laboratory results and dosage recommendations.
                     </p>
                 </div>
 
@@ -169,7 +157,7 @@
                     <p>
                         See all high-risk patients assigned to your queue,
                         enter lab results, and generate a dosage plan.
-                        You can also override the ML classification.
+                        
                     </p>
                 </div>
 
@@ -177,9 +165,7 @@
                     <span class="role-title">Admin</span>
                     <h4>Manage users &amp; data</h4>
                     <p>
-                        Create and deactivate doctor and patient accounts,
-                        monitor submission activity, and keep the
-                        user directory up to date.
+                        Manage patient and doctor accounts, maintain user records, and oversee the system database through the administrator dashboard.
                     </p>
                 </div>
 
