@@ -2,19 +2,11 @@ import hashlib
 import pytest
 from django.test import Client
 
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
 def make_password(raw):
     return hashlib.sha256(raw.encode()).hexdigest()
 
-
-# ---------------------------------------------------------------------------
 # Shared DB fixtures
-# ---------------------------------------------------------------------------
-
 @pytest.fixture
 def patient_user(db):
     from core.models import User
@@ -70,11 +62,7 @@ def patient_record(db, patient_user):
     rec.save()
     return rec
 
-
-# ---------------------------------------------------------------------------
 # Authenticated client fixtures
-# ---------------------------------------------------------------------------
-
 @pytest.fixture
 def patient_client(patient_user):
     client = Client()

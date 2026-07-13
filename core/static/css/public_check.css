@@ -1,20 +1,18 @@
-/* ============================================================
-   Public Symptom Check Page
-   ============================================================ */
+/* public_check.css — unauthenticated symptom check form page */
 
 :root {
-    --pc-blue:    #2c5aa0;
-    --pc-blue-dk: #1e4080;
-    --pc-blue-lt: #eef5ff;
-    --pc-text:    #111827;
-    --pc-text-2:  #374151;
-    --pc-muted:   #6b7280;
-    --pc-border:  #e5e7eb;
-    --pc-bg:      #f1f5f9;
-    --pc-white:   #ffffff;
-    --pc-radius:  8px;
+    --pc-blue:      #2c5aa0;
+    --pc-blue-dk:   #1e4080;
+    --pc-blue-lt:   #eef5ff;
+    --pc-text:      #111827;
+    --pc-text-2:    #374151;
+    --pc-muted:     #6b7280;
+    --pc-border:    #e5e7eb;
+    --pc-bg:        #f1f5f9;
+    --pc-white:     #ffffff;
+    --pc-radius:    8px;
     --pc-radius-sm: 5px;
-    --pc-shadow:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+    --pc-shadow:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
 }
 
 .symptom-check-page {
@@ -30,26 +28,12 @@
     line-height: 1.6;
 }
 
-/* ── Main area ── */
-.check-page {
-    flex: 1;
-    /* reset any flex/centering from landing.css home-section */
-    display: block;
-    padding: 0;
-    overflow: visible;
-    min-height: unset;
-    position: static;
-}
+/* Reset any flex/centering from landing.css home-section */
+.check-page { flex: 1; display: block; padding: 0; overflow: visible; min-height: unset; position: static; }
 
-.check-body {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 28px 32px 64px;
-    width: 100%;
-    box-sizing: border-box;
-}
+.check-body { max-width: 1400px; margin: 0 auto; padding: 28px 32px 64px; width: 100%; box-sizing: border-box; }
 
-/* ── Back link — override landing.css .back-link ── */
+/* Override landing.css .back-link so it renders as plain text link */
 .check-body .back-link {
     display: inline-flex;
     align-items: center;
@@ -67,85 +51,26 @@
 
 .check-body .back-link:hover { color: var(--pc-blue-dk); text-decoration: underline; }
 
-/* ── Page heading ── */
-.check-heading {
-    margin-bottom: 24px;
-}
+.check-heading { margin-bottom: 24px; }
 
-.check-heading h1 {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--pc-text);
-    margin: 0 0 4px;
-    line-height: 1.2;
-    letter-spacing: -.2px;
-    text-shadow: none;
-}
+.check-heading h1 { font-size: 22px; font-weight: 800; color: var(--pc-text); margin: 0 0 4px; line-height: 1.2; letter-spacing: -.2px; text-shadow: none; }
 
-.check-heading p {
-    font-size: 13.5px;
-    color: var(--pc-muted);
-    margin: 0;
-    line-height: 1.55;
-}
+.check-heading p { font-size: 13.5px; color: var(--pc-muted); margin: 0; line-height: 1.55; }
 
-/* ── Error box ── */
-.error-box {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    padding: 11px 14px;
-    border-radius: var(--pc-radius-sm);
-    margin-bottom: 16px;
-}
+/* Validation error box */
+.error-box { background: #fef2f2; border: 1px solid #fecaca; padding: 11px 14px; border-radius: var(--pc-radius-sm); margin-bottom: 16px; }
+.error-box p { margin: 0; color: #dc2626; font-size: 13.5px; }
 
-.error-box p {
-    margin: 0;
-    color: #dc2626;
-    font-size: 13.5px;
-}
+/* Content cards */
+.check-card { background: var(--pc-white); border: 1px solid var(--pc-border); border-radius: var(--pc-radius); padding: 24px 26px; margin-bottom: 16px; box-shadow: var(--pc-shadow); }
 
-/* ── Cards ── */
-.check-card {
-    background: var(--pc-white);
-    border: 1px solid var(--pc-border);
-    border-radius: var(--pc-radius);
-    padding: 24px 26px;
-    margin-bottom: 16px;
-    box-shadow: var(--pc-shadow);
-}
+.check-card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--pc-muted); margin: 0 0 18px; padding: 0 0 10px; border-bottom: 1px solid var(--pc-border); }
 
-.check-card-title {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .6px;
-    color: var(--pc-muted);
-    margin: 0 0 18px;
-    padding: 0 0 10px;
-    border-bottom: 1px solid var(--pc-border);
-}
+/* Personal info — three-column grid */
+.personal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px 28px; align-items: start; }
+.personal-grid .field-full { grid-column: 1 / -1; }
 
-/* ── Personal info grid ── */
-.personal-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px 28px;
-    align-items: start;
-}
-
-.personal-grid .field-full {
-    grid-column: 1 / -1;
-}
-
-.field-label {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    color: var(--pc-muted);
-    margin-bottom: 6px;
-}
+.field-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--pc-muted); margin-bottom: 6px; }
 
 .required { color: #dc2626; margin-left: 1px; }
 
@@ -162,73 +87,25 @@
     font-family: inherit;
 }
 
-.personal-grid input[type="number"]:focus {
-    outline: none;
-    border-color: var(--pc-blue);
-    box-shadow: 0 0 0 3px rgba(44,90,160,.1);
-}
+.personal-grid input[type="number"]:focus { outline: none; border-color: var(--pc-blue); box-shadow: 0 0 0 3px rgba(44,90,160,.1); }
 
-/* gender radios */
-.radio-row {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-top: 4px;
-}
+/* Gender radio row */
+.radio-row { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 4px; }
 
-.radio-opt {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--pc-text-2);
-    cursor: pointer;
-}
+.radio-opt { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 500; color: var(--pc-text-2); cursor: pointer; }
 
-.radio-opt input[type="radio"] {
-    accent-color: var(--pc-blue);
-    width: 15px;
-    height: 15px;
-    margin: 0;
-    cursor: pointer;
-}
+.radio-opt input[type="radio"] { accent-color: var(--pc-blue); width: 15px; height: 15px; margin: 0; cursor: pointer; }
 
-/* pregnant checkbox */
-.check-opt {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--pc-text-2);
-    cursor: pointer;
-    margin-top: 4px;
-}
+/* Pregnant checkbox */
+.check-opt { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--pc-text-2); cursor: pointer; margin-top: 4px; }
 
-.check-opt input[type="checkbox"] {
-    accent-color: var(--pc-blue);
-    width: 15px;
-    height: 15px;
-    margin: 0;
-    cursor: pointer;
-}
+.check-opt input[type="checkbox"] { accent-color: var(--pc-blue); width: 15px; height: 15px; margin: 0; cursor: pointer; }
 
-/* ── Symptom grid ── */
-.symptom-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 10px;
-}
+/* Symptom tile grid — 14 clickable cards */
+.symptom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
 
-.symptom-item {
-    cursor: pointer;
-    display: block;
-}
-
-.symptom-item input[type="checkbox"] {
-    display: none;
-}
+.symptom-item { cursor: pointer; display: block; }
+.symptom-item input[type="checkbox"] { display: none; }
 
 .symptom-box {
     display: flex;
@@ -248,38 +125,16 @@
     user-select: none;
 }
 
-.symptom-item:hover .symptom-box {
-    border-color: #c7d2df;
-    background: #f8fafc;
-}
+.symptom-item:hover .symptom-box { border-color: #c7d2df; background: #f8fafc; }
 
-.symptom-item input[type="checkbox"]:checked + .symptom-box {
-    background: var(--pc-blue-lt);
-    border-color: var(--pc-blue);
-    color: var(--pc-blue);
-    font-weight: 600;
-}
+/* Selected symptom tile */
+.symptom-item input[type="checkbox"]:checked + .symptom-box { background: var(--pc-blue-lt); border-color: var(--pc-blue); color: var(--pc-blue); font-weight: 600; }
 
-/* ── Error text below symptom grid ── */
-.error-text {
-    color: #dc2626;
-    font-size: 13px;
-    font-weight: 600;
-    margin: 8px 0 0;
-    min-height: 18px;
-}
+.error-text { color: #dc2626; font-size: 13px; font-weight: 600; margin: 8px 0 0; min-height: 18px; }
 
-/* ── Form actions ── */
-.form-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    padding-top: 20px;
-    border-top: 1px solid var(--pc-border);
-    margin-top: 8px;
-}
+/* Submit / Cancel row */
+.form-actions { display: flex; gap: 12px; align-items: center; padding-top: 20px; border-top: 1px solid var(--pc-border); margin-top: 8px; }
 
-/* ── Buttons ── */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -300,39 +155,16 @@
 .btn:hover  { transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 
-.btn-primary {
-    background: var(--pc-blue);
-    color: var(--pc-white);
-    border: 1px solid var(--pc-blue);
-}
-
+.btn-primary   { background: var(--pc-blue);  color: var(--pc-white); border: 1px solid var(--pc-blue); }
 .btn-primary:hover { background: var(--pc-blue-dk); border-color: var(--pc-blue-dk); }
 
-.btn-secondary {
-    background: var(--pc-white);
-    color: var(--pc-text-2);
-    border: 1px solid var(--pc-border);
-}
-
+.btn-secondary { background: var(--pc-white); color: var(--pc-text-2); border: 1px solid var(--pc-border); }
 .btn-secondary:hover { background: #f3f4f6; }
 
-/* ── Disclaimer banner ── */
-.info-banner {
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    padding: 12px 0;
-    margin-top: 16px;
-    color: #dc2626; /* red */
-    font-size: 13px;
-    line-height: 1.55;
-}
+/* Medical disclaimer shown below the form */
+.info-banner { background: transparent; border: none; padding: 12px 0; margin-top: 16px; color: #dc2626; font-size: 13px; line-height: 1.55; }
 
-/* ── Footer (reused from landing.css via parent) ── */
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* Responsive */
 @media (max-width: 900px) {
     .check-body { padding: 22px 24px 48px; }
     .personal-grid { grid-template-columns: 1fr 1fr 1fr; }
@@ -341,36 +173,14 @@
 
 @media (max-width: 640px) {
     .check-body { padding: 16px 16px 40px; }
-
     .check-heading h1 { font-size: 19px; }
-
-    .personal-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-
+    .personal-grid { grid-template-columns: 1fr; gap: 14px; }
     .personal-grid .field-full { grid-column: 1; }
-
     .radio-row { gap: 14px; }
-
-    .symptom-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 8px;
-    }
-
-    .symptom-box {
-        padding: 12px 8px;
-        min-height: 58px;
-        font-size: 13px;
-    }
-
-    .form-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
+    .symptom-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .symptom-box { padding: 12px 8px; min-height: 58px; font-size: 13px; }
+    .form-actions { flex-direction: column; align-items: stretch; }
     .form-actions .btn { width: 100%; justify-content: center; }
-
     .check-card { padding: 18px; }
 }
 

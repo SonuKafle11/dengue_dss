@@ -13,11 +13,7 @@ from core.models import User
 def make_password(raw):
     return hashlib.sha256(raw.encode()).hexdigest()
 
-
-# ============================================================
 # IT-01 to IT-08: Registration
-# ============================================================
-
 @pytest.mark.django_db
 class TestRegistration:
 
@@ -119,11 +115,7 @@ class TestRegistration:
         })
         assert 'user_id' not in client.session
 
-
-# ============================================================
 # IT-09 to IT-16: Login
-# ============================================================
-
 @pytest.mark.django_db
 class TestLogin:
 
@@ -220,11 +212,7 @@ class TestLogin:
         assert response.status_code == 200
         assert 'user_id' not in client.session
 
-
-# ============================================================
 # IT-17 to IT-19: Logout
-# ============================================================
-
 @pytest.mark.django_db
 class TestLogout:
 

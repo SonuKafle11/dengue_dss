@@ -6,11 +6,7 @@ import hashlib
 import pytest
 from core.forms import RegisterForm, LoginForm, PatientProfileForm
 
-
-# ============================================================
 # UT-20 to UT-29: RegisterForm
-# ============================================================
-
 @pytest.mark.django_db
 class TestRegisterForm:
 
@@ -105,11 +101,7 @@ class TestRegisterForm:
         form = RegisterForm(data=data)
         assert form.is_valid(), form.errors
 
-
-# ============================================================
 # UT-30 to UT-33: LoginForm
-# ============================================================
-
 class TestLoginForm:
 
     def test_UT30_valid_login_form(self):
@@ -135,11 +127,7 @@ class TestLoginForm:
         assert not form.is_valid()
         assert 'email' in form.errors
 
-
-# ============================================================
 # UT-34 to UT-38: PatientProfileForm
-# ============================================================
-
 class TestPatientProfileForm:
 
     def test_UT34_valid_profile_form(self):

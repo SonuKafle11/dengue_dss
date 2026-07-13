@@ -1,6 +1,4 @@
-/* ============================================================
-   Dengue DSS — Shared App / Dashboard Styles
-   ============================================================ */
+/* app.css — shared styles for all authenticated app pages (patient, doctor, admin) */
 
 :root {
     --blue:       #2c5aa0;
@@ -26,9 +24,6 @@
     --shadow-md:  0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
 }
 
-/* ============================================================
-   BASE
-   ============================================================ */
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
@@ -41,6 +36,7 @@ body {
     line-height: 1.6;
 }
 
+/* Reset the centered card set by main.css — app pages use full-width layout */
 body > .container {
     max-width: none;
     width: 100%;
@@ -52,12 +48,9 @@ body > .container {
     min-height: unset;
 }
 
-/* ============================================================
-   TOPBAR
-   ============================================================ */
+/* Sticky top navigation bar */
 .app-topbar {
     background: var(--blue);
-    border-bottom: none;
     padding: 0 32px;
     height: 60px;
     display: flex;
@@ -134,9 +127,7 @@ body > .container {
     color: var(--white);
 }
 
-/* ============================================================
-   WRAPPER & PAGE HEADER
-   ============================================================ */
+/* Page content wrapper */
 .app-wrapper {
     max-width: 1400px;
     margin: 0 auto;
@@ -182,9 +173,7 @@ body > .container {
 
 .back-link:hover { color: var(--blue-dk); text-decoration: underline; }
 
-/* ============================================================
-   CARDS
-   ============================================================ */
+/* White content cards */
 .card {
     background: var(--white);
     border-radius: var(--radius);
@@ -195,7 +184,7 @@ body > .container {
 }
 
 .card h3 {
-    color: var(--text);
+    color: var(--muted);
     font-size: 14px;
     font-weight: 700;
     margin: 0 0 14px;
@@ -203,7 +192,6 @@ body > .container {
     border-bottom: 1px solid var(--border);
     text-transform: uppercase;
     letter-spacing: .5px;
-    color: var(--muted);
 }
 
 .card h4 {
@@ -213,7 +201,7 @@ body > .container {
     margin: 14px 0 8px;
 }
 
-/* card with inline header + action */
+/* Card with inline title + action button */
 .card-head {
     display: flex;
     justify-content: space-between;
@@ -223,15 +211,9 @@ body > .container {
     border-bottom: 1px solid var(--border);
 }
 
-.card-head h3 {
-    margin: 0;
-    padding: 0;
-    border: none;
-}
+.card-head h3 { margin: 0; padding: 0; border: none; }
 
-/* ============================================================
-   STAT CARDS
-   ============================================================ */
+/* Summary stat cards — patient/doctor dashboards */
 .stat-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -264,9 +246,7 @@ body > .container {
     letter-spacing: -.5px;
 }
 
-/* ============================================================
-   BUTTONS
-   ============================================================ */
+/* Primary action button */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -285,40 +265,20 @@ body > .container {
     letter-spacing: .2px;
 }
 
-.btn:hover {
-    background: var(--blue-dk);
-    border-color: var(--blue-dk);
-    transform: translateY(-1px);
-}
-
+.btn:hover { background: var(--blue-dk); border-color: var(--blue-dk); transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 
-.btn-secondary {
-    background: var(--white);
-    color: var(--text-2) !important;
-    border: 1px solid var(--border);
-}
-
-.btn-secondary:hover {
-    background: var(--border-2);
-    transform: translateY(-1px);
-}
+.btn-secondary { background: var(--white); color: var(--text-2) !important; border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--border-2); transform: translateY(-1px); }
 
 .btn-success { background: var(--green); border-color: var(--green); }
 .btn-success:hover { background: #15803d; border-color: #15803d; }
 
 .btn-sm { padding: 5px 11px; font-size: 12.5px; }
 
-.btn-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 
-/* ============================================================
-   FILTER BAR
-   ============================================================ */
+/* Doctor dashboard: search + status filter bar */
 .filter-bar {
     display: flex;
     gap: 12px;
@@ -332,12 +292,7 @@ body > .container {
     box-shadow: var(--shadow-sm);
 }
 
-.filter-bar .field {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 160px;
-    min-width: 130px;
-}
+.filter-bar .field { display: flex; flex-direction: column; flex: 1 1 160px; min-width: 130px; }
 
 .filter-bar label {
     font-size: 11px;
@@ -366,16 +321,9 @@ body > .container {
     box-shadow: 0 0 0 3px rgba(44,90,160,.1);
 }
 
-.filter-bar .actions {
-    display: flex;
-    gap: 8px;
-    align-self: flex-end;
-    flex-shrink: 0;
-}
+.filter-bar .actions { display: flex; gap: 8px; align-self: flex-end; flex-shrink: 0; }
 
-/* ============================================================
-   TABLE
-   ============================================================ */
+/* Data table used across doctor and admin dashboards */
 .table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -423,10 +371,7 @@ table.app-table .action-link {
 
 table.app-table .action-link:hover { text-decoration: underline; }
 
-
-/* ============================================================
-   BADGES
-   ============================================================ */
+/* Risk level and status labels */
 .badge {
     display: inline-block;
     padding: 3px 9px;
@@ -447,9 +392,7 @@ table.app-table .action-link:hover { text-decoration: underline; }
 .badge-positive { color: #c0392b; }
 .badge-negative { color: #4a9e6b; }
 
-/* ============================================================
-   BANNERS
-   ============================================================ */
+/* Contextual notification banners */
 .banner {
     padding: 12px 16px;
     border-radius: var(--radius-sm);
@@ -465,13 +408,8 @@ table.app-table .action-link:hover { text-decoration: underline; }
 .banner-success { color: #4a9e6b; border-color: #b0ddc0; }
 .banner-danger  { color: #c0392b; border-color: #e8b0ae; }
 
-/* ============================================================
-   EMPTY STATE
-   ============================================================ */
-.empty-state {
-    text-align: center;
-    padding: 48px 20px;
-}
+/* Empty state shown when no records exist */
+.empty-state { text-align: center; padding: 48px 20px; }
 
 .empty-state h3 {
     color: var(--text-2);
@@ -491,9 +429,7 @@ table.app-table .action-link:hover { text-decoration: underline; }
     margin-right: auto;
 }
 
-/* ============================================================
-   RESULT HERO
-   ============================================================ */
+/* ML prediction result hero block */
 .result-hero {
     background: var(--white);
     border: 1px solid var(--border);
@@ -520,18 +456,15 @@ table.app-table .action-link:hover { text-decoration: underline; }
     letter-spacing: -.3px;
 }
 
+/* Risk-level colour variants on the outcome text */
 .result-hero--low    .outcome { color: var(--green); }
 .result-hero--possible .outcome { color: var(--amber); }
 .result-hero--high   .outcome { color: var(--red); }
 
-.result-hero .confidence {
-    margin-top: 8px;
-    font-size: 13.5px;
-    color: var(--muted);
-}
-
+.result-hero .confidence { margin-top: 8px; font-size: 13.5px; color: var(--muted); }
 .result-hero .confidence strong { color: var(--text); }
 
+/* Confidence percentage bar */
 .confidence-bar {
     margin-top: 10px;
     background: var(--border-2);
@@ -547,9 +480,7 @@ table.app-table .action-link:hover { text-decoration: underline; }
     transition: width .4s ease;
 }
 
-/* ============================================================
-   INFO GRID
-   ============================================================ */
+/* Key/value grid used in patient/doctor detail cards */
 .info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -572,9 +503,7 @@ table.app-table .action-link:hover { text-decoration: underline; }
     line-height: 1.3;
 }
 
-/* ============================================================
-   PILL LIST
-   ============================================================ */
+/* Symptom and drug pill lists */
 .pill-list {
     display: flex;
     flex-wrap: wrap;
@@ -597,32 +526,16 @@ table.app-table .action-link:hover { text-decoration: underline; }
     font-weight: 500;
 }
 
-.pill-score {
-    font-size: 10.5px;
-    color: var(--muted);
-    font-weight: 700;
-}
+.pill-score { font-size: 10.5px; color: var(--muted); font-weight: 700; }
 
+/* Danger-signs list (red tint) and forbidden-drugs list */
 .pill-list.pill-list--warn li   { background: none; color: #92400e; border-color: #e5e7eb; }
 .pill-list.pill-list--danger li { background: none; color: #991b1b; border-color: #e5e7eb; }
 
-/* ============================================================
-   TABLE HELPERS
-   ============================================================ */
-.tbl-note {
-    font-size: 11.5px;
-    color: var(--muted);
-    margin-left: 4px;
-}
+.tbl-note  { font-size: 11.5px; color: var(--muted); margin-left: 4px; }
+.tbl-empty { color: #cbd5e1; font-size: 16px; }
 
-.tbl-empty {
-    color: #cbd5e1;
-    font-size: 16px;
-}
-
-/* ============================================================
-   TWO-COL GRID
-   ============================================================ */
+/* Two-column grid used in doctor detail / prediction result */
 .two-col {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -630,9 +543,7 @@ table.app-table .action-link:hover { text-decoration: underline; }
     margin-bottom: 16px;
 }
 
-/* ============================================================
-   CLICKABLE STAT CARDS
-   ============================================================ */
+/* Doctor dashboard stat cards are links that also filter the table */
 .stat-card-link {
     display: block;
     text-decoration: none;
@@ -649,17 +560,11 @@ table.app-table .action-link:hover { text-decoration: underline; }
     color: inherit;
 }
 
-.stat-card-active {
-    border-color: var(--blue);
-    background: var(--blue-lt);
-}
-
+.stat-card-active { border-color: var(--blue); background: var(--blue-lt); }
 .stat-card-active .stat-label { color: var(--blue); }
 .stat-card-active .stat-value { color: var(--blue); }
 
-/* ============================================================
-   FILTER INDICATOR
-   ============================================================ */
+/* Active filter tags shown below the filter bar */
 .filter-indicator {
     display: flex;
     align-items: center;
@@ -681,26 +586,12 @@ table.app-table .action-link:hover { text-decoration: underline; }
 
 .filter-tag strong { color: var(--blue); font-weight: 700; }
 
-.filter-clear {
-    color: var(--red);
-    font-size: 12.5px;
-    text-decoration: none;
-    font-weight: 600;
-    margin-left: 4px;
-}
-
+.filter-clear { color: var(--red); font-size: 12.5px; text-decoration: none; font-weight: 600; margin-left: 4px; }
 .filter-clear:hover { text-decoration: underline; }
 
-/* record count label in card-head */
-.record-count {
-    font-size: 12.5px;
-    color: var(--muted);
-    font-weight: 500;
-}
+.record-count { font-size: 12.5px; color: var(--muted); font-weight: 500; }
 
-/* ============================================================
-   DOSAGE PANEL
-   ============================================================ */
+/* Dosage recommendation panels in doctor prediction result */
 .dosage-panel {
     background: #f8fafc;
     border: 1px solid var(--border);
@@ -708,9 +599,7 @@ table.app-table .action-link:hover { text-decoration: underline; }
     border-radius: var(--radius-sm);
 }
 
-/* ============================================================
-   FORM INPUTS (profile / detail pages)
-   ============================================================ */
+/* Form inputs used on doctor patient detail and patient profile */
 .form-card .form-group { margin-bottom: 16px; }
 
 .form-card label {
@@ -762,30 +651,12 @@ table.app-table .action-link:hover { text-decoration: underline; }
     box-shadow: 0 0 0 3px rgba(44,90,160,.1);
 }
 
-.hint {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-    display: block;
-    line-height: 1.4;
-}
+.hint { font-size: 12px; color: var(--muted); margin-top: 4px; display: block; line-height: 1.4; }
 
-/* ============================================================
-   PATIENT PROFILE
-   ============================================================ */
+/* Patient profile — read-only identity row */
+.profile-readonly-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px; }
 
-/* read-only identity row — two columns */
-.profile-readonly-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px 40px;
-}
-
-.profile-readonly-field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
+.profile-readonly-field { display: flex; flex-direction: column; gap: 4px; }
 
 .profile-field-label {
     font-size: 10.5px;
@@ -806,13 +677,9 @@ table.app-table .action-link:hover { text-decoration: underline; }
     line-height: 1.3;
 }
 
-.profile-field-hint {
-    font-size: 11.5px;
-    color: #9ca3af;
-    line-height: 1.4;
-}
+.profile-field-hint { font-size: 11.5px; color: #9ca3af; line-height: 1.4; }
 
-/* editable fields grid — 3 columns for numeric, full-width for others */
+/* Patient profile — editable fields grid */
 .profile-form-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -820,11 +687,8 @@ table.app-table .action-link:hover { text-decoration: underline; }
     align-items: start;
 }
 
-.profile-span-full {
-    grid-column: 1 / -1;
-}
+.profile-span-full { grid-column: 1 / -1; }
 
-/* inputs inside the profile grid go full column width */
 .profile-form-grid input[type="number"] {
     width: 100%;
     padding: 9px 12px;
@@ -844,22 +708,9 @@ table.app-table .action-link:hover { text-decoration: underline; }
     box-shadow: 0 0 0 3px rgba(44,90,160,.1);
 }
 
-.profile-unit {
-    font-size: 11px;
-    font-weight: 400;
-    color: #9ca3af;
-    text-transform: none;
-    letter-spacing: 0;
-    margin-left: 2px;
-}
+.profile-unit { font-size: 11px; font-weight: 400; color: #9ca3af; text-transform: none; letter-spacing: 0; margin-left: 2px; }
 
-/* gender radio options */
-.profile-radio-row {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-top: 6px;
-}
+.profile-radio-row { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 6px; }
 
 .profile-radio-opt {
     display: inline-flex;
@@ -871,15 +722,8 @@ table.app-table .action-link:hover { text-decoration: underline; }
     cursor: pointer;
 }
 
-.profile-radio-opt input[type="radio"] {
-    accent-color: var(--blue);
-    width: 15px;
-    height: 15px;
-    margin: 0;
-    cursor: pointer;
-}
+.profile-radio-opt input[type="radio"] { accent-color: var(--blue); width: 15px; height: 15px; margin: 0; cursor: pointer; }
 
-/* pregnant checkbox */
 .profile-checkbox-label {
     display: inline-flex;
     align-items: center;
@@ -892,7 +736,6 @@ table.app-table .action-link:hover { text-decoration: underline; }
     letter-spacing: 0;
 }
 
-/* profile responsive */
 @media (max-width: 768px) {
     .profile-readonly-row { grid-template-columns: 1fr; gap: 14px; }
     .profile-form-grid    { grid-template-columns: 1fr 1fr; }
@@ -903,9 +746,7 @@ table.app-table .action-link:hover { text-decoration: underline; }
     .profile-radio-row { gap: 16px; }
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* Responsive breakpoints */
 @media (max-width: 1100px) {
     .app-wrapper { padding: 24px 28px 56px; }
 }
@@ -919,95 +760,59 @@ table.app-table .action-link:hover { text-decoration: underline; }
 
 @media (max-width: 768px) {
     .app-topbar { padding: 0 20px; }
-
     .app-wrapper { padding: 18px 18px 44px; }
     .app-wrapper-narrow { padding: 18px 18px 44px; }
-
     .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
     .page-header h1 { font-size: 20px; }
-
     .stat-row { grid-template-columns: 1fr 1fr; gap: 10px; }
-
-    .filter-bar {
-        flex-direction: column;
-        gap: 10px;
-        padding: 14px;
-    }
+    .filter-bar { flex-direction: column; gap: 10px; padding: 14px; }
     .filter-bar .field { flex: 1 1 100%; min-width: 0; }
     .filter-bar .actions { width: 100%; justify-content: stretch; }
     .filter-bar .actions .btn { flex: 1; justify-content: center; }
-
     .card { padding: 16px; margin-bottom: 12px; }
     .card h3 { margin-bottom: 12px; padding-bottom: 8px; }
-
     .two-col { grid-template-columns: 1fr; gap: 12px; }
-
     .result-hero { padding: 18px; }
     .result-hero .outcome { font-size: 21px; }
-
     .info-grid { grid-template-columns: 1fr 1fr; gap: 12px 16px; }
-
     .btn-row { flex-direction: column; gap: 8px; }
     .btn-row .btn { width: 100%; justify-content: center; }
-
     .table-wrap { margin: 0 -16px -16px; }
     table.app-table { min-width: 540px; }
-
     .dosage-panel { padding: 14px; }
-
     .form-card input[type="text"],
     .form-card input[type="number"],
     .form-card select { max-width: 100%; }
 }
 
 @media (max-width: 640px) {
-    .app-topbar {
-        height: auto;
-        min-height: 54px;
-        flex-wrap: wrap;
-        padding: 8px 16px;
-        gap: 8px;
-    }
-
+    .app-topbar { height: auto; min-height: 54px; flex-wrap: wrap; padding: 8px 16px; gap: 8px; }
     .app-topbar .brand { font-size: 14px; }
     .app-topbar .user-info { gap: 6px; }
     .app-topbar .user-chip .name { max-width: 100px; font-size: 12px; }
     .app-topbar a { padding: 5px 10px; font-size: 12px; }
-
     .app-wrapper { padding: 14px 14px 36px; }
-
     .page-header h1 { font-size: 18px; }
     .page-header .subtitle { font-size: 13px; }
-
     .stat-row { grid-template-columns: 1fr 1fr; gap: 8px; }
     .stat-card { padding: 14px 16px; }
     .stat-card .stat-value { font-size: 22px; }
-
     .card { padding: 14px; }
-
     .result-hero { padding: 16px; }
     .result-hero .outcome { font-size: 20px; }
-
     .pill-list { gap: 5px; }
     .pill-list li { font-size: 12px; padding: 4px 9px; }
-
     .info-grid { grid-template-columns: 1fr 1fr; }
-
     table.app-table th,
     table.app-table td { padding: 10px 12px; }
 }
 
 @media (max-width: 480px) {
     .app-topbar .user-chip { display: none; }
-
     .stat-row { grid-template-columns: 1fr 1fr; }
-
     .info-grid { grid-template-columns: 1fr 1fr; }
-
     .back-link { font-size: 13px; }
-
     .btn { font-size: 13px; padding: 8px 14px; }
-
     table.app-table { min-width: 480px; }
 }
 

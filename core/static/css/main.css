@@ -1,6 +1,4 @@
-/* ============================================================
-   main.css — global base loaded by base.html on every page
-   ============================================================ */
+/* main.css — global base, loaded on every page via base.html */
 
 *, *::before, *::after {
     box-sizing: border-box;
@@ -13,8 +11,8 @@ body {
     padding: 0;
 }
 
-/* Default container — used by auth pages (login, register).
-   App/dashboard pages override every property via app.css or form.css. */
+/* Auth pages (login, register) use this centered card.
+   App/dashboard pages reset it to full-width via app.css or form.css. */
 .container {
     max-width: 600px;
     margin: 40px auto;
@@ -24,7 +22,7 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-/* Wide container — used by admin dashboard */
+/* Used by admin dashboard */
 .container-wide {
     max-width: 1100px;
 }
@@ -81,7 +79,7 @@ td, th {
     padding: 8px;
 }
 
-/* ── Mobile: shrink the auth card so it doesn't overflow ── */
+/* Mobile: collapse the auth card to full-screen */
 @media (max-width: 640px) {
     .container {
         margin: 0;

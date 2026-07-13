@@ -24,9 +24,7 @@
     <div class="page-header">
         <div>
             <h1>{{ record.patient.name }}</h1>
-            <div class="subtitle">
-                {{ record.created_at|date:"l, F d, Y · H:i" }}
-            </div>
+            <div class="subtitle">{{ record.created_at|date:"l, F d, Y · H:i" }}</div>
         </div>
     </div>
 
@@ -38,7 +36,6 @@
     {% endif %}
 
     <div class="two-col">
-
         <div class="card">
             <h3>Patient Details</h3>
             <div class="info-grid">
@@ -73,8 +70,6 @@
                     <div class="info-value">
                         {% if record.clinical_risk_level == 'low' %}
                             <span class="badge badge-low">Low</span>
-                        {% elif record.clinical_risk_level == 'possible' %}
-                            <span class="badge badge-possible">Possible</span>
                         {% else %}
                             <span class="badge badge-high">High</span>
                         {% endif %}
@@ -82,9 +77,9 @@
                 </div>
             </div>
         </div>
-
     </div>
 
+    <!-- Pill scores match SYMPTOM_WEIGHTS in views.py -->
     <div class="card">
         <h3>Symptoms Reported by Patient</h3>
         <ul class="pill-list">
@@ -108,9 +103,10 @@
     <div class="card form-card">
         <h3>Laboratory Results</h3>
         <p style="font-size:13px; color:#6b7280; margin:0 0 18px;">
-            Enter the results from the patient's blood work below. All five fields are required to run the prediction.
+            Enter the results from the patient's blood work. All five fields are required to run the prediction.
         </p>
 
+        <!-- POST triggers predict_dengue() in views.py via the Hybrid Naive Bayes model -->
         <form method="POST">
             {% csrf_token %}
 
@@ -146,7 +142,7 @@
                         <option value="positive" {% if record.igm == 1.0 %}selected{% endif %}>Positive</option>
                         <option value="negative" {% if record.igm == 0.0 %}selected{% endif %}>Negative</option>
                     </select>
-                    <span class="hint">Positive = Past or secondary dengue exposure</span>
+                    <span class="hint">Positive = past or secondary dengue exposure</span>
                 </div>
 
                 <div class="form-group">
@@ -156,7 +152,7 @@
                         <option value="positive" {% if record.igg == 1.0 %}selected{% endif %}>Positive</option>
                         <option value="negative" {% if record.igg == 0.0 %}selected{% endif %}>Negative</option>
                     </select>
-                    <span class="hint">Positive = Recent or active dengue infection</span>
+                    <span class="hint">Positive = recent or active dengue infection</span>
                 </div>
             </div>
 

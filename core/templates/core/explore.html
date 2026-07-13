@@ -9,197 +9,120 @@
 </head>
 <body>
 
-    <!-- ======================================================
-         NAVBAR
-    ====================================================== -->
-    <header class="navbar">
-        <div class="nav-content">
+<header class="navbar">
+    <div class="nav-content">
+        <h2 class="logo">Dengue DSS</h2>
 
-            <h2 class="logo">Dengue DSS</h2>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
 
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+        <ul class="nav-links" id="navLinks" role="list">
+            <li><a href="{% url 'landing' %}">Home</a></li>
+            <li><a href="{% url 'about' %}">About Us</a></li>
+            <li><a href="{% url 'explore' %}" class="active">Explore</a></li>
+            <li><a href="{% url 'login' %}" class="login-link">Login</a></li>
+        </ul>
+    </div>
+</header>
 
-            <ul class="nav-links" id="navLinks" role="list">
-                <li><a href="{% url 'landing' %}">Home</a></li>
-                <li><a href="{% url 'about' %}">About Us</a></li>
-                <li><a href="{% url 'explore' %}" class="active">Explore</a></li>
-                <li><a href="{% url 'login' %}" class="login-link">Login</a></li>
-            </ul>
+<!-- Page hero with background image -->
+<section class="explore-hero">
+    <img src="{% static 'images/explore-us.png' %}" alt="" class="explore-hero-bg" aria-hidden="true">
+    <div class="explore-hero-overlay" aria-hidden="true"></div>
+    <div class="explore-hero-content">
+        <span class="page-label">Get Started</span>
+        <h1>Explore the System</h1>
+        <p>
+            See how a symptom check works, understand what each result means,
+            and find out when you need to log in or see a doctor.
+        </p>
+        <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">Start Symptom Check</a>
+    </div>
+</section>
 
-        </div>
-    </header>
+<main class="explore-body">
 
-    <!-- ======================================================
-         PAGE HEADER
-    ====================================================== -->
-    <section class="explore-hero">
-        <img
-            src="{% static 'images/explore-us.png' %}"
-            alt=""
-            class="explore-hero-bg"
-            aria-hidden="true"
-        >
-        <div class="explore-hero-overlay" aria-hidden="true"></div>
-        <div class="explore-hero-content">
-            <span class="page-label">Get Started</span>
-            <h1>Explore the System</h1>
-            <p>
-                See how a symptom check works, understand what each result means,
-                and find out when you need to log in or see a doctor.
-            </p>
-            <a href="{% url 'public_symptom_check' %}" class="btn btn-primary">
-                Start Symptom Check
-            </a>
+    <section>
+        <span class="section-kicker">How it works</span>
+        <h2 class="section-heading">Four steps from symptoms to result</h2>
+        <p class="section-subtext">The whole process takes under two minutes. No account needed for the initial check.</p>
+
+        <!-- Step cards — auto-numbered via CSS counter -->
+        <div class="steps-list">
+            <div class="step-item">
+                <h4>Answer 14 questions</h4>
+                <p>You are shown a list of standard dengue warning signs. Select which symptoms apply to you. The form takes about 60 seconds to fill in.</p>
+            </div>
+            <div class="step-item">
+                <h4>Get an instant score</h4>
+                <p>Each symptom carries a clinical weight. The system adds them up and places you into one of two risk bands: Low Risk or High Risk.</p>
+            </div>
+            <div class="step-item">
+                <h4>ML cross-validation</h4>
+                <p>A trained Hybrid Naive Bayes model analyzes NS1, IgG, IgM, Platelet Count, and WBC Count to predict Dengue or No Dengue with a confidence score.</p>
+            </div>
+            <div class="step-item">
+                <h4>Doctor follow-up if needed</h4>
+                <p>High-risk results are queued for a doctor to review. You will be prompted to register so the doctor can access your record and add lab results.</p>
+            </div>
         </div>
     </section>
 
-    <!-- ======================================================
-         BODY
-    ====================================================== -->
-    <main class="explore-body">
+    <hr class="about-divider">
 
-        <!-- ── How it works ── -->
-        <section>
-            <span class="section-kicker">How it works</span>
-            <h2 class="section-heading">Four steps from symptoms to result</h2>
-            <p class="section-subtext">
-                The whole process takes under two minutes. No account is needed
-                for the initial check.
-            </p>
+    <section>
+        <span class="section-kicker">Access levels</span>
+        <h2 class="section-heading">What you can do without logging in</h2>
+        <p class="section-subtext">Some features are open to everyone. Others require an account so records can be stored and reviewed safely.</p>
 
-            <div class="steps-list">
-
-                <div class="step-item">
-                    <h4>Answer 14 questions</h4>
-                    <p>
-                        You are shown a list of standard dengue warning signs.
-                        Select which symptoms apply to you. The form takes about
-                        60 seconds to fill in.
-                    </p>
-                </div>
-
-                <div class="step-item">
-                    <h4>Get an instant score</h4>
-                    <p>
-                        Each symptom carries a clinical weight. The system adds
-                        them up and places you into one of two risk bands:
-                        Low Risk, or High Risk.
-                    </p>
-                </div>
-
-                <div class="step-item">
-                    <h4>ML cross-validation</h4>
-                    <p>
-                        A trained Hybrid Naive Bayes model analyzes NS1,
-                        IgG, IgM, Platelet Count, and WBC Count to predict
-                        Dengue or No Dengue and provides a confidence score.
-                    </p>
-                </div>
-
-                <div class="step-item">
-                    <h4>Doctor follow-up if needed</h4>
-                    <p>
-                        High-risk results are queued for a doctor to review.
-                        You will be prompted to register so the doctor can
-                        access your record and add lab results.
-                    </p>
-                </div>
-
+        <div class="access-grid">
+            <div class="access-card">
+                <span class="access-label">No account required</span>
+                <h4>Public symptom check</h4>
+                <p>Check your symptoms and receive a risk result at any time without registering. Nothing is saved to the database until you choose to create an account.</p>
             </div>
-        </section>
-
-        <hr class="about-divider">
-
-        <!-- ── Who can access ── -->
-        <section>
-            <span class="section-kicker">Access levels</span>
-            <h2 class="section-heading">What you can do without logging in</h2>
-            <p class="section-subtext">
-                Some features are open to everyone. Others require an account
-                so that your records can be stored and reviewed safely.
-            </p>
-
-            <div class="access-grid">
-
-                <div class="access-card">
-                    <span class="access-label">No account required</span>
-                    <h4>Public symptom check</h4>
-                    <p>
-                        You can check your symptoms and receive a risk result
-                        at any time without registering. Nothing is saved
-                        to the database until you choose to create an account.
-                    </p>
-                </div>
-
-                <div class="access-card">
-                    <span class="access-label">Patient account</span>
-                    <h4>Saved history &amp; doctor access</h4>
-                    <p>
-                        Registering lets you store your results, view past
-                        checks, and have a doctor review any high-risk
-                        submissions. Registration is free and takes under
-                        a minute.
-                    </p>
-                </div>
-
-                <div class="access-card">
-                    <span class="access-label">Doctor account</span>
-                    <h4>Case review &amp; prescriptions</h4>
-                    <p>
-                        Doctors log in to review patient records, enter laboratory values, predict Dengue or
-                         No Dengue using the trained ML model, and generate dosage recommendations.
-                    </p>
-                </div>
-
-                <div class="access-card">
-                    <span class="access-label">Understanding results</span>
-                    <h4>What the three bands mean</h4>
-                    <p>
-                        Low Risk means the patient's symptoms are less likely to indicate dengue.
-                         High Risk means immediate medical assessment is recommended.
-                    </p>
-                </div>
-
+            <div class="access-card">
+                <span class="access-label">Patient account</span>
+                <h4>Saved history &amp; doctor access</h4>
+                <p>Registering lets you store your results, view past checks, and have a doctor review any high-risk submissions. Registration is free and takes under a minute.</p>
             </div>
-        </section>
-
-        <hr class="about-divider">
-
-        <!-- ── CTA ── -->
-        <div class="explore-cta">
-            <div class="explore-cta-text">
-                <h3>Ready to check your symptoms?</h3>
-                <p>
-                    The check takes about a minute. No account needed to get started —
-                    you can register afterwards if you want to save your result.
-                </p>
+            <div class="access-card">
+                <span class="access-label">Doctor account</span>
+                <h4>Case review &amp; prescriptions</h4>
+                <p>Doctors log in to review patient records, enter laboratory values, predict Dengue or No Dengue using the trained ML model, and generate dosage recommendations.</p>
             </div>
-            <a href="{% url 'public_symptom_check' %}" class="btn-cta">
-                Start Now
-            </a>
+            <div class="access-card">
+                <span class="access-label">Understanding results</span>
+                <h4>What the risk bands mean</h4>
+                <p>Low Risk means symptoms are less likely to indicate dengue. High Risk means immediate medical assessment is recommended.</p>
+            </div>
         </div>
+    </section>
 
-    </main>
+    <hr class="about-divider">
 
-    <!-- ======================================================
-         FOOTER
-    ====================================================== -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <p>&copy; 2026 Dengue Decision Support System</p>
-            <p class="disclaimer">
-                This system is for academic and informational purposes only. It does not
-                replace professional medical advice. If you feel seriously unwell, please
-                visit a hospital or clinic immediately.
-            </p>
+    <div class="explore-cta">
+        <div class="explore-cta-text">
+            <h3>Ready to check your symptoms?</h3>
+            <p>The check takes about a minute. No account needed to get started — you can register afterwards if you want to save your result.</p>
         </div>
-    </footer>
+        <a href="{% url 'public_symptom_check' %}" class="btn-cta">Start Now</a>
+    </div>
 
-    <script src="{% static 'js/main.js' %}"></script>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <p>&copy; 2026 Dengue Decision Support System</p>
+        <p class="disclaimer">
+            This system is for academic and informational purposes only. It does not replace professional medical advice.
+            If you feel seriously unwell, please visit a hospital or clinic immediately.
+        </p>
+    </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
 
 </body>
 </html>

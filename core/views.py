@@ -19,16 +19,13 @@ SYMPTOM_FIELDS = [
 
 SYMPTOM_WEIGHTS = {
     'fever': 1, 'severe_headache': 2, 'joint_back_pain': 2,
-    'nausea_vomiting': 2, 'skin_rash': 1, 'vomiting_more_than_3': 2,
+    'nausea_vomiting': 1, 'skin_rash': 0.5, 'vomiting_more_than_3': 2,
     'bleeding': 3, 'extreme_weakness': 3, 'urine_output_low': 3,
     'fever_not_improving': 2, 'drop_in_fever_with_weakness': 3,
     'cold_hands_feet': 1, 'restless_drowsy': 3, 'abdominal_pain': 1,
 }
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
 def hash_password(raw):
     return hashlib.sha256(raw.encode()).hexdigest()
 
@@ -42,11 +39,7 @@ def current_user(request):
             pass
     return None
 
-
-# ---------------------------------------------------------------------------
 # Access-control decorators
-# ---------------------------------------------------------------------------
-
 def patient_required(fn):
     def wrap(request, *a, **kw):
         if not request.session.get('user_id') or request.session.get('role') != 'patient':
@@ -73,11 +66,7 @@ def admin_required(fn):
     wrap.__name__ = fn.__name__
     return wrap
 
-
-# ---------------------------------------------------------------------------
 # Public pages
-# ---------------------------------------------------------------------------
-
 def landing(request):
     return render(request, 'core/landing.html')
 
@@ -100,11 +89,7 @@ def index(request):
         return redirect('admin_dashboard')
     return redirect('landing')
 
-
-# ---------------------------------------------------------------------------
 # Public symptom checker
-# ---------------------------------------------------------------------------
-
 def public_symptom_check(request):
     if request.method == 'POST':
         selected = [s for s in SYMPTOM_FIELDS if s in request.POST]
@@ -162,11 +147,6 @@ def public_symptom_check(request):
         'age_value': '', 'gender_value': '', 'pregnant_value': False,
     })
 
-
-# ---------------------------------------------------------------------------
-# Registration — direct save, no OTP
-# ---------------------------------------------------------------------------
-
 def register(request):
     requested_as = request.GET.get('as', 'patient')
     if requested_as not in ('patient', 'doctor'):
@@ -211,11 +191,7 @@ def register(request):
         'as_role': requested_as,
     })
 
-
-# ---------------------------------------------------------------------------
 # Login
-# ---------------------------------------------------------------------------
-
 def login_view(request):
     if request.session.get('user_id'):
         return redirect('index')
@@ -253,20 +229,12 @@ def login_view(request):
     acct_msg = request.session.pop('account_created_msg', None)
     return render(request, 'core/login.html', {'form': form, 'account_created_msg': acct_msg})
 
-
-# ---------------------------------------------------------------------------
 # Logout
-# ---------------------------------------------------------------------------
-
 def logout_view(request):
     request.session.flush()
     return redirect('landing')
 
-
-# ---------------------------------------------------------------------------
 # Admin auth — unchanged
-# ---------------------------------------------------------------------------
-
 def admin_login(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -287,11 +255,7 @@ def admin_logout(request):
     request.session.flush()
     return redirect('admin_login')
 
-
-# ---------------------------------------------------------------------------
 # Patient views
-# ---------------------------------------------------------------------------
-
 @never_cache
 @patient_required
 def patient_dashboard(request):
@@ -438,10 +402,7 @@ def patient_profile(request):
         'form': form,
     })
 
-# ---------------------------------------------------------------------------
 # Doctor views
-# ---------------------------------------------------------------------------
-
 @never_cache
 @doctor_required
 def doctor_dashboard(request):
@@ -548,10 +509,7 @@ def doctor_prediction_result(request, record_id):
     })
 
 
-# ---------------------------------------------------------------------------
 # Admin views — unchanged
-# ---------------------------------------------------------------------------
-
 @never_cache
 @admin_required
 def admin_dashboard(request):
@@ -602,3 +560,4 @@ def admin_dataset_json(request):
     if info:
         return JsonResponse(info)
     return JsonResponse({'error': 'Model not trained yet.'}, status=404)
+

@@ -7,24 +7,17 @@ from selenium.common.exceptions import TimeoutException
 
 BASE = "http://127.0.0.1:8000"
 
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
 def go(driver, path):
     driver.get(BASE + path)
-
 
 def wait(driver, by, selector, timeout=8):
     return WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((by, selector))
     )
 
-
 def has_text(driver, text):
     return text.lower() in driver.page_source.lower()
-
 
 def js_click(driver, el):
     driver.execute_script("arguments[0].scrollIntoView(true);", el)
@@ -44,23 +37,17 @@ def do_logout(driver):
     go(driver, "/logout/")
     time.sleep(0.5)
 
-
-# ============================================================
 # ST-01 to ST-05: Public pages
-# ============================================================
-
 def test_ST01_landing_page_loads(driver):
     """ST-01: Landing page loads with correct title."""
     go(driver, "/")
     assert "Dengue" in driver.title or has_text(driver, "Dengue DSS")
-
 
 def test_ST02_about_page_loads(driver):
     """ST-02: About page loads and contains About content."""
     go(driver, "/about/")
     assert "/about/" in driver.current_url
     assert has_text(driver, "About")
-
 
 def test_ST03_explore_page_loads(driver):
     """ST-03: Explore page loads correctly."""
@@ -83,11 +70,7 @@ def test_ST05_register_page_loads(driver):
     assert driver.find_element(By.NAME, "password")
     assert driver.find_element(By.NAME, "confirm_password")
 
-
-# ============================================================
 # ST-06 to ST-09: Registration flow
-# ============================================================
-
 def test_ST06_patient_registration_success(driver, django_db_blocker):
     """ST-06: Registering with valid data redirects to login with success msg."""
     with django_db_blocker.unblock():
@@ -155,11 +138,7 @@ def test_ST09_duplicate_email_shows_error(driver, sys_patient):
     assert "/register/" in driver.current_url
     assert has_text(driver, "already exists")
 
-
-# ============================================================
 # ST-10 to ST-14: Login flow
-# ============================================================
-
 def test_ST10_successful_patient_login(driver, sys_patient):
     """ST-10: Valid patient credentials redirect to patient dashboard."""
     do_logout(driver)
@@ -204,18 +183,13 @@ def test_ST14_back_button_after_logout_reloads(driver, sys_patient):
     time.sleep(1)
     assert "/login/" in driver.current_url or driver.current_url == BASE + "/"
 
-
-# ============================================================
 # ST-15 to ST-19: Patient dashboard
-# ============================================================
-
 def test_ST15_patient_dashboard_shows_name(driver, sys_patient):
     """ST-15: Patient dashboard displays the patient's name."""
     do_logout(driver)
     email, password = sys_patient
     do_login(driver, email, password)
     assert has_text(driver, "System Patient")
-
 
 def test_ST16_patient_dashboard_accessible(driver, sys_patient):
     """ST-16: Patient dashboard page loads at /patient/."""
@@ -224,14 +198,12 @@ def test_ST16_patient_dashboard_accessible(driver, sys_patient):
         do_login(driver, email, password)
     assert "/patient/" in driver.current_url
 
-
 def test_ST17_unauthenticated_dashboard_redirects(driver):
     """ST-17: Accessing /patient/ without login redirects to /login/."""
     do_logout(driver)
     go(driver, "/patient/")
     time.sleep(0.5)
     assert "/login/" in driver.current_url
-
 
 def test_ST18_patient_profile_accessible(driver, sys_patient):
     """ST-18: Patient profile page loads after login."""
@@ -241,7 +213,6 @@ def test_ST18_patient_profile_accessible(driver, sys_patient):
     go(driver, "/patient/profile/")
     assert "/patient/profile/" in driver.current_url
     assert driver.find_element(By.NAME, "gender")
-
 
 def test_ST19_profile_male_unchecks_pregnant(driver, sys_patient):
     """ST-19: Selecting Male on profile page unchecks pregnant checkbox."""
@@ -264,11 +235,7 @@ def test_ST19_profile_male_unchecks_pregnant(driver, sys_patient):
     time.sleep(0.5)
     assert not pregnant_cb.is_selected()
 
-
-# ============================================================
 # ST-20 to ST-24: Public symptom checker
-# ============================================================
-
 def test_ST20_symptom_checker_loads(driver):
     """ST-20: Public symptom checker page loads."""
     go(driver, "/check/")
@@ -352,18 +319,13 @@ def test_ST24_result_back_link_works(driver):
     time.sleep(0.5)
     assert "/check/" in driver.current_url
 
-
-# ============================================================
 # ST-25 to ST-28: Doctor flow
-# ============================================================
-
 def test_ST25_doctor_login_and_dashboard(driver, sys_doctor):
     """ST-25: Doctor login redirects to doctor dashboard."""
     do_logout(driver)
     email, password = sys_doctor
     do_login(driver, email, password)
     assert "/doctor/" in driver.current_url
-
 
 def test_ST26_doctor_dashboard_shows_name(driver, sys_doctor):
     """ST-26: Doctor dashboard displays doctor's name."""
@@ -372,14 +334,12 @@ def test_ST26_doctor_dashboard_shows_name(driver, sys_doctor):
         do_login(driver, email, password)
     assert has_text(driver, "System Doctor") or has_text(driver, "Doctor")
 
-
 def test_ST27_unauthenticated_doctor_dashboard_redirects(driver):
     """ST-27: Accessing /doctor/ without login redirects to /login/."""
     do_logout(driver)
     go(driver, "/doctor/")
     time.sleep(0.5)
     assert "/login/" in driver.current_url
-
 
 def test_ST28_admin_login_page_loads(driver):
     """ST-28: Admin login page renders with username and password fields."""

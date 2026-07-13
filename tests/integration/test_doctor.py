@@ -8,11 +8,7 @@ from core.models import User, PatientRecord
 def make_password(raw):
     return hashlib.sha256(raw.encode()).hexdigest()
 
-
-# ============================================================
 # IT-39 to IT-44: Doctor Dashboard
-# ============================================================
-
 @pytest.mark.django_db
 class TestDoctorDashboard:
 
@@ -54,11 +50,7 @@ class TestDoctorDashboard:
         for rec in response.context['records']:
             assert rec.is_reviewed is True
 
-
-# ============================================================
 # IT-45 to IT-50: Doctor Patient Detail
-# ============================================================
-
 @pytest.mark.django_db
 class TestDoctorPatientDetail:
 
@@ -130,11 +122,7 @@ class TestDoctorPatientDetail:
         )
         assert response.context['record'].record_id == patient_record.record_id
 
-
-# ============================================================
 # IT-51 to IT-54: Doctor Prediction Result
-# ============================================================
-
 @pytest.mark.django_db
 class TestDoctorPredictionResult:
 

@@ -73,10 +73,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* ============================================================
+/* 
    Public Symptom Form — pregnant checkbox disable/enable
    based on gender selection
-   ============================================================ */
+ */
 document.addEventListener('DOMContentLoaded', function () {
     // Only run on the public check form (no height/weight fields)
     var genderRadios   = document.querySelectorAll('input[name="gender"]');
@@ -123,10 +123,10 @@ window.addEventListener('pageshow', function (event) {
 });
 
 
-/* ============================================================
+/* 
    Patient Profile — uncheck "Currently pregnant" when
    Male radio button is selected
-   ============================================================ */
+ */
 document.addEventListener('DOMContentLoaded', function () {
 
     var pregnantCb = document.querySelector('input[name="is_pregnant"]');
@@ -178,10 +178,10 @@ document.addEventListener('DOMContentLoaded', function () {
     syncProfilePregnant();
 });
 
-/* ============================================================
+/* 
    Admin Dashboard — AJAX delete (no page reload, no messages
    leaking to the login page)
-   ============================================================ */
+ */
 document.addEventListener('DOMContentLoaded', function () {
 
     function getCsrfToken() {
@@ -236,11 +236,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* ============================================================
+/* 
    Hamburger nav toggle
    Runs on: landing, about, explore, public_symptom_form,
             public_symptom_result (standalone pages)
-   ============================================================ */
+*/
 document.addEventListener('DOMContentLoaded', function () {
     var toggle = document.getElementById('navToggle');
     var links  = document.getElementById('navLinks');
@@ -261,10 +261,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-/* ============================================================
+/*
    Public symptom form — pregnant checkbox sync
    Only runs when input[name="pregnant"] exists (not is_pregnant)
-   ============================================================ */
+*/
 document.addEventListener('DOMContentLoaded', function () {
     var radios     = document.querySelectorAll('input[name="gender"]');
     var pregnantCb = document.querySelector('input[name="pregnant"]');
@@ -309,9 +309,9 @@ if (ageInput) {
     sync();
 });
 
-/* ============================================================
+/*
    Public symptom form — require at least one symptom
-   ============================================================ */
+*/
 document.addEventListener('DOMContentLoaded', function () {
     var checkForm = document.getElementById('checkForm');
     if (!checkForm) return;
@@ -328,55 +328,57 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-/* ============================================================
+/*
    Patient assessment form — pregnant checkbox sync
    Scoped to pages that have .symptom-grid (patient_form only)
-   ============================================================ */
+*/
 document.addEventListener('DOMContentLoaded', function () {
     var symptomGrid = document.querySelector('.symptom-grid');
     var pregnantCb  = document.querySelector('input[name="is_pregnant"]');
     var radios      = document.querySelectorAll('input[name="gender"]');
-    if (!symptomGrid || !pregnantCb || !radios.length) return;
+    var ageInput    = document.getElementById('age');
+
+    if (!symptomGrid || !pregnantCb || !radios.length || !ageInput) return;
 
     var label = pregnantCb.closest('label');
 
-  function sync() {
-    var sel = document.querySelector('input[name="gender"]:checked');
-    var gender = sel ? sel.value.toLowerCase() : '';
+    function sync() {
+        var selected = document.querySelector('input[name="gender"]:checked');
+        var gender = selected ? selected.value.toLowerCase() : '';
 
-    var ageInput = document.getElementById('pc_age');
-    var age = ageInput && ageInput.value !== ''
-        ? parseInt(ageInput.value)
-        : null;
+        var age = ageInput.value !== ''
+            ? parseInt(ageInput.value)
+            : null;
 
-    var disable =
-        (gender !== 'female' && gender !== 'other') ||
-        age === null ||
-        age < 13 ||
-        age > 55;
+        var disable =
+            gender !== 'female' &&gender !== 'other' ||
+            age === null ||
+            age < 13 ||
+            age > 55;
 
-    pregnantCb.disabled = disable;
+        pregnantCb.disabled = disable;
 
-    if (disable) {
-        pregnantCb.checked = false;
+        if (disable) {
+            pregnantCb.checked = false;
+        }
+
+        if (label) {
+            label.style.opacity = disable ? '0.4' : '1';
+            label.style.cursor = disable ? 'not-allowed' : 'pointer';
+        }
     }
 
-    if (label) {
-        label.style.opacity = disable ? '0.4' : '1';
-        label.style.cursor = disable ? 'not-allowed' : 'pointer';
-    }
-}
-    radios.forEach(function (r) { r.addEventListener('change', sync); });
-    var ageInput = document.getElementById('pc_age');
-if (ageInput) {
+    radios.forEach(function (r) {
+        r.addEventListener('change', sync);
+    });
+
     ageInput.addEventListener('input', sync);
-}
+
     sync();
 });
-
-/* ============================================================
+/*
    Doctor dashboard — status dropdown auto-submit
-   ============================================================ */
+*/
 document.addEventListener('DOMContentLoaded', function () {
     var statusSelect = document.getElementById('statusSelect');
     var filterForm   = document.getElementById('filterForm');
@@ -386,9 +388,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-/* ============================================================
+/*
    Login page — account-created modal
-   ============================================================ */
+ */
 document.addEventListener('DOMContentLoaded', function () {
     var modal = document.getElementById('acctModal');
     var btn   = document.getElementById('acctOk');
