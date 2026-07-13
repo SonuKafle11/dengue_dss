@@ -124,7 +124,7 @@ class PatientRecord(models.Model):
         return score
 
     def get_risk_level(self, score):
-        if score < 4:
+        if score <= 4:
             return 'low'
         else:
             return 'high'

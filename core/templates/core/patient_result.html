@@ -28,12 +28,11 @@
         </div>
     </div>
 
-    <div class="result-hero result-hero--{% if record.clinical_risk_level == 'low' %}low{% elif record.clinical_risk_level == 'possible' %}possible{% else %}high{% endif %}">
+    <div class="result-hero result-hero--{% if record.clinical_risk_level == 'low' %}low{% else %}high{% endif %}">
         <div class="label">Clinical Risk Level</div>
         <div class="outcome">
             {% if record.clinical_risk_level == 'low' %}Low Risk
-            {% elif record.clinical_risk_level == 'possible' %}Possible Dengue
-            {% elif record.clinical_risk_level == 'probable' %}Probable Dengue
+            
             {% else %}High Risk
             {% endif %}
         </div>

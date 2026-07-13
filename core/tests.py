@@ -58,18 +58,10 @@ class ClinicalScoringTest(TestCase):
         self.assertEqual(rec.clinical_score, 2)
         self.assertEqual(rec.clinical_risk_level, 'low')
 
-    def test_possible_dengue_score(self):
-        """TC-05: Score 4-6 gives Possible Dengue"""
-        rec = PatientRecord.objects.create(
-            patient=self.patient, age=25, weight=60,
-            fever=True,            # 2
-            extreme_weakness=True  # 2
-        )
-        self.assertEqual(rec.clinical_score, 4)
-        self.assertEqual(rec.clinical_risk_level, 'possible')
+    
 
     def test_high_risk_score(self):
-        """TC-06: Score >= 10 gives High Risk"""
+        """TC-06: Score > 4 gives High Risk"""
         rec = PatientRecord.objects.create(
             patient=self.patient, age=25, weight=60,
             fever=True,                        # 2
