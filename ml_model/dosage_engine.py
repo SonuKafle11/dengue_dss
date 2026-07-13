@@ -179,9 +179,8 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
             'Strict monitoring of vital signs every 1-2 hours.',
         ]
         # Hospitalization depends on ML prediction
-    if risk_level == "high":
-        recommendations["hospitalization"] = True
-    elif ml_prediction is not None and "Positive" in str(ml_prediction):
+   # Hospitalization depends on ML prediction
+    if ml_prediction and "Positive" in str(ml_prediction):
         recommendations["hospitalization"] = True
     else:
         recommendations["hospitalization"] = False
