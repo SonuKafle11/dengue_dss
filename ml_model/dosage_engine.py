@@ -22,22 +22,18 @@ def get_paracetamol_dosage(weight_kg, age):
         dose_str = "120 mg (Syrup)"
     elif dose_mg <= 250:
         dose_str = "250 mg"
-    elif dose_mg <= 375:
-        dose_str = "375 mg"
     elif dose_mg <= 500:
         dose_str = "500 mg"
-    elif dose_mg <= 650:
-        dose_str = "650 mg"
     else:
-        dose_str = "1000 mg (1 g)"
+        dose_str = "500-1000 mg (1 g) depending on feaver severity"
 
-    frequency = "Every 6 hours"
+    frequency = "Every 6-8 hours"
 
     # Maximum daily dose
     if age < 12:
         max_daily = min(round(weight_kg * 60), 4000)
     else:
-        max_daily = 4000
+        max_daily = 2000
 
     return dose_str, frequency, max_daily
 
@@ -183,10 +179,13 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
             'Strict monitoring of vital signs every 1-2 hours.',
         ]
         # Hospitalization depends on ML prediction
-    if ml_prediction and "Positive" in str(ml_prediction):
+    if risk_level == "high":
+        recommendations["hospitalization"] = True
+    elif ml_prediction is not None and "Positive" in str(ml_prediction):
         recommendations["hospitalization"] = True
     else:
         recommendations["hospitalization"] = False
+    
 
     # Rule 6: ML prediction upgrade
     if ml_prediction == "Positive Dengue" and risk_level == "low":
