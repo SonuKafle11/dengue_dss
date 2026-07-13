@@ -15,10 +15,10 @@ class HybridNaiveBayes:
     A pure GaussianNaiveBayes forces binary 0/1 features through a
     mean/variance model that doesn't represent them well, which can dilute
     genuinely strong signals (e.g. NS1 positivity correlating with Outcome
-    in ~83% of cases in training data). Bernoulli directly models
+    in ~88% of cases in training data). Bernoulli directly models
     P(feature=1 | class), which is the correct distribution for binary data.
     """
-
+#model initialize
     def __init__(self, binary_features=None):
         self.binary_features = binary_features or []
 
@@ -29,7 +29,7 @@ class HybridNaiveBayes:
         self.class_means = {}
         self.class_variances = {}
         self.class_bernoulli_p = {}
-
+#Train the model   
     def fit(self, X, y, feature_names=None):
         X = np.array(X, dtype=float)
         y = np.array(y)
@@ -38,6 +38,7 @@ class HybridNaiveBayes:
         self.feature_names = feature_names or [f"feature_{i}" for i in range(X.shape[1])]
         n_samples = len(y)
 
+#Prior Probability P(D)
         for cls in self.classes:
             X_cls = X[y == cls]
             self.class_priors[cls] = len(X_cls) / n_samples
@@ -65,7 +66,7 @@ class HybridNaiveBayes:
     def _bernoulli_log_prob(self, x, p):
         p = min(max(p, 1e-9), 1 - 1e-9)
         return x * math.log(p) + (1 - x) * math.log(1 - p)
-
+#Prediction using Bayes theorem
     def _predict_single(self, x):
         x = np.array(x, dtype=float)
         log_posteriors = {}
@@ -94,7 +95,7 @@ class HybridNaiveBayes:
             predicted_class = max(log_posteriors, key=log_posteriors.get)
             predictions.append(predicted_class)
         return np.array(predictions)
-
+#Confidence score
     def predict_proba(self, X):
         X = np.array(X, dtype=float)
         probabilities = []

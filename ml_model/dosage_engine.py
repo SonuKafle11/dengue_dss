@@ -22,16 +22,12 @@ def get_paracetamol_dosage(weight_kg, age):
         dose_str = "120 mg (Syrup)"
     elif dose_mg <= 250:
         dose_str = "250 mg"
-    elif dose_mg <= 375:
-        dose_str = "375 mg"
     elif dose_mg <= 500:
         dose_str = "500 mg"
-    elif dose_mg <= 650:
-        dose_str = "650 mg"
     else:
-        dose_str = "1000 mg (1 g)"
+        dose_str = "500-1000 mg (1 g) depending on feaver severity"
 
-    frequency = "Every 6 hours"
+    frequency = "Every 6-8 hours"
 
     # Maximum daily dose
     if age < 12:

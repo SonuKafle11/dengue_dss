@@ -74,7 +74,7 @@
             <div class="steps-list">
 
                 <div class="step-item">
-                    <h4>Answer 13 questions</h4>
+                    <h4>Answer 14 questions</h4>
                     <p>
                         You are shown a list of standard dengue warning signs.
                         Select which symptoms apply to you. The form takes about
@@ -86,17 +86,17 @@
                     <h4>Get an instant score</h4>
                     <p>
                         Each symptom carries a clinical weight. The system adds
-                        them up and places you into one of three risk bands:
-                        Low Risk, Possible Dengue, or High Risk.
+                        them up and places you into one of two risk bands:
+                        Low Risk, or High Risk.
                     </p>
                 </div>
 
                 <div class="step-item">
                     <h4>ML cross-validation</h4>
                     <p>
-                        A Naive Bayes classifier runs the same inputs through
-                        a trained model and flags any cases where the two
-                        approaches disagree.
+                        A trained Hybrid Naive Bayes model analyzes NS1,
+                        IgG, IgM, Platelet Count, and WBC Count to predict
+                        Dengue or No Dengue and provides a confidence score.
                     </p>
                 </div>
 
@@ -150,9 +150,8 @@
                     <span class="access-label">Doctor account</span>
                     <h4>Case review &amp; prescriptions</h4>
                     <p>
-                        Doctors are assigned by an admin. Once logged in,
-                        you can view the queue of high-risk patients, enter
-                        lab values, and generate a dosage plan.
+                        Doctors log in to review patient records, enter laboratory values, predict Dengue or
+                         No Dengue using the trained ML model, and generate dosage recommendations.
                     </p>
                 </div>
 
@@ -160,10 +159,8 @@
                     <span class="access-label">Understanding results</span>
                     <h4>What the three bands mean</h4>
                     <p>
-                        Low Risk means dengue is unlikely based on your symptoms.
-                        Possible Dengue means you should monitor closely and
-                        rest. High Risk means you should seek medical attention
-                        promptly.
+                        Low Risk means the patient's symptoms are less likely to indicate dengue.
+                         High Risk means immediate medical assessment is recommended.
                     </p>
                 </div>
 
