@@ -28,11 +28,11 @@
         </div>
     </div>
 
+    <!-- Clinical risk level derived from symptom score (views.py SYMPTOM_WEIGHTS) -->
     <div class="result-hero result-hero--{% if record.clinical_risk_level == 'low' %}low{% else %}high{% endif %}">
         <div class="label">Clinical Risk Level</div>
         <div class="outcome">
-            {% if record.clinical_risk_level == 'low' %}Low Risk
-            
+            {% if record.clinical_risk_level == 'low' %}Low Risk           
             {% else %}High Risk
             {% endif %}
         </div>
@@ -47,12 +47,12 @@
                 <div class="info-label">Result</div>
                 <div class="info-value">
                     {% if record.ml_prediction == "Positive Dengue" %}
-    <span class="badge badge-positive">{{ record.ml_prediction }}</span>
-{% elif record.ml_prediction == "Negative Dengue" %}
-    <span class="badge badge-negative">{{ record.ml_prediction }}</span>
-{% else %}
-    <span class="badge badge-pending">{{ record.ml_prediction }}</span>
-{% endif %}
+                        <span class="badge badge-positive">{{ record.ml_prediction }}</span>
+                    {% elif record.ml_prediction == "Negative Dengue" %}
+                        <span class="badge badge-negative">{{ record.ml_prediction }}</span>
+                    {% else %}
+                        <span class="badge badge-pending">{{ record.ml_prediction }}</span>
+                    {% endif %}
                 </div>
             </div>
             <div class="info-item">
@@ -100,20 +100,20 @@
     <div class="card">
         <h3>Symptoms Reported</h3>
         <ul class="pill-list">
-            {% if record.fever %}<li>Fever </li>{% endif %}
-            {% if record.severe_headache %}<li>Severe Headache </li>{% endif %}
-            {% if record.joint_back_pain %}<li>Joint / Back Pain </li>{% endif %}
-            {% if record.nausea_vomiting %}<li>Nausea / Vomiting </li>{% endif %}
-            {% if record.skin_rash %}<li>Skin Rash </li>{% endif %}
-            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times </li>{% endif %}
-            {% if record.bleeding %}<li>Bleeding </li>{% endif %}
-            {% if record.extreme_weakness %}<li>Extreme Weakness </li>{% endif %}
-            {% if record.urine_output_low %}<li>Low Urine Output </li>{% endif %}
-            {% if record.fever_not_improving %}<li>Fever Not Improving </li>{% endif %}
-            {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness </li>{% endif %}
-            {% if record.cold_hands_feet %}<li>Cold Hands / Feet </li>{% endif %}
-            {% if record.restless_drowsy %}<li>Restless / Drowsy </li>{% endif %}
-            {% if record.abdominal_pain %}<li>Abdominal Pain </li>{% endif %}
+            {% if record.fever %}<li>Fever</li>{% endif %}
+            {% if record.severe_headache %}<li>Severe Headache</li>{% endif %}
+            {% if record.joint_back_pain %}<li>Joint / Back Pain</li>{% endif %}
+            {% if record.nausea_vomiting %}<li>Nausea / Vomiting</li>{% endif %}
+            {% if record.skin_rash %}<li>Skin Rash</li>{% endif %}
+            {% if record.vomiting_more_than_3 %}<li>Vomiting &gt;3 times</li>{% endif %}
+            {% if record.bleeding %}<li>Bleeding</li>{% endif %}
+            {% if record.extreme_weakness %}<li>Extreme Weakness</li>{% endif %}
+            {% if record.urine_output_low %}<li>Low Urine Output</li>{% endif %}
+            {% if record.fever_not_improving %}<li>Fever Not Improving</li>{% endif %}
+            {% if record.drop_in_fever_with_weakness %}<li>Fever Drop + Weakness</li>{% endif %}
+            {% if record.cold_hands_feet %}<li>Cold Hands / Feet</li>{% endif %}
+            {% if record.restless_drowsy %}<li>Restless / Drowsy</li>{% endif %}
+            {% if record.abdominal_pain %}<li>Abdominal Pain</li>{% endif %}
         </ul>
     </div>
 

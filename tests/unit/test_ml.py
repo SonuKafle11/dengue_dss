@@ -13,11 +13,7 @@ from ml_model.dosage_engine import (
     format_dosage_text,
 )
 
-
-# ============================================================
 # UT-39 to UT-44: ML Predictor
-# ============================================================
-
 class TestMLPredictor:
 
     def test_UT39_model_trained(self):
@@ -71,11 +67,7 @@ class TestMLPredictor:
         assert 'WBC_Count' in features
         assert len(features) == 5
 
-
-# ============================================================
 # UT-45 to UT-50: Paracetamol Dosage
-# ============================================================
-
 class TestParacetamolDosage:
 
     def test_UT45_adult_50kg_dose(self):
@@ -99,11 +91,7 @@ class TestParacetamolDosage:
         _, freq, _ = get_paracetamol_dosage(60, 25)
         assert '6' in freq and '8' in freq
 
-
-# ============================================================
 # UT-49 to UT-53: Holliday-Segar Fluids
-# ============================================================
-
 class TestHollidaySegar:
 
     def test_UT49_10kg_child_fluids(self):
@@ -126,11 +114,7 @@ class TestHollidaySegar:
         assert daily == expected_daily
         assert hourly == expected_hourly
 
-
-# ============================================================
 # UT-52 to UT-55: Fluid Intake by Risk
-# ============================================================
-
 class TestFluidIntake:
 
     def test_UT52_high_risk_iv_fluid(self):
@@ -143,11 +127,7 @@ class TestFluidIntake:
         result = get_fluid_intake(60, 30, 'low')
         assert 'Oral' in result['type'] or 'oral' in result['type'].lower()
 
-
-# ============================================================
 # UT-54 to UT-57: Platelet Advice
-# ============================================================
-
 class TestPlateletAdvice:
 
     def test_UT54_critical_platelet(self):
@@ -169,11 +149,7 @@ class TestPlateletAdvice:
         """UT-57: None platelet count returns None."""
         assert get_platelet_based_advice(None) is None
 
-
-# ============================================================
 # UT-58 to UT-62: Full Dosage Recommendation
-# ============================================================
-
 class TestRecommendDosage:
 
     def test_UT58_dosage_returns_all_keys(self):

@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <!-- Stat cards are clickable — each filters by that status -->
+    {% comment %} Stat cards double as filter links — clicking each filters the table by status {% endcomment %}
     <div class="stat-row">
         <a href="{% url 'doctor_dashboard' %}{% if search %}?search={{ search }}{% endif %}"
            class="stat-card stat-card-link {% if not status_filter %}stat-card-active{% endif %}">
@@ -45,18 +45,11 @@
         </a>
     </div>
 
-    <!-- Search + filter bar -->
     <form method="GET" class="filter-bar" id="filterForm">
         <div class="field">
             <label for="searchInput">Search patient</label>
-            <input
-                type="text"
-                id="searchInput"
-                name="search"
-                value="{{ search }}"
-                placeholder="Name or patient ID"
-                autocomplete="off"
-            >
+            <input type="text" id="searchInput" name="search" value="{{ search }}"
+                   placeholder="Name or patient ID" autocomplete="off">
         </div>
         <div class="field">
             <label for="statusSelect">Status</label>
@@ -72,7 +65,6 @@
         </div>
     </form>
 
-    <!-- Active filter indicator -->
     {% if search or status_filter %}
     <div class="filter-indicator">
         <span>Showing results for:</span>

@@ -25,7 +25,7 @@
 <div class="banner-area">
     {% if pending_symptoms %}
     <div class="prefill-banner">
-        <strong>RSisk follow-up:</strong>
+        <strong>Risk follow-up:</strong>
         {{ pending_symptoms|length }} symptom{{ pending_symptoms|length|pluralize }} from your public check
         have been pre-selected. Review them below and complete the form.
     </div>
@@ -78,21 +78,22 @@
         <h3>Current Symptoms <span class="required-star">*</span></h3>
         <p id="symptom">Select every symptom you are experiencing right now.</p>
 
+        <!-- 14 weighted symptom checkboxes — weights defined in views.py SYMPTOM_WEIGHTS -->
         <div class="symptom-grid">
-            <label><input type="checkbox" name="fever"                      {% if 'fever'                      in prefill_symptoms %}checked{% endif %}><span>Fever</span></label>
-            <label><input type="checkbox" name="severe_headache"            {% if 'severe_headache'            in prefill_symptoms %}checked{% endif %}><span>Severe Headache</span></label>
-            <label><input type="checkbox" name="joint_back_pain"            {% if 'joint_back_pain'            in prefill_symptoms %}checked{% endif %}><span>Joint or Back Pain</span></label>
-            <label><input type="checkbox" name="nausea_vomiting"            {% if 'nausea_vomiting'            in prefill_symptoms %}checked{% endif %}><span>Nausea or Vomiting</span></label>
-            <label><input type="checkbox" name="skin_rash"                  {% if 'skin_rash'                  in prefill_symptoms %}checked{% endif %}><span>Skin Rash</span></label>
-            <label><input type="checkbox" name="vomiting_more_than_3"       {% if 'vomiting_more_than_3'       in prefill_symptoms %}checked{% endif %}><span>Vomiting 3+ times</span></label>
-            <label><input type="checkbox" name="bleeding"                   {% if 'bleeding'                   in prefill_symptoms %}checked{% endif %}><span>Bleeding</span></label>
-            <label><input type="checkbox" name="extreme_weakness"           {% if 'extreme_weakness'           in prefill_symptoms %}checked{% endif %}><span>Extreme Weakness</span></label>
-            <label><input type="checkbox" name="urine_output_low"           {% if 'urine_output_low'           in prefill_symptoms %}checked{% endif %}><span>Low Urine Output</span></label>
-            <label><input type="checkbox" name="fever_not_improving"        {% if 'fever_not_improving'        in prefill_symptoms %}checked{% endif %}><span>Fever Not Improving</span></label>
+            <label><input type="checkbox" name="fever"                       {% if 'fever'                       in prefill_symptoms %}checked{% endif %}><span>Fever</span></label>
+            <label><input type="checkbox" name="severe_headache"             {% if 'severe_headache'             in prefill_symptoms %}checked{% endif %}><span>Severe Headache</span></label>
+            <label><input type="checkbox" name="joint_back_pain"             {% if 'joint_back_pain'             in prefill_symptoms %}checked{% endif %}><span>Joint or Back Pain</span></label>
+            <label><input type="checkbox" name="nausea_vomiting"             {% if 'nausea_vomiting'             in prefill_symptoms %}checked{% endif %}><span>Nausea or Vomiting</span></label>
+            <label><input type="checkbox" name="skin_rash"                   {% if 'skin_rash'                   in prefill_symptoms %}checked{% endif %}><span>Skin Rash</span></label>
+            <label><input type="checkbox" name="vomiting_more_than_3"        {% if 'vomiting_more_than_3'        in prefill_symptoms %}checked{% endif %}><span>Vomiting 3+ times</span></label>
+            <label><input type="checkbox" name="bleeding"                    {% if 'bleeding'                    in prefill_symptoms %}checked{% endif %}><span>Bleeding</span></label>
+            <label><input type="checkbox" name="extreme_weakness"            {% if 'extreme_weakness'            in prefill_symptoms %}checked{% endif %}><span>Extreme Weakness</span></label>
+            <label><input type="checkbox" name="urine_output_low"            {% if 'urine_output_low'            in prefill_symptoms %}checked{% endif %}><span>Low Urine Output</span></label>
+            <label><input type="checkbox" name="fever_not_improving"         {% if 'fever_not_improving'         in prefill_symptoms %}checked{% endif %}><span>Fever Not Improving</span></label>
             <label><input type="checkbox" name="drop_in_fever_with_weakness" {% if 'drop_in_fever_with_weakness' in prefill_symptoms %}checked{% endif %}><span>Fever Drop with Weakness</span></label>
-            <label><input type="checkbox" name="cold_hands_feet"            {% if 'cold_hands_feet'            in prefill_symptoms %}checked{% endif %}><span>Cold Hands or Feet</span></label>
-            <label><input type="checkbox" name="restless_drowsy"            {% if 'restless_drowsy'            in prefill_symptoms %}checked{% endif %}><span>Restless or Drowsy</span></label>
-            <label><input type="checkbox" name="abdominal_pain"             {% if 'abdominal_pain'             in prefill_symptoms %}checked{% endif %}><span>Abdominal Pain</span></label>
+            <label><input type="checkbox" name="cold_hands_feet"             {% if 'cold_hands_feet'             in prefill_symptoms %}checked{% endif %}><span>Cold Hands or Feet</span></label>
+            <label><input type="checkbox" name="restless_drowsy"             {% if 'restless_drowsy'             in prefill_symptoms %}checked{% endif %}><span>Restless or Drowsy</span></label>
+            <label><input type="checkbox" name="abdominal_pain"              {% if 'abdominal_pain'              in prefill_symptoms %}checked{% endif %}><span>Abdominal Pain</span></label>
         </div>
 
         <p id="symptom-error"></p>

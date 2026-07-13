@@ -7,11 +7,7 @@ import pytest
 from django.urls import reverse
 from core.models import PatientRecord
 
-
-# ============================================================
 # IT-20 to IT-25: Patient Dashboard
-# ============================================================
-
 @pytest.mark.django_db
 class TestPatientDashboard:
 
@@ -124,11 +120,7 @@ class TestPatientForm:
         # Should not create a record — redirect back or error shown
         assert response.status_code == 200
 
-
-# ============================================================
 # IT-32 to IT-35: Patient Result
-# ============================================================
-
 @pytest.mark.django_db
 class TestPatientResult:
 
@@ -176,11 +168,7 @@ class TestPatientResult:
         )
         assert response.status_code == 404
 
-
-# ============================================================
 # IT-36 to IT-38: Patient Profile
-# ============================================================
-
 @pytest.mark.django_db
 class TestPatientProfile:
 

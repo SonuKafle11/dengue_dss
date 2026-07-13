@@ -9,188 +9,130 @@
 </head>
 <body>
 
-    <!-- ======================================================
-         NAVBAR
-    ====================================================== -->
-    <header class="navbar">
-        <div class="nav-content">
+<header class="navbar">
+    <div class="nav-content">
+        <a href="{% url 'landing' %}" class="logo-link">
+            <h2 class="logo">Dengue DSS</h2>
+        </a>
 
-            <a href="{% url 'landing' %}" class="logo-link">
-                <h2 class="logo">Dengue DSS</h2>
-            </a>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
 
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+        <ul class="nav-links" id="navLinks" role="list">
+            <li><a href="{% url 'landing' %}">Home</a></li>
+            <li><a href="{% url 'about' %}" class="active">About Us</a></li>
+            <li><a href="{% url 'explore' %}">Explore</a></li>
+            <li><a href="{% url 'login' %}" class="login-link">Login</a></li>
+        </ul>
+    </div>
+</header>
 
-            <ul class="nav-links" id="navLinks" role="list">
-                <li><a href="{% url 'landing' %}">Home</a></li>
-                <li><a href="{% url 'about' %}" class="active">About Us</a></li>
-                <li><a href="{% url 'explore' %}">Explore</a></li>
-                <li><a href="{% url 'login' %}" class="login-link">Login</a></li>
-            </ul>
+<!-- Page hero with background image -->
+<section class="about-hero">
+    <img src="{% static 'images/hero-bg.png' %}" alt="" class="about-hero-bg" aria-hidden="true">
+    <div class="about-hero-overlay" aria-hidden="true"></div>
+    <div class="about-hero-content">
+        <h1>About This System</h1>
+        <p>
+            This system was developed as a final-year project to help identify dengue risk at an early stage.
+            It combines symptom-based scoring with a trained machine learning model to support faster and
+            more accurate clinical decision-making.
+        </p>
+    </div>
+</section>
 
-        </div>
-    </header>
+<main class="about-body">
 
-    <!-- ======================================================
-         TOP BAND
-    ====================================================== -->
-    <section class="about-hero">
-        <img
-            src="{% static 'images/hero-bg.png' %}"
-            alt=""
-            class="about-hero-bg"
-            aria-hidden="true"
-        >
-        <div class="about-hero-overlay" aria-hidden="true"></div>
-        <div class="about-hero-content">
-            <h1>About This System</h1>
-            <p>
-                This system was developed as a final-year project to help identify dengue risk at an early stage. It combines symptom-based scoring with a trained machine learning model to support faster and more accurate clinical decision-making.
-            </p>
+    <section style="text-align:center;">
+        <span class="section-kicker">Background</span>
+        <h2 class="section-heading">Why this was built</h2>
+        <p class="section-subtext" style="max-width:640px; margin-left:auto; margin-right:auto;">
+            Diagnosing dengue in its early stage can be challenging because many symptoms overlap with other
+            diseases. This project was developed to support healthcare professionals by providing a fast,
+            consistent, and reliable dengue risk assessment and dosage recommendations.
+        </p>
+    </section>
+
+    <hr class="about-divider">
+
+    <section>
+        <span class="section-kicker">System capabilities</span>
+        <h2 class="section-heading">What the system actually does</h2>
+        <p class="section-subtext">
+            The workflow runs from a public symptom check all the way through to a doctor-confirmed dosage recommendation.
+        </p>
+
+        <!-- Six feature cards — auto-numbered via CSS counter -->
+        <div class="feature-list">
+            <div class="feature-item">
+                <h4>Public symptom check</h4>
+                <p>Visitors can submit 14 clinical symptoms without registering. No account, no personal data stored — just a quick risk check.</p>
+            </div>
+            <div class="feature-item">
+                <h4>Scoring</h4>
+                <p>Each symptom is assigned a weighted score. The total score classifies the patient into Low Risk or High Risk.</p>
+            </div>
+            <div class="feature-item">
+                <h4>Machine learning cross-check</h4>
+                <p>A trained Hybrid Naive Bayes model analyzes NS1, IgG, IgM, Platelet Count, and WBC Count to predict dengue status with a confidence score.</p>
+            </div>
+            <div class="feature-item">
+                <h4>Doctor review queue</h4>
+                <p>After reviewing the patient's symptoms, the doctor enters lab values. The system predicts dengue status and provides clinical recommendations.</p>
+            </div>
+            <div class="feature-item">
+                <h4>Weight-based dosage</h4>
+                <p>Paracetamol dosage is calculated using age and weight. IV fluid requirements are estimated using the Holliday–Segar method.</p>
+            </div>
+            <div class="feature-item">
+                <h4>Patient history</h4>
+                <p>Patients can review previous assessments, laboratory results, and dengue prediction history anytime after logging in.</p>
+            </div>
         </div>
     </section>
 
-    <!-- ======================================================
-         BODY
-    ====================================================== -->
-    <main class="about-body">
+    <hr class="about-divider">
 
-        <!-- ── Background ── -->
-        <section style="text-align:center;">
-            <span class="section-kicker">Background</span>
-            <h2 class="section-heading">Why this was built</h2>
-            <p class="section-subtext" style="max-width:640px; margin-left:auto; margin-right:auto;">
-                Diagnosing dengue in its early stage can be challenging because many symptoms overlap with other diseases. This project was developed to support healthcare professionals by providing a fast, consistent, and reliable dengue risk assessmentand dosage recommendations.
-            </p>
-        </section>
+    <section>
+        <span class="section-kicker">User roles</span>
+        <h2 class="section-heading">Three roles, one platform</h2>
+        <p class="section-subtext">Access is scoped by role. Each user type sees only what they need.</p>
 
-        <hr class="about-divider">
-
-        <!-- ── What it does ── -->
-        <section>
-            <span class="section-kicker">System capabilities</span>
-            <h2 class="section-heading">What the system actually does</h2>
-            <p class="section-subtext">
-                The workflow runs from a public symptom check all the way through to
-                a doctor-confirmed dosage recommendation.
-            </p>
-
-            <div class="feature-list">
-
-                <div class="feature-item">
-                    <h4>Public symptom check</h4>
-                    <p>
-                        Visitors can submit 14 clinical symptoms without registering.
-                        No account, no personal data stored — just a quick risk check.
-                    </p>
-                </div>
-
-                <div class="feature-item">
-                    <h4>Scoring</h4>
-                    <p>
-                        Each symptom is assigned a weighted score. 
-                        The total score is used to classify the patient into one of two risk levels: Low Risk or High Risk.
-                    </p>
-                </div>
-
-                <div class="feature-item">
-                    <h4>Machine learning cross-check</h4>
-                    <p>
-                        A trained Hybrid Naive Bayes model analyzes laboratory values (NS1, IgG, IgM, Platelet Count, and WBC Count) to predict whether the patient has dengue and provides a confidence score.
-                    </p>
-                </div>
-
-                <div class="feature-item">
-                    <h4>Doctor review queue</h4>
-                    <p>
-                        After reviewing the patient's symptoms, the doctor enters NS1, IgG, IgM, Platelet Count, and WBC Count. 
-                        The system predicts dengue status and provides clinical recommendations based on the results.
-                    </p>
-                </div>
-
-                <div class="feature-item">
-                    <h4>Weight-based dosage</h4>
-                    <p>
-                        Paracetamol dosage is calculated using the patient's age and weight, 
-                        while IV fluid requirements are estimated using the Holliday–Segar method.
-                    </p>
-                </div>
-
-                <div class="feature-item">
-                    <h4>Patient history</h4>
-                    <p>
-                        Patients can review their previous assessments, laboratory results, and dengue prediction history anytime after logging in.
-                    </p>
-                </div>
-
+        <div class="role-row">
+            <div class="role-card">
+                <span class="role-title">Patient</span>
+                <h4>Check &amp; track your records</h4>
+                <p>Complete symptom assessments, view dengue risk results, access previous assessment history, and review laboratory results and dosage recommendations.</p>
             </div>
-        </section>
-
-        <hr class="about-divider">
-
-        <!-- ── Roles ── -->
-        <section>
-            <span class="section-kicker">User roles</span>
-            <h2 class="section-heading">Three roles, one platform</h2>
-            <p class="section-subtext">
-                Access is scoped by role. Each user type sees only
-                what they need — nothing more.
-            </p>
-
-            <div class="role-row">
-
-                <div class="role-card">
-                    <span class="role-title">Patient</span>
-                    <h4>Check &amp; track your records</h4>
-                    <p>
-                        Complete symptom assessments, view dengue risk results, access previous assessment history, and review laboratory results and dosage recommendations.
-                    </p>
-                </div>
-
-                <div class="role-card">
-                    <span class="role-title">Doctor</span>
-                    <h4>Review flagged cases</h4>
-                    <p>
-                        See all high-risk patients assigned to your queue,
-                        enter lab results, and generate a dosage plan.
-                        
-                    </p>
-                </div>
-
-                <div class="role-card">
-                    <span class="role-title">Admin</span>
-                    <h4>Manage users &amp; data</h4>
-                    <p>
-                        Manage patient and doctor accounts, maintain user records, and oversee the system database through the administrator dashboard.
-                    </p>
-                </div>
-
+            <div class="role-card">
+                <span class="role-title">Doctor</span>
+                <h4>Review flagged cases</h4>
+                <p>See all patients in your queue, enter lab results, and generate a dosage plan.</p>
             </div>
-        </section>
-
-        <hr class="about-divider">
-
-    </main>
-
-    <!-- ======================================================
-         FOOTER
-    ====================================================== -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <p>&copy; 2026 Dengue Decision Support System</p>
-            <p class="disclaimer">
-                This system is for academic and informational purposes only. It does not
-                replace professional medical advice, diagnosis, or treatment. If you feel
-                seriously unwell, please visit a hospital or clinic immediately.
-            </p>
+            <div class="role-card">
+                <span class="role-title">Admin</span>
+                <h4>Manage users &amp; data</h4>
+                <p>Manage patient and doctor accounts, maintain user records, and oversee the system database through the administrator dashboard.</p>
+            </div>
         </div>
-    </footer>
+    </section>
 
-    <script src="{% static 'js/main.js' %}"></script>
+    <hr class="about-divider">
+
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <p>&copy; 2026 Dengue Decision Support System</p>
+        <p class="disclaimer">
+            This system is for academic and informational purposes only. It does not replace professional
+            medical advice, diagnosis, or treatment. If you feel seriously unwell, please visit a hospital or clinic immediately.
+        </p>
+    </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
 
 </body>
 </html>

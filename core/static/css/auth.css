@@ -1,11 +1,6 @@
-/* ============================================================
-   Auth pages — login, register, admin login
-   ============================================================ */
+/* auth.css — login, register, admin login pages
+   Builds on the .container card centred by main.css */
 
-/* the base.html wraps content in .container which is already
-   centered at max-width:600px by main.css — we build on that */
-
-/* ── Page-level centering ── */
 body {
     display: flex;
     flex-direction: column;
@@ -22,7 +17,6 @@ body > .container {
     padding-bottom: 40px;
 }
 
-/* ── Card shell ── */
 .container {
     background: #ffffff;
     border-radius: 10px;
@@ -31,7 +25,6 @@ body > .container {
     box-shadow: 0 4px 20px rgba(0,0,0,.07);
 }
 
-/* ── Headings ── */
 h1, h2 {
     font-size: 22px;
     font-weight: 700;
@@ -48,7 +41,6 @@ p {
     line-height: 1.6;
 }
 
-/* ── Form layout ── */
 form {
     margin-top: 8px;
     display: flex;
@@ -67,7 +59,6 @@ label {
 
 label:first-of-type { margin-top: 0; }
 
-/* text / password inputs */
 input[type="text"],
 input[type="password"],
 input[type="email"],
@@ -92,7 +83,7 @@ input[type="number"]:focus {
     box-shadow: 0 0 0 3px rgba(44,90,160,.08);
 }
 
-/* radio — keep inline, don't stretch */
+/* Radio — keep inline, don't stretch to full width */
 input[type="radio"] {
     width: auto;
     margin: 0 5px 0 0;
@@ -100,7 +91,6 @@ input[type="radio"] {
     accent-color: #2c5aa0;
 }
 
-/* ── Submit button ── */
 button[type="submit"],
 button {
     display: block;
@@ -120,41 +110,17 @@ button {
 
 button:hover { background: #1e4080; }
 
-/* ── Links below form ── */
-p a {
-    color: #2c5aa0;
-    font-weight: 500;
-    text-decoration: none;
-}
-
+p a { color: #2c5aa0; font-weight: 500; text-decoration: none; }
 p a:hover { text-decoration: underline; }
 
-/* ── Role toggle line ── */
+/* Role-toggle line is left-aligned */
 p[style] { text-align: left; }
 
-/* ── Success box (after registration) ── */
-.success-box {
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    padding: 24px;
-    border-radius: 8px;
-    margin: 0;
-    text-align: center;
-}
-
-
-.success-box p {
-    color: #374151;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-/* ── Modal for account-created popup ── */
+/* One-time "account created" modal — shown on first login after registration */
 .modal-backdrop {
     position: fixed;
     inset: 0;
     display: none;
-    /* align to top so the popup appears near the top of the page */
     align-items: flex-start;
     justify-content: center;
     background: rgba(0,0,0,0.35);
@@ -162,28 +128,27 @@ p[style] { text-align: left; }
     padding: 28px 12px 12px;
 }
 .modal-backdrop.open { display: flex; }
+
 .modal {
     background: #fff;
     border-radius: 8px;
-    max-width: 420px; /* smaller width */
+    max-width: 420px;
     width: 100%;
-    padding: 14px 14px; /* reduced padding */
+    padding: 14px 14px;
     box-shadow: 0 8px 22px rgba(0,0,0,.14);
     text-align: left;
     transform: translateY(-6px);
     transition: transform .22s cubic-bezier(.2,.9,.2,1), opacity .18s;
     opacity: 0.98;
 }
-/* slide down slightly when backdrop opens */
+
 .modal-backdrop.open .modal { transform: translateY(0); }
 .modal h2 { margin: 0 0 6px; font-size: 18px; color: #111827; }
-.modal p { margin: 0; color: #374151; font-size: 14px; }
+.modal p  { margin: 0; color: #374151; font-size: 14px; }
 .modal .btn { display: inline-block; padding: 6px 12px; background: #2c5aa0; color: #fff; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; }
 .modal .btn:hover { background: #1e4080; }
 
-.success-box .btn:hover { background: #1e4080; }
-
-/* ── Error box ── */
+/* Error box — wrong credentials, duplicate email, etc. */
 .error-box {
     background: #fef2f2;
     border: 1px solid #fecaca;
@@ -192,14 +157,9 @@ p[style] { text-align: left; }
     margin-bottom: 16px;
 }
 
-.error-box p {
-    margin: 0;
-    color: #b91c1c;
-    font-size: 13px;
-    text-align: left;
-}
+.error-box p { margin: 0; color: #b91c1c; font-size: 13px; text-align: left; }
 
-/* ── Per-field validation error ── */
+/* Per-field validation error (below each input) */
 .field-error {
     margin: 4px 0 8px;
     color: #b91c1c;
@@ -208,7 +168,7 @@ p[style] { text-align: left; }
     text-align: left;
 }
 
-/* ── Inline success flash (e.g. "Account created successfully") ── */
+/* Inline success flash (e.g. after OTP send) */
 .success-flash {
     font-size: 13.5px;
     color: #15803d;
@@ -220,7 +180,18 @@ p[style] { text-align: left; }
     border: none;
 }
 
-/* ── Success message box (flash messages) ── */
+.success-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 24px;
+    border-radius: 8px;
+    margin: 0;
+    text-align: center;
+}
+
+.success-box p { color: #374151; margin-bottom: 10px; text-align: center; }
+.success-box .btn:hover { background: #1e4080; }
+
 .success-msg-box {
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
@@ -229,23 +200,10 @@ p[style] { text-align: left; }
     margin-bottom: 16px;
 }
 
-.success-msg-box p {
-    margin: 0;
-    color: #15803d;
-    font-size: 13px;
-    text-align: left;
-}
+.success-msg-box p { margin: 0; color: #15803d; font-size: 13px; text-align: left; }
 
-/* ── Responsive ── */
 @media (max-width: 560px) {
-    .container {
-        padding: 28px 22px;
-        border-radius: 8px;
-        margin: 16px;
-        /* override main.css fixed margins */
-        margin-top: 16px !important;
-    }
-
+    .container { padding: 28px 22px; border-radius: 8px; margin: 16px; margin-top: 16px !important; }
     h1, h2 { font-size: 19px; }
     button  { margin-top: 18px; }
 }

@@ -6,19 +6,11 @@ import hashlib
 import pytest
 from core.models import User, AdminUser, PatientRecord, generate_user_id
 
-
-# ============================================================
 # Helpers
-# ============================================================
-
 def make_password(raw):
     return hashlib.sha256(raw.encode()).hexdigest()
 
-
-# ============================================================
 # UT-01 to UT-06: User model
-# ============================================================
-
 @pytest.mark.django_db
 class TestUserModel:
 
@@ -86,11 +78,7 @@ class TestUserModel:
         assert "Ram" in str(user)
         assert "patient" in str(user)
 
-
-# ============================================================
 # UT-07 to UT-08: AdminUser model
-# ============================================================
-
 @pytest.mark.django_db
 class TestAdminUserModel:
 
@@ -112,11 +100,7 @@ class TestAdminUserModel:
             AdminUser.objects.create(username="dupAdmin",
                                       password=make_password("p"))
 
-
-# ============================================================
 # UT-09 to UT-18: PatientRecord model
-# ============================================================
-
 @pytest.mark.django_db
 class TestPatientRecordModel:
 
@@ -235,11 +219,7 @@ class TestPatientRecordModel:
         assert rec.clinical_risk_level == "high"
         assert rec.clinical_score >= 10
 
-
-# ============================================================
 # UT-19: generate_user_id helper
-# ============================================================
-
 def test_UT19_generate_user_id_format():
     """UT-19: generate_user_id returns 8-char alphanumeric string."""
     uid = generate_user_id()

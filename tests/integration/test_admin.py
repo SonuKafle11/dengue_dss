@@ -13,11 +13,7 @@ from core.models import User, AdminUser, PatientRecord
 def make_password(raw):
     return hashlib.sha256(raw.encode()).hexdigest()
 
-
-# ============================================================
 # IT-55 to IT-60: Admin Login
-# ============================================================
-
 @pytest.mark.django_db
 class TestAdminLogin:
 
