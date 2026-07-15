@@ -565,7 +565,7 @@ def admin_delete_record(request, record_id):
     return JsonResponse({'ok': False}, status=405)
 
 
-@never_cache
+@never_cache #django decorator
 @admin_required
 def admin_dataset_json(request):
     info = get_dataset_info()
