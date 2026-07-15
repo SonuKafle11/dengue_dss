@@ -28,11 +28,23 @@
         </div>
     </div>
 
-    {% if messages %}
-        {% for msg in messages %}
-        <div class="banner banner-success"><strong>{{ msg }}</strong></div>
+{% if form.errors %}
+<div class="banner banner-danger" style="
+    background:#fdecea;
+    color:#b42318;
+    border:1px solid #f5c2c7;
+    padding:12px;
+    border-radius:6px;
+    margin-bottom:20px;
+    font-weight:600;
+">
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div>Invalid input: {{ error }}</div>
         {% endfor %}
-    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 
     <!-- Name and email are read-only — set at registration -->
     <div class="card">
@@ -56,7 +68,6 @@
 
         <form method="POST">
             {% csrf_token %}
-
             <div class="profile-form-grid">
 
                 <div class="form-group profile-span-full">
@@ -75,18 +86,31 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Age</label>
-                    <input type="number" name="age" id="age"
-                           value="{{ user.age|default:'' }}"
-                           min="0" max="120" placeholder="e.g. 28">
-                </div>
+    <label>Age</label>
+
+    <input type="number"
+           name="age"
+           id="age"
+           value="{% if form.errors %}{% else %}{{ user.age|default:'' }}{% endif %}"
+           min="1"
+           max="120"
+           placeholder="e.g. 28">
+
+</div>
+
 
                 <div class="form-group">
-                    <label>Weight <span class="profile-unit">kg</span></label>
-                    <input type="number" name="weight" step="0.1"
-                           value="{{ user.weight|default:'' }}"
-                           min="2" max="200" placeholder="e.g. 58.5">
-                </div>
+    <label>Weight <span class="profile-unit">kg</span></label>
+
+    <input type="number"
+           name="weight"
+           step="0.1"
+           value="{% if form.errors %}{% else %}{{ user.weight|default:'' }}{% endif %}"
+           min="2"
+           max="200"
+           placeholder="e.g. 58.5">
+
+</div>
 
                 <div class="form-group profile-span-full">
                     <label class="profile-checkbox-label">

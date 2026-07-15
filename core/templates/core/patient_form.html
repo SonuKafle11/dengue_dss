@@ -23,6 +23,21 @@
 </div>
 
 <div class="banner-area">
+{% if messages %}
+    {% for message in messages %}
+        <div class="banner banner-danger" style="
+            background:#fdecea;
+            color:#b42318;
+            border:1px solid #f5c2c7;
+            padding:12px;
+            border-radius:6px;
+            margin-bottom:15px;
+            font-weight:600;
+        ">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
     {% if pending_symptoms %}
     <div class="prefill-banner">
         <strong>Risk follow-up:</strong>
@@ -56,7 +71,7 @@
         <div class="three-column">
             <div class="form-group">
                 <label>Age <span class="required-star">*</span></label>
-                <input type="number" id="age" name="age" value="{{ profile.age }}" required min="0" max="120" placeholder="e.g. 28">
+                <input type="number" id="age" name="age" value="{{ profile.age }}" required min="1" max="120" placeholder="e.g. 28">
             </div>
             <div class="form-group">
                 <label>Weight (kg) <span class="required-star">*</span></label>

@@ -276,12 +276,29 @@ def patient_form(request):
     pending_symptoms = request.session.get('pending_symptoms', [])
 
     if request.method == 'POST':
+
         try:
             gender = request.POST.get("gender")
             age    = float(request.POST.get('age', 0))
             weight = float(request.POST.get('weight', 0))
+
+# Basic validation
             if age <= 0 or weight <= 0:
                 raise ValueError("Age and weight must be positive.")
+
+# Adult weight validation
+            if age >= 18:
+                if weight < 30 or weight > 200:
+                    raise ValueError(
+                    "For adults (18 years and above), weight must be between 30 kg and 200 kg."
+                    )
+
+# Child weight validation
+            else:
+                if weight < 2 or weight > 100:
+                    raise ValueError(
+                    "For children, weight must be between 2 kg and 100 kg."
+                    )
             is_pregnant = request.POST.get('is_pregnant') == 'on'
             if is_pregnant:
                 if gender not in ("female", "other"):
@@ -326,6 +343,19 @@ def patient_form(request):
             return redirect('patient_result', record_id=rec.record_id)
         except (ValueError, TypeError) as e:
             messages.error(request, f'Invalid input: {e}')
+
+    return render(request, 'core/patient_form.html', {
+        'user': user,
+        'pending_symptoms': pending_symptoms,
+        'prefill_symptoms': pending_symptoms,
+        'has_previous_record': False,
+        'profile': {
+            'age': '',
+            'weight': '',
+            'gender': request.POST.get('gender'),
+            'is_pregnant': request.POST.get('is_pregnant') == 'on',
+        },
+    })
 
     last_record = PatientRecord.objects.filter(patient=user).order_by('-created_at').first()
     last_symptoms = []
@@ -384,7 +414,6 @@ def patient_profile(request):
 
             messages.success(request, "Profile updated successfully.")
             return redirect('patient_dashboard')
-
         return render(request, 'core/patient_profile.html', {
             'user': user,
             'form': form,
@@ -497,7 +526,6 @@ def doctor_patient_detail(request, record_id):
         'record': rec, 'doctor': doctor,
         'model_trained': is_model_trained(),
     })
-
 
 @never_cache
 @doctor_required

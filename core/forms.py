@@ -87,7 +87,7 @@ class PatientProfileForm(forms.Form):
     )
     weight = forms.FloatField(
         required=False,
-        widget=forms.NumberInput(attrs={'placeholder': 'Weight (kg)', 'min': '1', 'max': '300', 'step': '0.1'}),
+        widget=forms.NumberInput(attrs={'placeholder': 'Weight (kg)', 'min': '2', 'max': '200', 'step': '0.1'}),
     )
     gender = forms.ChoiceField(
         choices=GENDER_CHOICES,
@@ -106,12 +106,23 @@ class PatientProfileForm(forms.Form):
         return age
 
     def clean_weight(self):
-        weight = self.cleaned_data.get('weight')
-        if weight is not None:
-            if weight <= 0:
-                raise forms.ValidationError('Weight must be a positive number.')
-            if weight > 300:
-                raise forms.ValidationError('Weight must be 300 kg or below.')
+        weight = self.cleaned_data.get("weight")
+        age = self.cleaned_data.get("age")
+
+        if weight is None or age is None:
+            return weight
+
+        if age >= 18:
+            if weight < 30 or weight > 200:
+                raise forms.ValidationError(
+                "For adults (18 years and above), weight must be between 30 kg and 200 kg."
+                )
+        else:
+            if weight < 2 or weight > 100:
+                raise forms.ValidationError(
+                "For children, weight must be between 2 kg and 100 kg."
+            )
+
         return weight
 
     def clean_gender(self):
