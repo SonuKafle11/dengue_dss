@@ -443,10 +443,17 @@ def doctor_patient_detail(request, record_id):
             platelet = float(request.POST.get('platelet_count', 0))
             wbc      = float(request.POST.get('wbc_count', 0))
             # Cap platelet count
-            if platelet > 1000000:
+            if platelet < 10000:
+                platelet = 10000
+            elif platelet > 1000000:
                 platelet = 1000000
-            if wbc > 50000:
+
+            # Cap WBC count
+            if wbc < 1000:
+                wbc = 1000
+            elif wbc > 50000:
                 wbc = 50000
+                
             ns1 = 1 if request.POST.get('ns1_status') == 'positive' else 0
             igg = 1 if request.POST.get('igg_status') == 'positive' else 0
             igm = 1 if request.POST.get('igm_status') == 'positive' else 0
