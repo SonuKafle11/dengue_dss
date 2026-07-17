@@ -1,10 +1,8 @@
 from django.views.decorators.cache import never_cache
-import hashlib
-
+from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
-
 from .models import User, AdminUser, PatientRecord
 from .forms import RegisterForm, LoginForm, PatientProfileForm
 from ml_model.predictor import predict_dengue, is_model_trained, get_dataset_info
@@ -26,9 +24,6 @@ SYMPTOM_WEIGHTS = {
 }
 
 # Helpers
-def hash_password(raw):
-    return hashlib.sha256(raw.encode()).hexdigest()
-
 
 def current_user(request):
     uid = request.session.get('user_id')
@@ -172,7 +167,7 @@ def register(request):
             User(
                 name=name,
                 email=email,
-                password=hash_password(password),
+                password=make_password(password),
                 role=role,
             ).save()
 
@@ -208,7 +203,7 @@ def login_view(request):
                 messages.error(request, 'No account found with that email address.')
                 return render(request, 'core/login.html', {'form': form})
 
-            if user.password != hash_password(password):
+            if not check_password(password, user.password):
                 messages.error(request, 'Incorrect password. Please try again.')
                 return render(request, 'core/login.html', {'form': form})
 
@@ -241,7 +236,7 @@ def admin_login(request):
         password = request.POST.get('password', '').strip()
         try:
             admin = AdminUser.objects.get(username=username)
-            if admin.password == hash_password(password):
+            if check_password(password, admin.password):
                 request.session['admin_logged_in'] = True
                 request.session['admin_username']  = username
                 return redirect('admin_dashboard')

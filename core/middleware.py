@@ -18,7 +18,6 @@ class NoCacheForAuthMiddleware:
         is_logged_in = (
             request.session.get('user_id')
             or request.session.get('admin_logged_in')
-            or request.session.get('otp_pending_user_id')
         )
 
         if is_logged_in:

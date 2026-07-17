@@ -1,13 +1,10 @@
 {
   "dataset_file": "dengue_dataset.csv",
-  "total_rows": 5000,
-  "usable_rows": 5000,
-  "rows_after_outlier_removal": 4961,
-  "outliers_removed": 39,
-  "outlier_per_column": {
-    "Platelet_Count": 20,
-    "WBC_Count": 19
-  },
+  "total_rows": 1000,
+  "usable_rows": 1000,
+  "rows_after_outlier_removal": 1000,
+  "outliers_removed": 0,
+  "outlier_per_column": {},
   "total_columns": 19,
   "all_columns": [
     "Gender",
@@ -53,10 +50,10 @@
   ],
   "target_column": "Outcome",
   "class_distribution": {
-    "0": 1894,
-    "1": 3106
+    "0": 453,
+    "1": 547
   },
-  "model_accuracy_pct": 88.82,
+  "model_accuracy_pct": 82.0,
   "model_info": {
     "classes": [
       "0",
@@ -76,8 +73,8 @@
       "IgM"
     ],
     "class_priors": {
-      "0": 0.37752016129032256,
-      "1": 0.6224798387096774
+      "0": 0.4525,
+      "1": 0.5475
     }
   }
 }

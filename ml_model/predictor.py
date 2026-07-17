@@ -17,7 +17,6 @@ FEATURES = [
 
 _model = _scaler = None
 
-
 def _load():
     global _model, _scaler
     if _model is None:
@@ -27,7 +26,6 @@ def _load():
         with open(MODEL_PKL, 'rb') as f:
             _model = pickle.load(f)
     return _model
-
 
 def _build_vector(d):
     mapping = {
