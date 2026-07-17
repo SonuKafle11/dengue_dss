@@ -685,6 +685,12 @@ table.app-table .action-link:hover { text-decoration: underline; }
     visibility: visible;
 }
 
+.unit{
+    margin-bottom:5px;
+    color:#9ca3af;
+    font-size:11px;
+    text-transform:none;
+}
 /* Patient profile — read-only identity row */
 .profile-readonly-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px; }
 
@@ -766,13 +772,6 @@ table.app-table .action-link:hover { text-decoration: underline; }
     cursor: pointer;
     text-transform: none;
     letter-spacing: 0;
-}
-
-.unit{
-    margin-bottom:5px;
-    color:#9ca3af;
-    font-size:11px;
-    text-transform:none;
 }
 
 @media (max-width: 768px) {

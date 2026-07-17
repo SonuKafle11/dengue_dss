@@ -119,52 +119,48 @@
                         <option value="positive" {% if record.ns1 == 1.0 %}selected{% endif %}>Positive</option>
                         <option value="negative" {% if record.ns1 == 0.0 %}selected{% endif %}>Negative</option>
                     </select>
-                    <span class="tooltip-text">Positive = early or active dengue infection</span>
+                    <span class="tooltip-text">Positive = Early or active dengue infection</span>
                 </div>
-                </div>
+            </div>
 
                 <div class="form-group">
                     <label>Platelet Count <small class="unit">(per &micro;L)</small></label>
                     <input type="number" name="platelet_count"
                            value="{{ record.platelet_count|default:'' }}"
-                           placeholder="e.g. 150000" required>
+                           placeholder="150000-450000 /µL" required>
                 </div>
 
                 <div class="form-group">
                     <label>WBC Count <small class="unit">(per &micro;L)</small></label>
                     <input type="number" name="wbc_count"
                            value="{{ record.wbc_count|default:'' }}"
-                           placeholder="e.g. 6000" required>
-                </div>
-
-                <div class="form-group">
-                    <div class="tooltip-field">
-                    <label>IgG Result</label>
-                    <select name="igm_status" required>
-                        <option value="">Select result</option>
-                        <option value="positive" {% if record.igm == 1.0 %}selected{% endif %}>Positive</option>
-                        <option value="negative" {% if record.igm == 0.0 %}selected{% endif %}>Negative</option>
-                    </select>
-                        <span class="tooltip-text">
-        Positive = past or secondary dengue exposure
-        </span>
-                </div>
+                           placeholder="4000-11000 /µL" required>
                 </div>
 
                 <div class="form-group">
                     <div class="tooltip-field">
                     <label>IgM Result</label>
+                    <select name="igm_status" required>
+                        <option value="">Select result</option>
+                        <option value="positive" {% if record.igm == 1.0 %}selected{% endif %}>Positive</option>
+                        <option value="negative" {% if record.igm == 0.0 %}selected{% endif %}>Negative</option>
+                    </select>
+                    <span class="tooltip-text">Positive = Recent or active dengue infection</span>
+                </div>
+            </div>
+
+                <div class="form-group">
+                    <div class="tooltip-field">
+                    <label>IgG Result</label>
                     <select name="igg_status" required>
                         <option value="">Select result</option>
                         <option value="positive" {% if record.igg == 1.0 %}selected{% endif %}>Positive</option>
                         <option value="negative" {% if record.igg == 0.0 %}selected{% endif %}>Negative</option>
                     </select>
-                        <span class="tooltip-text">
-        Positive = recent or active dengue infection
-    </span>
-                </div>
+                    <span class="tooltip-text">Positive = Past or secondary dengue exposure</span>
                 </div>
             </div>
+        </div>
 
             <div class="btn-row" style="margin-top:20px;">
                 <button type="submit" class="btn btn-success">Save and Run Prediction</button>
