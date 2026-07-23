@@ -3,15 +3,11 @@ tests/integration/test_auth.py
 Integration tests for registration, login, and logout flows.
 Uses Django test Client to simulate HTTP requests.
 """
-import hashlib
 import pytest
 from django.urls import reverse
 from django.test import Client
+from django.contrib.auth.hashers import make_password
 from core.models import User
-
-
-def make_password(raw):
-    return hashlib.sha256(raw.encode()).hexdigest()
 
 # IT-01 to IT-08: Registration
 @pytest.mark.django_db
@@ -144,7 +140,7 @@ class TestLogin:
             'password': self.password,
         }, follow=True)
         assert response.status_code == 200
-        assert client.session.get('user_id') == self.user.user_id
+        assert client.session.get('user_id') == self.user.pk
         assert client.session.get('role') == 'patient'
 
     def test_IT11_wrong_password_login_fails(self):
@@ -170,13 +166,13 @@ class TestLogin:
         assert 'user_id' not in client.session
 
     def test_IT13_session_set_after_login(self):
-        """IT-13: Session contains user_id, role, user_name after login."""
+        """IT-13: Session contains user_id (pk), role, user_name after login."""
         client = Client()
         client.post(reverse('login'), {
             'email': self.email,
             'password': self.password,
         })
-        assert client.session['user_id'] == self.user.user_id
+        assert client.session['user_id'] == self.user.pk
         assert client.session['role'] == 'patient'
         assert client.session['user_name'] == self.user.name
 
@@ -199,7 +195,7 @@ class TestLogin:
         """IT-15: Accessing /login/ while already logged in redirects away."""
         client = Client()
         session = client.session
-        session['user_id'] = self.user.user_id
+        session['user_id'] = self.user.pk
         session['role'] = 'patient'
         session.save()
         response = client.get(reverse('login'))
@@ -226,7 +222,7 @@ class TestLogout:
         )
         client = Client()
         session = client.session
-        session['user_id']   = user.user_id
+        session['user_id']   = user.pk
         session['role']      = 'patient'
         session['user_name'] = user.name
         session.save()
@@ -250,7 +246,7 @@ class TestLogout:
         )
         client = Client()
         session = client.session
-        session['user_id'] = user.user_id
+        session['user_id'] = user.pk
         session['role']    = 'patient'
         session.save()
         client.get(reverse('logout'))

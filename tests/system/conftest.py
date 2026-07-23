@@ -2,13 +2,9 @@
 tests/system/conftest.py
 Selenium fixtures for system tests.
 """
-import hashlib
+# ADD at the top:
+from django.contrib.auth.hashers import make_password
 import pytest
-
-
-def make_password(raw):
-    return hashlib.sha256(raw.encode()).hexdigest()
-
 
 @pytest.fixture(scope="session")
 def driver():

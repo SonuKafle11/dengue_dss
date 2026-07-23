@@ -95,8 +95,8 @@ class TestAdminDashboard:
         """IT-64: Dashboard context contains users queryset."""
         response = admin_client.get(reverse('admin_dashboard'))
         assert 'users' in response.context
-        user_ids = [u.user_id for u in response.context['users']]
-        assert patient_user.user_id in user_ids
+        user_pks = [u.pk for u in response.context['users']]
+        assert patient_user.pk in user_pks
 
     def test_IT65_dashboard_context_has_records(self, admin_client, patient_record):
         """IT-65: Dashboard context contains records queryset."""
@@ -120,25 +120,25 @@ class TestAdminDelete:
             role="patient",
         )
         response = admin_client.post(
-            reverse('admin_delete_user', kwargs={'user_id': user.user_id})
+            reverse('admin_delete_user', kwargs={'pk': user.pk})
         )
         assert response.status_code == 200
         import json
         data = json.loads(response.content)
         assert data['ok'] is True
-        assert not User.objects.filter(user_id=user.user_id).exists()
+        assert not User.objects.filter(pk=user.pk).exists()
 
     def test_IT67_delete_user_returns_json(self, admin_client, patient_user):
         """IT-67: Delete user endpoint returns JSON response."""
         response = admin_client.post(
-            reverse('admin_delete_user', kwargs={'user_id': patient_user.user_id})
+            reverse('admin_delete_user', kwargs={'pk': patient_user.pk})
         )
         assert response['Content-Type'] == 'application/json'
 
     def test_IT68_delete_nonexistent_user_returns_404(self, admin_client):
         """IT-68: Deleting non-existent user returns JSON with ok=False."""
         response = admin_client.post(
-            reverse('admin_delete_user', kwargs={'user_id': 'XXXXXXXX'})
+            reverse('admin_delete_user', kwargs={'pk': 99999})
         )
         import json
         data = json.loads(response.content)
@@ -159,7 +159,7 @@ class TestAdminDelete:
         """IT-70: Anonymous delete request redirects to admin login."""
         client = Client()
         response = client.post(
-            reverse('admin_delete_user', kwargs={'user_id': patient_user.user_id})
+            reverse('admin_delete_user', kwargs={'pk': patient_user.pk})
         )
         assert response.status_code == 302
         assert '/admin-login/' in response['Location']

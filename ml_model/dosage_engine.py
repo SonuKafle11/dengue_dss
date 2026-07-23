@@ -33,7 +33,7 @@ def get_paracetamol_dosage(weight_kg, age):
     if age < 12:
         max_daily = min(round(weight_kg * 60), 4000)
     else:
-        max_daily = 2000
+        max_daily = 4000
 
     return dose_str, frequency, max_daily
 
@@ -183,10 +183,10 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
     if risk_level == "high":
         recommendations["hospitalization"] = True
 
-    elif platelet_count < 50000:
+    elif platelet_count is not None and platelet_count < 50000:
         recommendations["hospitalization"] = True
 
-    elif platelet_count <= 100000 and "Positive" in str(ml_prediction):
+    elif platelet_count is not None and platelet_count <= 100000 and "Positive" in str(ml_prediction):
         recommendations["hospitalization"] = True
 
     elif risk_level == "probable" and "Positive" in str(ml_prediction):
@@ -234,7 +234,7 @@ def recommend_dosage(weight_kg, age, risk_level, platelet_count=None,
         )
 
     # Rule 10: Elderly adjustments
-    if age >= 60:
+    if age > 70:
         recommendations['general_advice'].append(
             'Elderly patient: Higher risk of severe dengue. '
             'Lower threshold for hospitalization. Monitor renal function.'

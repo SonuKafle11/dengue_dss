@@ -1,10 +1,6 @@
-import hashlib
 import pytest
 from django.test import Client
-
-# Helpers
-def make_password(raw):
-    return hashlib.sha256(raw.encode()).hexdigest()
+from django.contrib.auth.hashers import make_password
 
 # Shared DB fixtures
 @pytest.fixture
@@ -67,7 +63,7 @@ def patient_record(db, patient_user):
 def patient_client(patient_user):
     client = Client()
     session = client.session
-    session['user_id']   = patient_user.user_id
+    session['user_id']   = patient_user.pk
     session['role']      = 'patient'
     session['user_name'] = patient_user.name
     session.save()
@@ -78,7 +74,7 @@ def patient_client(patient_user):
 def doctor_client(doctor_user):
     client = Client()
     session = client.session
-    session['user_id']   = doctor_user.user_id
+    session['user_id']   = doctor_user.pk
     session['role']      = 'doctor'
     session['user_name'] = doctor_user.name
     session.save()

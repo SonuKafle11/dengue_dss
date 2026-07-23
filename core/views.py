@@ -16,11 +16,11 @@ SYMPTOM_FIELDS = [
 ]
 
 SYMPTOM_WEIGHTS = {
-    'fever': 1, 'severe_headache': 2, 'joint_back_pain': 2,
-    'nausea_vomiting': 1, 'skin_rash': 0.5, 'vomiting_more_than_3': 2,
-    'bleeding': 3, 'extreme_weakness': 3, 'urine_output_low': 3,
-    'fever_not_improving': 2, 'drop_in_fever_with_weakness': 3,
-    'cold_hands_feet': 1, 'restless_drowsy': 3, 'abdominal_pain': 1,
+    'fever': 1, 'severe_headache': 1, 'joint_back_pain': 1,
+    'nausea_vomiting': 1, 'skin_rash': 0.5, 'vomiting_more_than_3': 3,
+    'bleeding': 3, 'extreme_weakness': 2, 'urine_output_low': 3,
+    'fever_not_improving': 1, 'drop_in_fever_with_weakness': 3,
+    'cold_hands_feet': 2, 'restless_drowsy': 3, 'abdominal_pain': 2,
 }
 
 # Helpers
@@ -29,7 +29,7 @@ def current_user(request):
     uid = request.session.get('user_id')
     if uid:
         try:
-            return User.objects.get(user_id=uid)
+            return User.objects.get(pk=uid)
         except User.DoesNotExist:
             pass
     return None
@@ -117,13 +117,13 @@ def public_symptom_check(request):
             })
 
         score = sum(SYMPTOM_WEIGHTS.get(s, 0) for s in selected)
-        if age >= 70:
+        if age > 70:
             score += 1
         if pregnant:
             score += 1
 
-        risk_key   = 'high' if score > 4 else 'low'
-        risk_label = 'High Risk' if score > 4 else 'Low Risk'
+        risk_key   = 'high' if score >= 5 else 'low'
+        risk_label = 'High Risk' if score >= 5 else 'Low Risk'
 
         request.session['pending_symptoms'] = selected
         request.session['pending_score']    = score
@@ -208,7 +208,7 @@ def login_view(request):
                 return render(request, 'core/login.html', {'form': form})
 
             # Credentials valid — create session
-            request.session['user_id']   = user.user_id
+            request.session['user_id']   = user.pk
             request.session['role']      = user.role
             request.session['user_name'] = user.name
 
@@ -339,8 +339,6 @@ def patient_form(request):
         except (ValueError, TypeError) as e:
             messages.error(request, f'Invalid input: {e}')
 
-
-
     last_record = PatientRecord.objects.filter(patient=user).order_by('-created_at').first()
     last_symptoms = []
     if last_record:
@@ -361,14 +359,12 @@ def patient_form(request):
         },
     })
 
-
 @never_cache
 @patient_required
 def patient_result(request, record_id):
     user = current_user(request)
     rec  = get_object_or_404(PatientRecord, record_id=record_id, patient=user)
     return render(request, 'core/patient_result.html', {'record': rec, 'user': user})
-
 
 @never_cache
 @patient_required
@@ -428,7 +424,7 @@ def doctor_dashboard(request):
         records = records.filter(
             patient__name__icontains=search
         ) | records.filter(
-            patient__user_id__icontains=search
+            patient__email__icontains=search
         )
         records = records.distinct()
     if status == 'reviewed':
@@ -443,7 +439,6 @@ def doctor_dashboard(request):
         'pending' : records.filter(is_reviewed=False).count(),
         'reviewed': records.filter(is_reviewed=True).count(),
     })
-
 
 @never_cache
 @doctor_required
@@ -532,7 +527,6 @@ def doctor_prediction_result(request, record_id):
         'record': rec, 'doctor': doctor, 'dosage': dosage_rec,
     })
 
-
 # Admin views — unchanged
 @never_cache
 @admin_required
@@ -550,19 +544,17 @@ def admin_dashboard(request):
         'admin_username' : request.session.get('admin_username'),
     })
 
-
 @never_cache
 @admin_required
-def admin_delete_user(request, user_id):
+def admin_delete_user(request, pk):
     if request.method == 'POST':
         try:
-            u = User.objects.get(user_id=user_id)
+            u = User.objects.get(pk=pk)
             u.delete()
             return JsonResponse({'ok': True})
         except User.DoesNotExist:
             return JsonResponse({'ok': False, 'error': 'User not found.'}, status=404)
     return JsonResponse({'ok': False}, status=405)
-
 
 @never_cache
 @admin_required
@@ -575,7 +567,6 @@ def admin_delete_record(request, record_id):
         except PatientRecord.DoesNotExist:
             return JsonResponse({'ok': False, 'error': 'Record not found.'}, status=404)
     return JsonResponse({'ok': False}, status=405)
-
 
 @never_cache #django decorator
 @admin_required

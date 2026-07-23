@@ -74,7 +74,7 @@ class TestParacetamolDosage:
         """UT-45: 50kg adult gets 500mg dose."""
         dose, freq, max_d = get_paracetamol_dosage(50, 30)
         assert '500' in dose
-        assert max_d == 2000
+        assert max_d == 4000
 
     def test_UT46_child_10kg_dose(self):
         """UT-46: 10kg child gets 120-250mg dose."""

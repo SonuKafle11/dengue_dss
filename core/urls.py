@@ -35,7 +35,7 @@ urlpatterns = [
 
     # Admin
     path('admin-panel/',                                views.admin_dashboard,    name='admin_dashboard'),
-    path('admin-panel/delete-user/<str:user_id>/',      views.admin_delete_user,  name='admin_delete_user'),
+    path('admin-panel/delete-user/<int:pk>/',            views.admin_delete_user,  name='admin_delete_user'),
     path('admin-panel/delete-record/<uuid:record_id>/', views.admin_delete_record,name='admin_delete_record'),
     path('admin-panel/dataset-json/',                   views.admin_dataset_json, name='admin_dataset_json'),
 ]

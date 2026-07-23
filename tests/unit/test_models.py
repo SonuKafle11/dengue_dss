@@ -4,7 +4,7 @@ Unit tests for core models: User, AdminUser, PatientRecord.
 """
 import hashlib
 import pytest
-from core.models import User, AdminUser, PatientRecord, generate_user_id
+from core.models import User, AdminUser, PatientRecord
 
 # Helpers
 def make_password(raw):
@@ -39,24 +39,24 @@ class TestUserModel:
         assert user.role == "doctor"
 
     def test_UT03_user_id_auto_generated(self):
-        """UT-03: user_id is auto-generated, 8 characters, alphanumeric."""
+        """UT-03: Django auto-increment pk is assigned on save."""
         user = User.objects.create(
             name="Auto ID User",
             email="autoid@example.com",
             password=make_password("pass1234"),
             role="patient",
         )
-        assert user.user_id is not None
-        assert len(user.user_id) == 8
-        assert user.user_id.isalnum()
+        assert user.pk is not None
+        assert isinstance(user.pk, int)
+        assert user.pk > 0
 
     def test_UT04_user_id_unique(self):
-        """UT-04: Two users get different user_ids."""
+        """UT-04: Two users get different pks."""
         u1 = User.objects.create(name="A", email="a@example.com",
                                   password=make_password("p"), role="patient")
         u2 = User.objects.create(name="B", email="b@example.com",
                                   password=make_password("p"), role="patient")
-        assert u1.user_id != u2.user_id
+        assert u1.pk != u2.pk
 
     def test_UT05_email_unique_constraint(self):
         """UT-05: Duplicate email raises IntegrityError."""
@@ -68,7 +68,7 @@ class TestUserModel:
                                  password=make_password("p"), role="patient")
 
     def test_UT06_user_str(self):
-        """UT-06: __str__ returns name, role, and user_id."""
+        """UT-06: __str__ returns name, role, and pk."""
         user = User.objects.create(
             name="Ram",
             email="ram2@example.com",
@@ -77,6 +77,7 @@ class TestUserModel:
         )
         assert "Ram" in str(user)
         assert "patient" in str(user)
+        assert str(user.pk) in str(user)
 
 # UT-07 to UT-08: AdminUser model
 @pytest.mark.django_db
@@ -133,11 +134,11 @@ class TestPatientRecordModel:
         rec = PatientRecord(
             patient=user, age=30, weight=60, gender="female",
             fever=True,           # +1
-            severe_headache=True, # +2
+            severe_headache=True, # +1
             bleeding=True,        # +3
         )
         rec.save()
-        assert rec.clinical_score == 6
+        assert rec.clinical_score == 5
 
     def test_UT11_low_risk_level(self):
         """UT-11: Score < 4 gives low risk level."""
@@ -150,12 +151,12 @@ class TestPatientRecordModel:
         assert rec.clinical_risk_level == "low"
 
     def test_UT12_high_risk_level(self):
-        """UT-12: Score >= 4 gives high risk level."""
+        """UT-12: Score >5 gives high risk level."""
         user = self._make_user("high@example.com")
         rec = PatientRecord(
             patient=user, age=30, weight=60, gender="female",
             bleeding=True,          # +3
-            extreme_weakness=True,  # +3
+            extreme_weakness=True,  # +2
         )
         rec.save()
         assert rec.clinical_risk_level == "high"
@@ -219,10 +220,4 @@ class TestPatientRecordModel:
         assert rec.clinical_risk_level == "high"
         assert rec.clinical_score >= 10
 
-# UT-19: generate_user_id helper
-def test_UT19_generate_user_id_format():
-    """UT-19: generate_user_id returns 8-char alphanumeric string."""
-    uid = generate_user_id()
-    assert len(uid) == 8
-    assert uid.isalnum()
-    assert uid == uid.upper()
+# UT-19 removed — generate_user_id no longer exists (Django auto pk used instead)

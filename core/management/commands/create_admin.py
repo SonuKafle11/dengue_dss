@@ -2,8 +2,8 @@
 Usage:
   python manage.py create_admin --username admin --password admin123
 """
-import hashlib
 from django.core.management.base import BaseCommand
+from django.contrib.auth.hashers import make_password
 from core.models import AdminUser
 
 class Command(BaseCommand):
@@ -16,11 +16,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         username = options['username']
         password = options['password']
-        hashed   = hashlib.sha256(password.encode()).hexdigest()
 
         obj, created = AdminUser.objects.update_or_create(
             username=username,
-            defaults={'password': hashed}
+            defaults={'password': make_password(password)}
         )
         if created:
             self.stdout.write(self.style.SUCCESS(

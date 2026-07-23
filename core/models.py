@@ -1,10 +1,5 @@
 from django.db import models
 import uuid
-import random
-import string
-
-def generate_user_id():
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
 class User(models.Model):
     ROLE_CHOICES = [
@@ -17,7 +12,8 @@ class User(models.Model):
         ('other', 'Other'),
     ]
 
-    user_id  = models.CharField(max_length=10, unique=True, default=generate_user_id, primary_key=True)
+    # pk (auto BigAutoField) is the primary key — set by Django automatically
+
     name     = models.CharField(max_length=100)
     email    = models.EmailField(max_length=254, unique=True, null=True, blank=True)
     email_verified = models.BooleanField(default=False)
@@ -36,7 +32,7 @@ class User(models.Model):
     updated_at  = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.name} ({self.role}) - {self.user_id}"
+        return f"{self.name} ({self.role}) - {self.pk}"
 
 class AdminUser(models.Model):
     username = models.CharField(max_length=100, unique=True)
@@ -103,19 +99,19 @@ class PatientRecord(models.Model):
     def calculate_clinical_score(self):
         score = 0
         score += 1 if self.fever else 0
-        score += 2 if self.severe_headache else 0
-        score += 2 if self.joint_back_pain else 0
+        score += 1 if self.severe_headache else 0
+        score += 1 if self.joint_back_pain else 0
         score += 1 if self.nausea_vomiting else 0
         score += 0.5 if self.skin_rash else 0
-        score += 2 if self.vomiting_more_than_3 else 0
+        score += 3 if self.vomiting_more_than_3 else 0
         score += 3 if self.bleeding else 0
-        score += 3 if self.extreme_weakness else 0
+        score += 2 if self.extreme_weakness else 0
         score += 3 if self.urine_output_low else 0
-        score += 2 if self.fever_not_improving else 0
+        score += 1 if self.fever_not_improving else 0
         score += 3 if self.drop_in_fever_with_weakness else 0
-        score += 1 if self.cold_hands_feet else 0
+        score += 2 if self.cold_hands_feet else 0
         score += 3 if self.restless_drowsy else 0
-        score += 1 if self.abdominal_pain else 0
+        score += 2 if self.abdominal_pain else 0
         # Age and pregnancy bonuses
         if self.age and self.age > 70:
             score += 1
@@ -124,7 +120,7 @@ class PatientRecord(models.Model):
         return score
 
     def get_risk_level(self, score):
-        if score <= 4:
+        if score < 5:
             return 'low'
         else:
             return 'high'

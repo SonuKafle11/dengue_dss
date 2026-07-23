@@ -111,7 +111,7 @@
                     <td>
                         <button
                             class="btn btn-sm btn-delete-user"
-                            data-url="{% url 'admin_delete_user' u.user_id %}"
+                            data-url="{% url 'admin_delete_user' u.pk %}"
                             data-name="{{ u.name }}"
                             style="background:#dc2626; border-color:#dc2626; padding:4px 10px; font-size:12px;"
                         >Delete</button>

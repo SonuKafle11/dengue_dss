@@ -10,14 +10,15 @@ class UserModelTest(TestCase):
     """Test Case 1: User model creation and ID generation"""
 
     def test_patient_creation(self):
-        """TC-01: Patient user created with unique 8-char ID"""
+        """TC-01: Patient user created with auto-increment pk"""
         user = User.objects.create(
             name='Sumitra Kafle',
             password=hash_password('test123'),
             role='patient'
         )
         self.assertEqual(user.role, 'patient')
-        self.assertEqual(len(user.user_id), 8)
+        self.assertIsNotNone(user.pk)
+        self.assertIsInstance(user.pk, int)
 
     def test_doctor_creation(self):
         """TC-02: Doctor user created successfully"""
@@ -128,30 +129,32 @@ class LoginTest(TestCase):
         self.client = Client()
         self.user = User.objects.create(
             name='Login Test Patient',
+            email='logintest@example.com',
             password=hash_password('mypass'),
             role='patient'
         )
 
-    def test_login_with_user_id(self):
-        """TC-11: User can login using their unique ID"""
+    def test_login_with_email(self):
+        """TC-11: User can login using their email"""
         response = self.client.post(reverse('login'), {
-            'identifier': self.user.user_id,
+            'email': 'logintest@example.com',
             'password': 'mypass'
         })
         self.assertRedirects(response, reverse('patient_dashboard'))
 
     def test_login_with_name(self):
-        """TC-12: User can login using their full name"""
+        """TC-12: Wrong email does not log in"""
         response = self.client.post(reverse('login'), {
-            'identifier': 'Login Test Patient',
+            'email': 'wrong@example.com',
             'password': 'mypass'
         })
-        self.assertRedirects(response, reverse('patient_dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('user_id', self.client.session)
 
     def test_wrong_password_rejected(self):
         """TC-13: Wrong password does not log in"""
         response = self.client.post(reverse('login'), {
-            'identifier': self.user.user_id,
+            'email': 'logintest@example.com',
             'password': 'wrongpassword'
         })
         self.assertEqual(response.status_code, 200)
@@ -160,7 +163,7 @@ class LoginTest(TestCase):
     def test_patient_cannot_access_doctor_pages(self):
         """TC-14: Patient session cannot access /doctor/"""
         self.client.post(reverse('login'), {
-            'identifier': self.user.user_id,
+            'email': 'logintest@example.com',
             'password': 'mypass'
         })
         response = self.client.get(reverse('doctor_dashboard'))

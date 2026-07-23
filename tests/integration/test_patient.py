@@ -40,7 +40,7 @@ class TestPatientDashboard:
     def test_IT24_dashboard_context_has_user(self, patient_client, patient_user):
         """IT-24: Dashboard context contains the logged-in user."""
         response = patient_client.get(reverse('patient_dashboard'))
-        assert response.context['user'].user_id == patient_user.user_id
+        assert response.context['user'].pk == patient_user.pk
 
     def test_IT25_dashboard_context_has_records(self, patient_client, patient_record):
         """IT-25: Dashboard context contains records queryset."""
@@ -160,7 +160,7 @@ class TestPatientResult:
         )
         client = Client()
         session = client.session
-        session['user_id'] = other.user_id
+        session['user_id'] = other.pk
         session['role']    = 'patient'
         session.save()
         response = client.get(
