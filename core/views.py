@@ -263,7 +263,6 @@ def patient_dashboard(request):
         'reviewed': reviewed, 'pending': pending,
     })
 
-
 @never_cache
 @patient_required
 def patient_form(request):
@@ -551,7 +550,13 @@ def admin_delete_user(request, pk):
         try:
             u = User.objects.get(pk=pk)
             u.delete()
-            return JsonResponse({'ok': True})
+            return JsonResponse({
+            'ok': True,
+            'total_patients': User.objects.filter(role='patient').count(),
+            'total_doctors': User.objects.filter(role='doctor').count(),
+            'total_records': PatientRecord.objects.count(),
+            'reviewed_records': PatientRecord.objects.filter(is_reviewed=True).count(),
+        })
         except User.DoesNotExist:
             return JsonResponse({'ok': False, 'error': 'User not found.'}, status=404)
     return JsonResponse({'ok': False}, status=405)
@@ -563,7 +568,13 @@ def admin_delete_record(request, record_id):
         try:
             r = PatientRecord.objects.get(record_id=record_id)
             r.delete()
-            return JsonResponse({'ok': True})
+            return JsonResponse({
+            'ok': True,
+            'total_patients': User.objects.filter(role='patient').count(),
+            'total_doctors': User.objects.filter(role='doctor').count(),
+            'total_records': PatientRecord.objects.count(),
+            'reviewed_records': PatientRecord.objects.filter(is_reviewed=True).count(),
+        })
         except PatientRecord.DoesNotExist:
             return JsonResponse({'ok': False, 'error': 'Record not found.'}, status=404)
     return JsonResponse({'ok': False}, status=405)

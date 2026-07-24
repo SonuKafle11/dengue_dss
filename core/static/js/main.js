@@ -201,11 +201,26 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(function (res) { return res.json(); })
         .then(function (data) {
-            if (data.ok) {
-                row.style.transition = 'opacity 0.25s';
-                row.style.opacity    = '0';
-                setTimeout(function () { row.remove(); }, 260);
-            } else {
+    if (data.ok) {
+    row.style.transition = 'opacity 0.25s';
+    row.style.opacity = '0';
+    setTimeout(function () {
+        row.remove();
+        document.getElementById("total-patients").textContent =
+            data.total_patients;
+
+        document.getElementById("total-doctors").textContent =
+            data.total_doctors;
+
+        document.getElementById("total-records").textContent =
+            data.total_records;
+
+        document.getElementById("reviewed-records").textContent =
+            data.reviewed_records;
+
+    }, 260);
+
+} else {
                 alert(data.error || 'Delete failed.');
             }
         })
