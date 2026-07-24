@@ -392,7 +392,7 @@ def patient_profile(request):
             user.save()
 
             messages.success(request, "Profile updated successfully.")
-            return redirect('patient_dashboard')
+            return redirect('patient_profile')
         return render(request, 'core/patient_profile.html', {
             'user': user,
             'form': form,

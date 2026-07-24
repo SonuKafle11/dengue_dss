@@ -27,7 +27,21 @@
             <div class="subtitle">These details are pre-filled on every new assessment. Keep them up to date.</div>
         </div>
     </div>
-
+{% if messages %}
+    {% for message in messages %}
+        <div class="banner banner-success" style="
+            background:#e8f5e9;
+            color:#1b5e20;
+            border:1px solid #81c784;
+            padding:12px;
+            border-radius:6px;
+            margin-bottom:20px;
+            font-weight:600;
+        ">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 {% if form.errors %}
 <div class="banner banner-danger" style="
     background:#fdecea;
