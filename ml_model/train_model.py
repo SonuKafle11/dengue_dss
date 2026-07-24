@@ -7,9 +7,11 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 
+#import HybridNaiveBayes from ml_model.naive_bayes
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ml_model.naive_bayes import HybridNaiveBayes
 
+#define file path
 BASE         = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE)
 
@@ -68,7 +70,6 @@ def remove_outliers(X, column_indices):
         if num_outliers > 0:
             outlier_info[feature_list[col_idx]] = int(num_outliers)
     return keep, outlier_info
-
 
 def train():
 

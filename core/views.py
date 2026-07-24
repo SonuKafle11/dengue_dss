@@ -24,7 +24,6 @@ SYMPTOM_WEIGHTS = {
 }
 
 # Helpers
-
 def current_user(request):
     uid = request.session.get('user_id')
     if uid:
@@ -43,7 +42,6 @@ def patient_required(fn):
     wrap.__name__ = fn.__name__
     return wrap
 
-
 def doctor_required(fn):
     def wrap(request, *a, **kw):
         if not request.session.get('user_id') or request.session.get('role') != 'doctor':
@@ -51,7 +49,6 @@ def doctor_required(fn):
         return fn(request, *a, **kw)
     wrap.__name__ = fn.__name__
     return wrap
-
 
 def admin_required(fn):
     def wrap(request, *a, **kw):
@@ -65,14 +62,11 @@ def admin_required(fn):
 def landing(request):
     return render(request, 'core/landing.html')
 
-
 def about(request):
     return render(request, 'core/about.html')
 
-
 def explore(request):
     return render(request, 'core/explore.html')
-
 
 def index(request):
     role = request.session.get('role')
@@ -244,7 +238,6 @@ def admin_login(request):
         except AdminUser.DoesNotExist:
             messages.error(request, 'Admin account not found.')
     return render(request, 'core/admin_login.html')
-
 
 def admin_logout(request):
     request.session.flush()
